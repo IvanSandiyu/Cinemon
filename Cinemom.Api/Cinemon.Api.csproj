@@ -11,4 +11,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Endpoints\Reservas\" />
+    <Folder Include="Endpoints\Peliculas\" />
+    <Folder Include="Endpoints\Funciones\" />
+  </ItemGroup>
+
 </Project>
