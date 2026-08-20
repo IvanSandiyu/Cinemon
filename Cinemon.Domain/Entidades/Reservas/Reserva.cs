@@ -1,4 +1,5 @@
 ﻿using Cinemon.Domain.Entidades.Butacas;
+using Cinemon.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +15,26 @@ namespace Cinemon.Domain.Entidades.Reservas
         public int RealizadaPorId { get; set; }
         public int FuncionId { get; set; }
         public DateTime FechaReserva { get; set; }
-        public bool Estado { get; set; }
-        public float Total { get; set; }
-        //public ReservaButacas ReservasButacas { get; set; }
+        public EstadoReserva EstadoReserva { get; set; }
+        public decimal Total { get; set; }
+
+        public Reserva(
+       int clienteId,
+       int realizadaPorId,
+       int funcionId,
+       decimal total)
+        {
+            UsuarioId = clienteId;
+            RealizadaPorId = realizadaPorId;
+            FuncionId = funcionId;
+            Total = total;
+            FechaReserva = DateTime.UtcNow;
+            EstadoReserva = EstadoReserva.Confirmada;
+        }
+
+        public void Cancelar()
+        {
+            EstadoReserva = EstadoReserva.Cancelada;
+        }
     }
 }

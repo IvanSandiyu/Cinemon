@@ -1,4 +1,4 @@
-using Cinema.Web.Components;
+using Cinemon.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 

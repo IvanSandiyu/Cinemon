@@ -12,6 +12,12 @@ namespace Cinemon.Domain.Entidades.Butacas
         public int SalaId {  get; set; }
         public string Fila {  get; set; }
         public int Numero { get; set; }
-        //public string Codigo => $"{Fila}{Numero}";
+        public string Codigo => $"{Fila}{Numero}";
+        public Butaca(int salaId, string fila, int numero)
+        {
+            SalaId = salaId;
+            Fila = fila;
+            Numero = numero;
+        }
     }
 }

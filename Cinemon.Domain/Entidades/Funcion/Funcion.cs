@@ -16,7 +16,34 @@ namespace Cinemon.Domain.Entidades.Funcion
         public IdiomaFuncion Idioma { get; set; }
         public TipoSala TipoSala { get; set; }
         public Formato Formato { get; set; }
-        public float Precio { get; set; }
+        public decimal Precio { get; set; }
         public EstadoFuncion EstadoFuncion{ get; set; }
+
+        public Funcion(
+        int peliculaId,
+        int salaId,
+        DateTime fechaHoraInicio,
+        IdiomaFuncion idioma,
+        Formato formato,
+        decimal precio)
+        {
+            PeliculaId = peliculaId;
+            SalaId = salaId;
+            FechaHoraInicio = fechaHoraInicio;
+            Idioma = idioma;
+            Formato = formato;
+            Precio = precio;
+            EstadoFuncion = EstadoFuncion.Programada;
+        }
+
+        public void Cancelar()
+        {
+            EstadoFuncion = EstadoFuncion.Cancelada;
+        }
+
+        public void Finalizar()
+        {
+            EstadoFuncion = EstadoFuncion.Finalizada;
+        }
     }
 }

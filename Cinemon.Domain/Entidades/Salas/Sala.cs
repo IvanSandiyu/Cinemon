@@ -12,7 +12,14 @@ namespace Cinemon.Domain.Entidades.Salas
         public int Id {  get; set; }
         public int Numero { get; set; }
         public TipoSala TipoSala { get; set; }
-        
+
+        public Sala(int numero, TipoSala tipo)
+        {
+            Numero = numero;
+            TipoSala = tipo;
+        }
     }
+
+    
 
 }

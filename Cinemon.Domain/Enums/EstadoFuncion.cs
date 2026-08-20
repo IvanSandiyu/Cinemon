@@ -8,7 +8,8 @@ namespace Cinemon.Domain.Enums
 {
     public enum EstadoFuncion
     {
-        Finalizada = 1,
-        Cancelada = 2
+        Programada = 1,
+        Finalizada = 2,
+        Cancelada = 3
     }
 }
