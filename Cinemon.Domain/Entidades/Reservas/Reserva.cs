@@ -19,12 +19,12 @@ namespace Cinemon.Domain.Entidades.Reservas
         public decimal Total { get; set; }
 
         public Reserva(
-       int clienteId,
+       int usuarioId,
        int realizadaPorId,
        int funcionId,
        decimal total)
         {
-            UsuarioId = clienteId;
+            UsuarioId = usuarioId;
             RealizadaPorId = realizadaPorId;
             FuncionId = funcionId;
             Total = total;

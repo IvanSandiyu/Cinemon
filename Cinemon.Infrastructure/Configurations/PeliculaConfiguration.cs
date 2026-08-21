@@ -1,5 +1,4 @@
-﻿using Cinemon.Domain.Entidades.Generos;
-using Cinemon.Domain.Entidades.Peliculas;
+﻿using Cinemon.Domain.Entidades.Peliculas;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -38,25 +37,6 @@ namespace Cinemon.Infrastructure.Configurations
 
             builder.Property(x => x.Activa)
                 .IsRequired();
-
-            builder.HasMany(x => x.Generos)
-                .WithMany();
-
-            builder
-                .HasMany<Genero>()
-                .WithMany()
-                .UsingEntity<Dictionary<string, object>>(
-                    "PeliculaGenero",
-                    right => right
-                        .HasOne<Genero>()
-                        .WithMany()
-                        .HasForeignKey("GeneroId")
-                        .OnDelete(DeleteBehavior.Cascade),
-                    left => left
-                        .HasOne<Pelicula>()
-                        .WithMany()
-                        .HasForeignKey("PeliculaId")
-                        .OnDelete(DeleteBehavior.Cascade));
         }
     }
 }

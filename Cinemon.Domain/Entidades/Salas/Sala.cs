@@ -13,10 +13,10 @@ namespace Cinemon.Domain.Entidades.Salas
         public int Numero { get; set; }
         public TipoSala TipoSala { get; set; }
 
-        public Sala(int numero, TipoSala tipo)
+        public Sala(int numero, TipoSala tipoSala)
         {
             Numero = numero;
-            TipoSala = tipo;
+            TipoSala = tipoSala;
         }
     }
 

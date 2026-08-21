@@ -1,4 +1,5 @@
 ﻿using Cinemon.Domain.Entidades.Butacas;
+using Cinemon.Domain.Entidades.Salas;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -34,6 +35,8 @@ namespace Cinemon.Infrastructure.Configurations
                 x.Numero
             })
             .IsUnique();
+
+            builder.HasOne<Sala>().WithMany().HasForeignKey(x => x.SalaId).OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

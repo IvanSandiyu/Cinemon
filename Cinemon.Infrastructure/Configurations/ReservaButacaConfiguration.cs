@@ -21,12 +21,24 @@ namespace Cinemon.Infrastructure.Configurations
             builder.Property(x => x.ReservaId)
                 .IsRequired();
 
+            builder.Property(x => x.FuncionId)
+                .IsRequired();
+
             builder.Property(x => x.ButacaId)
                 .IsRequired();
 
             builder.HasOne<Reserva>()
                 .WithMany()
-                .HasForeignKey(x => x.ReservaId)
+                .HasForeignKey(x => new
+                {
+                    x.ReservaId,
+                    x.FuncionId
+                })
+                .HasPrincipalKey(x => new
+                {
+                    x.Id,
+                    x.FuncionId
+                })
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne<Butaca>()
@@ -39,6 +51,8 @@ namespace Cinemon.Infrastructure.Configurations
                 x.FuncionId,
                 x.ButacaId
             }).IsUnique();
+
+            builder.Property(x => x.FuncionId).IsRequired();
         }
     }
 }

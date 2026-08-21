@@ -14,7 +14,6 @@ namespace Cinemon.Domain.Entidades.Funcion
         public int SalaId { get; set; }
         public DateTime FechaHoraInicio { get; set; }
         public IdiomaFuncion Idioma { get; set; }
-        public TipoSala TipoSala { get; set; }
         public Formato Formato { get; set; }
         public decimal Precio { get; set; }
         public EstadoFuncion EstadoFuncion{ get; set; }

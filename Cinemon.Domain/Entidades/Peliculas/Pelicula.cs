@@ -15,7 +15,6 @@ namespace Cinemon.Domain.Entidades.Peliculas
         public string Sinopsis { get; set; }
         public int Duracion {  get; set; }
         public DateTime FechaEstreno { get; set; }
-        public ICollection<Genero> Generos { get; set; }
         public ClasificacionEdad ClasificacionEdad { get; set; }
         public string PosterUrl { get; set; }
         public string TrailerUrl { get; set; }

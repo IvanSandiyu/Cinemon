@@ -17,12 +17,11 @@ namespace Cinemon.Domain.Entidades.Usuarios
         public Rol Rol { get; set; }
 
         public Usuario(
-       string nombre,
-       string apellido,
+       string nombreApellido,
        string email,
        Rol rol)
         {
-            NombreApellido = nombre;
+            NombreApellido = nombreApellido;
             Email = email;
             Rol = rol;
             Activo = true;
