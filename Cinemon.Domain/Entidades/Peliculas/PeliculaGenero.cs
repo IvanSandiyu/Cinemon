@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cinemon.Domain.Entidades.Generos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,10 @@ namespace Cinemon.Domain.Entidades.Peliculas
         public int PeliculaId { get; private set; }
 
         public int GeneroId { get; private set; }
+
+        public Pelicula Pelicula { get; private set; } = null!;
+
+        public Genero Genero { get; private set; } = null!;
 
         public PeliculaGenero()
         {

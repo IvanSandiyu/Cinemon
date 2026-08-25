@@ -72,5 +72,21 @@ namespace Cinemon.Infrastructure.Repositories
         {
             await _context.SaveChangesAsync(cancellationToken);
         }
+        public async Task<IReadOnlyCollection<Pelicula>> ObtenerTodasAsync(
+    CancellationToken cancellationToken)
+        {
+            return await _context.Peliculas
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<Pelicula?> ObtenerPorIdAsync(
+            int id,
+            CancellationToken cancellationToken)
+        {
+            return await _context.Peliculas
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        }
     }
 }

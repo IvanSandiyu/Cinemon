@@ -19,6 +19,13 @@ namespace Cinemon.Application.Abstractions
        IReadOnlyCollection<int> generoIds,
        CancellationToken cancellationToken);
 
+        Task<IReadOnlyCollection<Pelicula>> ObtenerTodasAsync(
+    CancellationToken cancellationToken);
+
+        Task<Pelicula?> ObtenerPorIdAsync(
+            int id,
+            CancellationToken cancellationToken);
+
         Task SaveChangesAsync(
             CancellationToken cancellationToken);
     }

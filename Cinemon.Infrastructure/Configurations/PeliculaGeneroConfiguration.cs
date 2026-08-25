@@ -22,12 +22,12 @@ namespace Cinemon.Infrastructure.Configurations
                 x.GeneroId
             });
 
-            builder.HasOne<Pelicula>()
-                .WithMany()
-                .HasForeignKey(x => x.PeliculaId)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(x => x.Pelicula).
+                WithMany(x => x.Generos)
+               .HasForeignKey(x => x.PeliculaId)
+               .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne<Genero>()
+            builder.HasOne(x => x.Genero)
                 .WithMany()
                 .HasForeignKey(x => x.GeneroId)
                 .OnDelete(DeleteBehavior.Cascade);
