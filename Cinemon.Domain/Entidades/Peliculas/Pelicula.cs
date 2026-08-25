@@ -10,15 +10,15 @@ namespace Cinemon.Domain.Entidades.Peliculas
 {
     public class Pelicula
     {
-        public int Id { get; set; }
-        public string Titulo { get; set; }
-        public string Sinopsis { get; set; }
-        public int Duracion {  get; set; }
-        public DateTime FechaEstreno { get; set; }
-        public ClasificacionEdad ClasificacionEdad { get; set; }
-        public string PosterUrl { get; set; }
-        public string TrailerUrl { get; set; }
-        public bool Activa { get; set; }
+        public int Id { get; private set; }
+        public string Titulo { get; private set; }
+        public string Sinopsis { get; private set; }
+        public int Duracion {  get; private set; }
+        public DateTime FechaEstreno { get; private set; }
+        public ClasificacionEdad ClasificacionEdad { get; private set; }
+        public string PosterUrl { get; private set; }
+        public string TrailerUrl { get; private set; }
+        public bool Activa { get; private set; }
 
         //Creamos la pelicula y automaticamente Activo es false ya que no nos interesa que se pueda ver todavia
         //Creamos aca y no en application pq es mas sencillo y automaticamente esta en "stand by"

@@ -8,9 +8,9 @@ namespace Cinemon.Domain.Enums
 {
     public enum ClasificacionEdad
     {
-        ATP = 0,
-        MayorDe13 = 1,
-        MayorDe16 = 2,
-        MayorDe18 = 3
+        ATP = 1,
+        MayorDe13 = 2,
+        MayorDe16 = 3,
+        MayorDe18 = 4
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Cinemon.Domain.Entidades.Butacas;
+using Cinemon.Domain.Entidades.Generos;
 using Cinemon.Domain.Entidades.Salas;
 using Cinemon.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,8 @@ namespace Cinemon.Infrastructure.Seed
         public static async Task SeedAsync(CinemonDbContext context)
         {
             await context.Database.MigrateAsync();
+            //await SeedSalasAsync(context);
+            await SeedGenerosAsync(context);
 
             if (await context.Salas.AnyAsync())
                 return;
@@ -62,6 +65,7 @@ namespace Cinemon.Infrastructure.Seed
             await context.SaveChangesAsync();
         }
 
+
         private static void GenerarButacas(
             ICollection<Butaca> butacas,
             int salaId,
@@ -80,5 +84,24 @@ namespace Cinemon.Infrastructure.Seed
                 }
             }
         }
+
+        private static async Task SeedGenerosAsync(CinemonDbContext context)
+        {
+            if (await context.Generos.AnyAsync())
+                return;
+
+            var generos = new List<Genero> {
+        new() { Nombre = "Acción" },
+        new() { Nombre = "Comedia" },
+        new() { Nombre = "Drama" },
+        new() { Nombre = "Ciencia Ficción" },
+        new() { Nombre = "Terror" }
+    };
+
+            context.Generos.AddRange(generos);
+
+            await context.SaveChangesAsync();
+        }
+
     }
 }

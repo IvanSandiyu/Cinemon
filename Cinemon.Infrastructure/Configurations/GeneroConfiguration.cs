@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Cinemon.Infrastructure.Configurations
 {
-    internal class GeneroConfiguration : IEntityTypeConfiguration<Genero>
+    public class GeneroConfiguration : IEntityTypeConfiguration<Genero>
     {
         public void Configure(EntityTypeBuilder<Genero> builder)
         {

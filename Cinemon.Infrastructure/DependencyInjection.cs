@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Cinemon.Application.Abstractions;
+using Cinemon.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -18,6 +20,9 @@ namespace Cinemon.Infrastructure
             services.AddDbContext<CinemonDbContext>(options =>
                 options.UseSqlServer(
                     configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddScoped<IPeliculaRepository, PeliculaRepository>();
+            services.AddScoped<IGeneroRepository, GeneroRepository>();
 
 
             return services;

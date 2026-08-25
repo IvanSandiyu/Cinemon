@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Cinemon.Infrastructure.Configurations
 {
-    internal class PeliculaConfiguration : IEntityTypeConfiguration<Pelicula>
+    public class PeliculaConfiguration : IEntityTypeConfiguration<Pelicula>
     {
         public void Configure(EntityTypeBuilder<Pelicula> builder)
         {

@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <Folder Include="Endpoints\Reservas\" />
-    <Folder Include="Endpoints\Peliculas\" />
     <Folder Include="Endpoints\Funciones\" />
   </ItemGroup>
 

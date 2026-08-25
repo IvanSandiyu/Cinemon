@@ -1,0 +1,76 @@
+﻿using Cinemon.Application.Abstractions;
+using Cinemon.Domain.Entidades.Peliculas;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Cinemon.Infrastructure.Repositories
+{
+    public class PeliculaRepository : IPeliculaRepository
+    {
+        private readonly CinemonDbContext _context;
+
+        public PeliculaRepository(CinemonDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task AddAsync(Pelicula pelicula,IReadOnlyCollection<int> generoIds,CancellationToken cancellationToken)
+        {
+            await using var transaction =
+                await _context.Database.BeginTransactionAsync(
+                    cancellationToken);
+
+            try {
+                await _context.Peliculas.AddAsync(
+                    pelicula,
+                    cancellationToken);
+
+                await _context.SaveChangesAsync(
+                    cancellationToken);
+
+                var relaciones = generoIds.Select(
+                    generoId => new PeliculaGenero(
+                        pelicula.Id,
+                        generoId));
+
+                await _context.Set<PeliculaGenero>()
+                    .AddRangeAsync(
+                        relaciones,
+                        cancellationToken);
+
+                await _context.SaveChangesAsync(
+                    cancellationToken);
+
+                await transaction.CommitAsync(
+                    cancellationToken);
+            } catch {
+                await transaction.RollbackAsync(
+                    cancellationToken);
+
+                throw;
+            }
+        }
+        public async Task AddGenerosAsync(Pelicula pelicula,IReadOnlyCollection<int> generoIds,CancellationToken cancellationToken)
+        {
+            var relaciones = generoIds.Select(
+                generoId => new PeliculaGenero(
+                    pelicula.Id,
+                    generoId));
+
+            await _context.Set<PeliculaGenero>()
+                .AddRangeAsync(
+                    relaciones,
+                    cancellationToken);
+        }
+
+        public async Task SaveChangesAsync(
+            CancellationToken cancellationToken)
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+    }
+}
