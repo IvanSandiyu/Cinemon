@@ -1,4 +1,5 @@
-﻿using Cinemon.Domain.Enums;
+﻿using Cinemon.Domain.Entidades.Butacas;
+using Cinemon.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace Cinemon.Domain.Entidades.Salas
         public int Id {  get; set; }
         public int Numero { get; set; }
         public TipoSala TipoSala { get; set; }
+
+        public ICollection<Butaca> Butacas { get; private set; } = [];
 
         public Sala(int numero, TipoSala tipoSala)
         {

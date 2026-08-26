@@ -1,4 +1,7 @@
+using Cinemon.Api.Endpoints.Butacas;
+using Cinemon.Api.Endpoints.Funciones;
 using Cinemon.Api.Endpoints.Peliculas;
+using Cinemon.Api.Endpoints.Salas;
 using Cinemon.Api.Middleware;
 using Cinemon.Application;
 using Cinemon.Infrastructure;
@@ -31,6 +34,9 @@ app.UseExceptionHandler();
 app.UseHttpsRedirection();
 
 app.MapPeliculaEndpoint();
+app.MapSalaEndpoints();
+app.MapButacaEndpoints();
+app.MapFuncionEndpoints();
 
 using (var scope = app.Services.CreateScope()) {
     var context = scope.ServiceProvider

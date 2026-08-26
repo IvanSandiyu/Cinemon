@@ -48,9 +48,9 @@ namespace Cinemon.Infrastructure.Configurations
             });
 
             builder.HasOne<Pelicula>()
-    .WithMany()
-    .HasForeignKey(x => x.PeliculaId)
-    .OnDelete(DeleteBehavior.Restrict);
+                .WithMany()
+                .HasForeignKey(x => x.PeliculaId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne<Sala>()
                 .WithMany()

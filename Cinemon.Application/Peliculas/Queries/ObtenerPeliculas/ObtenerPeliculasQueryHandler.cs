@@ -12,15 +12,12 @@ namespace Cinemon.Application.Peliculas.Queries.ObtenerPeliculas
     {
         private readonly IPeliculaRepository _peliculaRepository;
 
-        public ObtenerPeliculasQueryHandler(
-            IPeliculaRepository peliculaRepository)
+        public ObtenerPeliculasQueryHandler(IPeliculaRepository peliculaRepository)
         {
             _peliculaRepository = peliculaRepository;
         }
 
-        public async Task<IReadOnlyCollection<PeliculaDto>> Handle(
-            ObtenerPeliculasQuery request,
-            CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<PeliculaDto>> Handle(ObtenerPeliculasQuery request,CancellationToken cancellationToken)
         {
             var peliculas = await _peliculaRepository
                 .ObtenerTodasAsync(cancellationToken);

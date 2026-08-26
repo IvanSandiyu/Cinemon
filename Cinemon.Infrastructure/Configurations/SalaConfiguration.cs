@@ -25,6 +25,11 @@ namespace Cinemon.Infrastructure.Configurations
 
             builder.HasIndex(x => x.Numero)
                 .IsUnique();
+
+            builder.HasMany(x => x.Butacas)
+                .WithOne()
+                .HasForeignKey(x => x.SalaId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
