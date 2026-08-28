@@ -9,8 +9,8 @@ namespace Cinemon.Application.Abstractions
 {
     public interface IButacaRepository
     {
-        Task<IReadOnlyCollection<Butaca>> ObtenerPorSalaAsync(
-            int salaId,
-            CancellationToken cancellationToken);
+        Task<IReadOnlyCollection<Butaca>> ObtenerPorSalaAsync(int salaId,CancellationToken cancellationToken);
+
+        Task<IReadOnlyCollection<Butaca>> ObtenerPorIdsAsync(IReadOnlyCollection<int> ids,CancellationToken cancellationToken);
     }
 }

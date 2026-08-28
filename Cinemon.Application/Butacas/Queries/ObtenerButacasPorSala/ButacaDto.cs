@@ -8,6 +8,7 @@ namespace Cinemon.Application.Butacas.Queries.ObtenerButacasPorSala
 {
     public sealed record ButacaDto(
     int Id,
+    //int SalaId,
     string Fila,
     int Numero);
 }

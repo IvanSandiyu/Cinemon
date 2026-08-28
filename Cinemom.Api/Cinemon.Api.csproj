@@ -16,10 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Endpoints\Reservas\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Cinemon.Application\Cinemon.Application.csproj" />
     <ProjectReference Include="..\Cinemon.Infrastructure\Cinemon.Infrastructure.csproj" />
   </ItemGroup>

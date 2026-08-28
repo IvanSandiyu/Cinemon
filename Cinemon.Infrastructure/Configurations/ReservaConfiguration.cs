@@ -57,8 +57,7 @@ namespace Cinemon.Infrastructure.Configurations
             {
                 x.Id,
                 x.FuncionId
-            })
-.IsUnique();
+            }).IsUnique();
         }
     }
 }

@@ -18,6 +18,14 @@ namespace Cinemon.Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task<IReadOnlyCollection<Butaca>> ObtenerPorIdsAsync(IReadOnlyCollection<int> ids,CancellationToken cancellationToken)
+        {
+            return await _context.Butacas
+                .AsNoTracking()
+                .Where(x => ids.Contains(x.Id))
+                .ToListAsync(cancellationToken);
+        }
+
         public async Task<IReadOnlyCollection<Butaca>> ObtenerPorSalaAsync(
             int salaId,
             CancellationToken cancellationToken)

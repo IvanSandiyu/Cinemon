@@ -51,5 +51,14 @@ namespace Cinemon.Infrastructure.Repositories
         {
             return await _context.Funciones.AsNoTracking().ToListAsync(cancellationToken);
         }
+
+        public async Task<Funcion?> ObtenerPorIdAsync(int id,CancellationToken cancellationToken)
+        {
+            return await _context.Funciones
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    x => x.Id == id,
+                    cancellationToken);
+        }
     }
 }

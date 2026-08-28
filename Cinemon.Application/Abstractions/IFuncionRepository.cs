@@ -18,6 +18,8 @@ namespace Cinemon.Application.Abstractions
 
         Task<IReadOnlyCollection<Funcion>>ObtenerFuncionesAsync(CancellationToken cancellationToken);
 
+        Task<Funcion?> ObtenerPorIdAsync(int id,CancellationToken cancellationToken);
+
         Task AddAsync(
             Funcion funcion,
             CancellationToken cancellationToken);

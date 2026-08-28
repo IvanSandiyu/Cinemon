@@ -26,6 +26,8 @@ namespace Cinemon.Infrastructure
             services.AddScoped<ISalaRepository, SalaRepository>();
             services.AddScoped<IButacaRepository, ButacaRepository>();
             services.AddScoped<IFuncionRepository, FuncionRepository>();
+            services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+            services.AddScoped<IReservaRepository, ReservaRepository>();
 
 
             return services;
