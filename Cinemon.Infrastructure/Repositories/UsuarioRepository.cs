@@ -28,5 +28,32 @@ namespace Cinemon.Infrastructure.Repositories
                     x => x.Id == id,
                     cancellationToken);
         }
+        public async Task AddAsync(Usuario usuario,CancellationToken cancellationToken)
+        {
+            await _context.Usuarios.AddAsync(
+                usuario,
+                cancellationToken);
+
+            await _context.SaveChangesAsync(
+                cancellationToken);
+        }
+
+        public async Task<bool> ExistePorEmailAsync(string email, CancellationToken cancellationToken)
+        {
+            return await _context.Usuarios
+                .AsNoTracking()
+                .AnyAsync(
+                    x => x.Email == email,
+                    cancellationToken);
+        }
+
+        public async Task<Usuario?> ObtenerPorEmailAsync(string email,CancellationToken cancellationToken)
+        {
+            return await _context.Usuarios
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    x => x.Email == email,
+                    cancellationToken);
+        }
     }
 }

@@ -12,13 +12,17 @@ namespace Cinemon.Api.Endpoints.Reservas
             var group = app.MapGroup("/api/reservas")
                 .WithTags("Reservas");
 
-            group.MapPost("/", CrearReserva);
+            group.MapPost("/", CrearReserva)
+                .RequireAuthorization(policy =>policy.RequireRole("Cliente"));
 
-            group.MapGet("/", ObtenerReservas);
+            group.MapGet("/", ObtenerReservas)
+                .RequireAuthorization(policy =>policy.RequireRole("Cliente"));
 
-            group.MapGet("/{id}", ObtenerReservaPorId);
+            group.MapGet("/{id}", ObtenerReservaPorId)
+                .RequireAuthorization(policy => policy.RequireRole("Cliente"));
 
-            group.MapPost("/{id}/cancelar", CancelarReserva);
+            group.MapPost("/{id}/cancelar", CancelarReserva)
+                .RequireAuthorization(policy => policy.RequireRole("Cliente"));
 
             return app;
         }

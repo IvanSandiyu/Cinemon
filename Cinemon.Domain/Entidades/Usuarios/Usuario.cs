@@ -15,16 +15,15 @@ namespace Cinemon.Domain.Entidades.Usuarios
         public string Email { get; set; }
         public bool Activo { get; set; }
         public Rol Rol { get; set; }
+        public string PasswordHash { get; private set; }
 
-        public Usuario(
-       string nombreApellido,
-       string email,
-       Rol rol)
+        public Usuario(string nombreApellido,string email,Rol rol,string passwordHash)
         {
             NombreApellido = nombreApellido;
             Email = email;
             Rol = rol;
             Activo = true;
+            PasswordHash = passwordHash;
         }
 
         public void Activar()

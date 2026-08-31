@@ -1,4 +1,7 @@
 ﻿using Cinemon.Application.Abstractions;
+using Cinemon.Application.Usuarios;
+using Cinemon.Application.Usuarios.Interfaces;
+using Cinemon.Infrastructure.Authentication;
 using Cinemon.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +31,8 @@ namespace Cinemon.Infrastructure
             services.AddScoped<IFuncionRepository, FuncionRepository>();
             services.AddScoped<IUsuarioRepository, UsuarioRepository>();
             services.AddScoped<IReservaRepository, ReservaRepository>();
+            services.AddScoped<IPasswordService, PasswordService>();
+            services.AddScoped<ITokenService, JwtTokenService>();
 
 
             return services;

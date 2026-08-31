@@ -9,8 +9,11 @@ namespace Cinemon.Application.Abstractions
 {
     public interface IUsuarioRepository
     {
-        Task<Usuario?> ObtenerPorIdAsync(
-            int id,
-            CancellationToken cancellationToken);
+        Task AddAsync(Usuario usuario, CancellationToken cancellationToken);
+        Task<Usuario?> ObtenerPorIdAsync(int id,CancellationToken cancellationToken);
+
+        Task<bool> ExistePorEmailAsync(string email,CancellationToken cancellationToken);
+
+        Task<Usuario?> ObtenerPorEmailAsync(string email,CancellationToken cancellationToken);
     }
 }

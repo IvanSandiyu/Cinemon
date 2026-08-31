@@ -33,6 +33,10 @@ namespace Cinemon.Infrastructure.Configurations
 
             builder.Property(x => x.Activo)
                 .IsRequired();
+
+            builder.Property(x => x.PasswordHash)
+                .IsRequired()
+                .HasMaxLength(500);
         }
     }
 }
