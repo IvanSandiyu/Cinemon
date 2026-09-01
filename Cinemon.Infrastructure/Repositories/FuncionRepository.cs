@@ -1,5 +1,6 @@
 ﻿using Cinemon.Application.Abstractions;
 using Cinemon.Domain.Entidades.Funcion;
+using Cinemon.Domain.Entidades.Peliculas;
 using Cinemon.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -58,6 +59,57 @@ namespace Cinemon.Infrastructure.Repositories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(
                     x => x.Id == id,
+                    cancellationToken);
+        }
+
+        public async Task<bool> ExisteSuperposicionAsync(int salaId,DateTime fechaHoraInicio,DateTime fechaHoraFin,
+            int? funcionId,
+            CancellationToken cancellationToken)
+        {
+            return await _context.Funciones
+                .AsNoTracking()
+                .Where(x =>
+                    x.SalaId == salaId &&
+                    x.EstadoFuncion != EstadoFuncion.Cancelada &&
+                    (!funcionId.HasValue || x.Id != funcionId.Value))
+                .Join(
+                    _context.Peliculas,
+                    funcion => funcion.PeliculaId,
+                    pelicula => pelicula.Id,
+                    (funcion, pelicula) => new
+                    {
+                        funcion.Id,
+                        funcion.FechaHoraInicio,
+                        pelicula.Duracion
+                    })
+                .AnyAsync(
+                    x =>
+                        x.FechaHoraInicio < fechaHoraFin &&
+                        fechaHoraInicio <
+                            x.FechaHoraInicio.AddMinutes(x.Duracion),
+                    cancellationToken);
+        }
+
+        public async Task SaveChangesAsync(CancellationToken cancellationToken)
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task UpdateAsync(
+            Funcion funcion,
+            CancellationToken cancellationToken)
+        {
+            _context.Funciones.Update(funcion);
+
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<Pelicula?> ObtenerPeliculaAsync(int peliculaId,CancellationToken cancellationToken)
+        {
+            return await _context.Peliculas
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    x => x.Id == peliculaId,
                     cancellationToken);
         }
     }

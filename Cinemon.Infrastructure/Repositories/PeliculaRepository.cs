@@ -67,10 +67,7 @@ namespace Cinemon.Infrastructure.Repositories
                     cancellationToken);
         }
 
-        public async Task UpdateAsync(
-            Pelicula pelicula,
-            IReadOnlyCollection<int> generoIds,
-            CancellationToken cancellationToken)
+        public async Task UpdateAsync(Pelicula pelicula,IReadOnlyCollection<int> generoIds,CancellationToken cancellationToken)
         {
             await using var transaction =
                 await _context.Database.BeginTransactionAsync(
@@ -113,8 +110,7 @@ namespace Cinemon.Infrastructure.Repositories
             }
         }
 
-        public async Task SaveChangesAsync(
-            CancellationToken cancellationToken)
+        public async Task SaveChangesAsync(CancellationToken cancellationToken)
         {
             await _context.SaveChangesAsync(cancellationToken);
         }

@@ -37,12 +37,32 @@ namespace Cinemon.Domain.Entidades.Funcion
 
         public void Cancelar()
         {
+            if (EstadoFuncion != EstadoFuncion.Programada)
+                throw new InvalidOperationException(
+                    "Solo se pueden cancelar funciones programadas.");
+
             EstadoFuncion = EstadoFuncion.Cancelada;
         }
 
         public void Finalizar()
         {
+            if (EstadoFuncion != EstadoFuncion.Programada)
+                throw new InvalidOperationException(
+                    "Solo se pueden finalizar funciones programadas.");
+
             EstadoFuncion = EstadoFuncion.Finalizada;
+        }
+
+        public void Editar(int peliculaId,int salaId,DateTime fechaHoraInicio,IdiomaFuncion idioma,
+            Formato formato,
+            decimal precio)
+        {
+            PeliculaId = peliculaId;
+            SalaId = salaId;
+            FechaHoraInicio = fechaHoraInicio;
+            Idioma = idioma;
+            Formato = formato;
+            Precio = precio;
         }
     }
 }

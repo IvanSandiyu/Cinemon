@@ -1,6 +1,10 @@
-﻿using Cinemon.Application.Usuarios.Commands;
+﻿using Cinemon.Application.Usuarios.ActivarUsuarios.Commands;
+using Cinemon.Application.Usuarios.CrearUsuarios.Commands;
 using Cinemon.Application.Usuarios.Login;
+using Cinemon.Application.Usuarios.ObtenerUsuarios.Queries;
 using MediatR;
+using System.Reflection;
+using System.Threading;
 
 namespace Cinemon.Api.Endpoints.Usuarios
 {
@@ -12,34 +16,57 @@ namespace Cinemon.Api.Endpoints.Usuarios
             var group = app.MapGroup("/api/usuarios")
                 .WithTags("Usuarios");
 
-            group.MapPost("/", CrearUsuario);
+            group.MapGet("/", ObtenerUsuarios).RequireAuthorization(policy =>policy.RequireRole("Admin"));
+            
+            group.MapGet("/{id:int}", ObtenerUsuario);//Lo dejo publico para el futuro de poder editar datos del cliente
+            group.MapPatch("/{id:int}/activar", ActivarUsuario).RequireAuthorization(policy => policy.RequireRole("Admin"));
+            group.MapPatch("/{id:int}/desactivar", DesactivarUsuario).RequireAuthorization(policy => policy.RequireRole("Admin"));
 
+            group.MapPost("/", CrearUsuario);
+            //group.MapGet("/{id}",VerUsuario).RequireAuthorization(policy =>policy.RequireRole("Admin"));
+           
             group.MapPost("/login", Login);
 
             return app;
         }
 
-        private static async Task<IResult> CrearUsuario(
-            CrearUsuarioCommand command,
-            ISender sender,
-            CancellationToken cancellationToken)
+        private static async Task<IResult> DesactivarUsuario(int id,ISender sender,CancellationToken cancellationToken)
         {
-            var usuarioId = await sender.Send(
-                command,
-                cancellationToken);
+            await sender.Send(new DesactivarUsuarioCommand(id),cancellationToken);
 
-            return Results.Created(
-                $"/api/usuarios/{usuarioId}",
-                new
-                {
+            return Results.NoContent();
+        }
+
+        private static async Task<IResult> ActivarUsuario(int id,ISender sender,CancellationToken cancellationToken)
+        {
+            await sender.Send(new ActivarUsuarioCommand(id),cancellationToken);
+
+            return Results.NoContent();
+        }
+        private static async Task<IResult> ObtenerUsuario(int id,ISender sender,CancellationToken cancellationToken)
+        {
+            var usuario = await sender.Send(new ObtenerUsuarioPorIdQuery(id),cancellationToken);
+
+            return usuario is null? Results.NotFound(): Results.Ok(usuario);
+        }
+        private static async Task<IResult> ObtenerUsuarios(ISender sender,CancellationToken cancellationToken)
+        {
+            var usuarios = await sender.Send(new ObtenerUsuariosQuery(),cancellationToken);
+
+            return Results.Ok(usuarios);
+        }
+
+        private static async Task<IResult> CrearUsuario(CrearUsuarioCommand command,ISender sender,CancellationToken cancellationToken)
+        {
+            var usuarioId = await sender.Send(command,cancellationToken);
+
+            return Results.Created($"/api/usuarios/{usuarioId}",new{
                     Id = usuarioId
                 });
         }
         private static async Task<IResult> Login(LoginCommand command,ISender sender,CancellationToken cancellationToken)
         {
-            var response = await sender.Send(
-                command,
-                cancellationToken);
+            var response = await sender.Send(command,cancellationToken);
 
             return Results.Ok(response);
         }

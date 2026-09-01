@@ -19,10 +19,7 @@ namespace Cinemon.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<bool> ButacasDisponiblesAsync(
-            int funcionId,
-            IReadOnlyCollection<int> butacasIds,
-            CancellationToken cancellationToken)
+        public async Task<bool> ButacasDisponiblesAsync(int funcionId,IReadOnlyCollection<int> butacasIds,CancellationToken cancellationToken)
         {
             return !await _context.ReservasButacas
                 .AsNoTracking()
@@ -33,10 +30,7 @@ namespace Cinemon.Infrastructure.Repositories
                     cancellationToken);
         }
 
-        public async Task AddAsync(
-            Reserva reserva,
-            IReadOnlyCollection<int> butacasIds,
-            CancellationToken cancellationToken)
+        public async Task AddAsync(Reserva reserva,IReadOnlyCollection<int> butacasIds,CancellationToken cancellationToken)
         {
             await using var transaction =
                 await _context.Database.BeginTransactionAsync(
@@ -69,6 +63,12 @@ namespace Cinemon.Infrastructure.Repositories
 
                 await transaction.CommitAsync(
                     cancellationToken);
+            } catch (DbUpdateException) {
+                await transaction.RollbackAsync(
+                    cancellationToken);
+
+                throw new InvalidOperationException(
+                    "Una o más butacas ya están reservadas para esta función.");
             } catch {
                 await transaction.RollbackAsync(
                     cancellationToken);
@@ -76,8 +76,7 @@ namespace Cinemon.Infrastructure.Repositories
                 throw;
             }
         }
-        public async Task<IReadOnlyCollection<Reserva>> ObtenerTodasAsync(
-            CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<Reserva>> ObtenerTodasAsync(CancellationToken cancellationToken)
         {
             return await _context.Reservas
                 .AsNoTracking()
@@ -85,9 +84,16 @@ namespace Cinemon.Infrastructure.Repositories
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<Reserva?> ObtenerPorIdAsync(
-            int id,
-            CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<Reserva>> ObtenerPorUsuarioAsync(int usuarioId,CancellationToken cancellationToken)
+        {
+            return await _context.Reservas
+                .AsNoTracking()
+                .Where(x => x.UsuarioId == usuarioId)
+                .OrderByDescending(x => x.FechaReserva)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<Reserva?> ObtenerPorIdAsync(int id, CancellationToken cancellationToken)
         {
             return await _context.Reservas
                 .AsNoTracking()
@@ -96,9 +102,7 @@ namespace Cinemon.Infrastructure.Repositories
                     cancellationToken);
         }
 
-        public async Task<bool> CancelarAsync(
-            int id,
-            CancellationToken cancellationToken)
+        public async Task<bool> CancelarAsync(int id,CancellationToken cancellationToken)
         {
             await using var transaction =
                 await _context.Database.BeginTransactionAsync(
@@ -127,9 +131,7 @@ namespace Cinemon.Infrastructure.Repositories
             return true;
         }
 
-        public async Task<IReadOnlyCollection<int>> ObtenerButacaIdsAsync(
-            int reservaId,
-            CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<int>> ObtenerButacaIdsAsync(int reservaId,CancellationToken cancellationToken)
         {
             return await _context.ReservasButacas
                 .AsNoTracking()

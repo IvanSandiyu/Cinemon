@@ -23,6 +23,10 @@ namespace Cinemon.Application.Abstractions
         Task<IReadOnlyCollection<Reserva>> ObtenerTodasAsync(
             CancellationToken cancellationToken);
 
+        Task<IReadOnlyCollection<Reserva>> ObtenerPorUsuarioAsync(
+            int usuarioId,
+            CancellationToken cancellationToken);
+
         Task<Reserva?> ObtenerPorIdAsync(
             int id,
             CancellationToken cancellationToken);

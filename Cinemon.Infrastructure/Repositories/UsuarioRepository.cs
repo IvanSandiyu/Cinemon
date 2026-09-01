@@ -18,9 +18,7 @@ namespace Cinemon.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<Usuario?> ObtenerPorIdAsync(
-            int id,
-            CancellationToken cancellationToken)
+        public async Task<Usuario?> ObtenerPorIdAsync(int id,CancellationToken cancellationToken)
         {
             return await _context.Usuarios
                 .AsNoTracking()
@@ -54,6 +52,20 @@ namespace Cinemon.Infrastructure.Repositories
                 .FirstOrDefaultAsync(
                     x => x.Email == email,
                     cancellationToken);
+        }
+
+        public async Task UpdateAsync(Usuario usuario, CancellationToken cancellationToken)
+        {
+            _context.Usuarios.Update(usuario);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<IReadOnlyCollection<Usuario>> ObtenerTodosAsync(CancellationToken cancellationToken)
+        {
+            return await _context.Usuarios
+                .AsNoTracking()
+                .OrderBy(x => x.NombreApellido)
+                .ToListAsync(cancellationToken);
         }
     }
 }

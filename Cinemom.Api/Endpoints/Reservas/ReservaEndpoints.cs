@@ -1,4 +1,5 @@
-﻿using Cinemon.Application.Reservas.Commands.CancelarReserva;
+﻿using Cinemon.Application.Interfaces;
+using Cinemon.Application.Reservas.Commands.CancelarReserva;
 using Cinemon.Application.Reservas.Commands.CrearReserva;
 using Cinemon.Application.Reservas.Queries.ObtenerReservas;
 using MediatR;
@@ -13,10 +14,10 @@ namespace Cinemon.Api.Endpoints.Reservas
                 .WithTags("Reservas");
 
             group.MapPost("/", CrearReserva)
-                .RequireAuthorization(policy =>policy.RequireRole("Cliente"));
+                .RequireAuthorization(policy => policy.RequireRole("Cliente"));
 
             group.MapGet("/", ObtenerReservas)
-                .RequireAuthorization(policy =>policy.RequireRole("Cliente"));
+                .RequireAuthorization(policy => policy.RequireRole("Cliente"));
 
             group.MapGet("/{id}", ObtenerReservaPorId)
                 .RequireAuthorization(policy => policy.RequireRole("Cliente"));
@@ -24,63 +25,48 @@ namespace Cinemon.Api.Endpoints.Reservas
             group.MapPost("/{id}/cancelar", CancelarReserva)
                 .RequireAuthorization(policy => policy.RequireRole("Cliente"));
 
+            group.MapGet("/mis-reservas", HistorialReservas).RequireAuthorization(policy => policy.RequireRole("Cliente"));
+
             return app;
         }
 
-        private static async Task<IResult> CrearReserva(
-            CrearReservaCommand command,
-            ISender sender,
-            CancellationToken cancellationToken)
-        {
-            var reservaId = await sender.Send(
-                command,
-                cancellationToken);
-
-            return Results.Created(
-                $"/api/reservas/{reservaId}",
-                new
-                {
-                    Id = reservaId
-                });
-        }
-
-        private static async Task<IResult> ObtenerReservas(
-            ISender sender,
-            CancellationToken cancellationToken)
+        private static async Task<IResult> HistorialReservas(ICurrentUserService currentUserService,ISender sender,CancellationToken cancellationToken)
         {
             var reservas = await sender.Send(
-                new ObtenerReservasQuery(),
+                new ObtenerReservasPorUsuarioQuery(currentUserService.UserId),
                 cancellationToken);
 
             return Results.Ok(reservas);
         }
 
-        private static async Task<IResult> ObtenerReservaPorId(
-            int id,
-            ISender sender,
-            CancellationToken cancellationToken)
+        private static async Task<IResult> CrearReserva(CrearReservaCommand command,ISender sender,CancellationToken cancellationToken)
         {
-            var reserva = await sender.Send(
-                new ObtenerReservaPorIdQuery(id),
-                cancellationToken);
+            var reservaId = await sender.Send(command,cancellationToken);
 
-            return reserva is not null
-                ? Results.Ok(reserva)
-                : Results.NotFound();
+            return Results.Created($"/api/reservas/{reservaId}",new {
+                    Id = reservaId
+                });
         }
 
-        private static async Task<IResult> CancelarReserva(
-            int id,
-            ISender sender,
-            CancellationToken cancellationToken)
+        private static async Task<IResult> ObtenerReservas(ISender sender,CancellationToken cancellationToken)
         {
-            var cancelada = await sender.Send(
-                new CancelarReservaCommand(id),
-                cancellationToken);
+            var reservas = await sender.Send(new ObtenerReservasQuery(),cancellationToken);
 
-            return cancelada
-                ? Results.NoContent()
-                : Results.NotFound();
+            return Results.Ok(reservas);
+        }
+
+        private static async Task<IResult> ObtenerReservaPorId(int id,ISender sender,CancellationToken cancellationToken)
+        {
+            var reserva = await sender.Send(new ObtenerReservaPorIdQuery(id),cancellationToken);
+
+            return reserva is not null? Results.Ok(reserva): Results.NotFound();
+        }
+
+        private static async Task<IResult> CancelarReserva(int id,ISender sender,CancellationToken cancellationToken)
+        {
+            var cancelada = await sender.Send(new CancelarReservaCommand(id),cancellationToken);
+
+            return cancelada? Results.NoContent(): Results.NotFound();
         }
     }
 }

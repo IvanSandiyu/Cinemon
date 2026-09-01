@@ -11,6 +11,9 @@ namespace Cinemon.Application.Peliculas.Commands.EditarPelicula
     {
         public EditarPeliculaCommandValidator()
         {
+            RuleFor(x => x.Id)
+                .GreaterThan(0);
+
             RuleFor(x => x.Titulo)
                .NotEmpty()
                .MaximumLength(200);

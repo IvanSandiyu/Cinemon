@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cinemon.Application.Usuarios.Commands
+namespace Cinemon.Application.Usuarios.CrearUsuarios.Commands
 {
     public sealed class CrearUsuarioValidator: AbstractValidator<CrearUsuarioCommand>
     {

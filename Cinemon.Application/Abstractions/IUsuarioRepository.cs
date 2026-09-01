@@ -15,5 +15,8 @@ namespace Cinemon.Application.Abstractions
         Task<bool> ExistePorEmailAsync(string email,CancellationToken cancellationToken);
 
         Task<Usuario?> ObtenerPorEmailAsync(string email,CancellationToken cancellationToken);
+        Task UpdateAsync(Usuario usuario,CancellationToken cancellationToken);
+
+        Task<IReadOnlyCollection<Usuario>> ObtenerTodosAsync(CancellationToken cancellationToken);
     }
 }
