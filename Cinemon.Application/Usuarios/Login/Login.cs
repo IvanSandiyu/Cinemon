@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cinemon.Application.Usuarios.Commands
+namespace Cinemon.Application.Usuarios.Login
 {
     public class Login
     {

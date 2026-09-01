@@ -14,6 +14,13 @@ namespace Cinemon.Application.Abstractions
         IReadOnlyCollection<int> generoIds,
         CancellationToken cancellationToken);
 
+        Task UpdateAsync(Pelicula pelicula, IReadOnlyCollection<int> generoIds, CancellationToken cancellationToken);
+
+        Task<bool> CambiarEstadoActivaAsync(
+            int id,
+            bool activa,
+            CancellationToken cancellationToken);
+
         Task AddGenerosAsync(
        Pelicula pelicula,
        IReadOnlyCollection<int> generoIds,

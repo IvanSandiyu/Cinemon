@@ -1,4 +1,6 @@
-﻿using Cinemon.Application.Peliculas.Commands.CrearPelicula;
+﻿using Cinemon.Application.Peliculas.Commands.CambiarEstadoPelicula;
+using Cinemon.Application.Peliculas.Commands.CrearPelicula;
+using Cinemon.Application.Peliculas.Commands.EditarPelicula;
 using Cinemon.Application.Peliculas.Queries.ObtenerPeliculas;
 
 using MediatR;
@@ -12,11 +14,17 @@ namespace Cinemon.Api.Endpoints.Peliculas
             var group = app.MapGroup("/api/peliculas")
                 .WithTags("Peliculas");
 
-            group.MapPost("/", CrearPelicula);
+            group.MapPost("/", CrearPelicula).RequireAuthorization(policy =>policy.RequireRole("Admin"));
 
             group.MapGet("/", ObtenerPeliculas);
 
             group.MapGet("/{id}", ObtenerPeliculasId);
+
+            group.MapPut("/{id}", EditarPeliculas).RequireAuthorization(policy => policy.RequireRole("Admin"));
+
+            group.MapPatch("/{id}/activar", ActivarPeliculas).RequireAuthorization(policy => policy.RequireRole("Admin"));
+
+            group.MapPatch("/{id}/desactivar", DesactivarPeliculas).RequireAuthorization(policy => policy.RequireRole("Admin"));
 
             return app;
         }
@@ -59,6 +67,42 @@ namespace Cinemon.Api.Endpoints.Peliculas
                 cancellationToken);
 
             return Results.Ok(peliculas);
+        }
+
+        private static async Task<IResult> EditarPeliculas(int id, EditarPeliculaRequest request,ISender sender, CancellationToken cancellationToken)
+        {
+            var command = new EditarPeliculaCommand(
+                id,
+                request.Titulo,
+                request.Sinopsis,
+                request.Duracion,
+                request.FechaEstreno,
+                request.ClasificacionEdad,
+                request.PosterUrl,
+                request.TrailerUrl,
+                request.GeneroIds);
+
+            await sender.Send(command, cancellationToken);
+
+            return Results.NoContent();
+        }
+
+        private static async Task<IResult> ActivarPeliculas(int id, ISender sender, CancellationToken cancellationToken)
+        {
+            var cambiada = await sender.Send(
+                new CambiarEstadoPeliculaCommand(id, true),
+                cancellationToken);
+
+            return cambiada ? Results.NoContent() : Results.NotFound();
+        }
+
+        private static async Task<IResult> DesactivarPeliculas(int id, ISender sender, CancellationToken cancellationToken)
+        {
+            var cambiada = await sender.Send(
+                new CambiarEstadoPeliculaCommand(id, false),
+                cancellationToken);
+
+            return cambiada ? Results.NoContent() : Results.NotFound();
         }
 
        

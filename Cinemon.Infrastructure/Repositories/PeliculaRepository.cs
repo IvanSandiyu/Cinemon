@@ -67,26 +67,87 @@ namespace Cinemon.Infrastructure.Repositories
                     cancellationToken);
         }
 
+        public async Task UpdateAsync(
+            Pelicula pelicula,
+            IReadOnlyCollection<int> generoIds,
+            CancellationToken cancellationToken)
+        {
+            await using var transaction =
+                await _context.Database.BeginTransactionAsync(
+                    cancellationToken);
+
+            try {
+                _context.Peliculas.Update(pelicula);
+
+                await _context.SaveChangesAsync(
+                    cancellationToken);
+
+                var relacionesExistentes = await _context
+                    .Set<PeliculaGenero>()
+                    .Where(x => x.PeliculaId == pelicula.Id)
+                    .ToListAsync(cancellationToken);
+
+                _context.Set<PeliculaGenero>()
+                    .RemoveRange(relacionesExistentes);
+
+                var relacionesNuevas = generoIds.Select(
+                    generoId => new PeliculaGenero(
+                        pelicula.Id,
+                        generoId));
+
+                await _context.Set<PeliculaGenero>()
+                    .AddRangeAsync(
+                        relacionesNuevas,
+                        cancellationToken);
+
+                await _context.SaveChangesAsync(
+                    cancellationToken);
+
+                await transaction.CommitAsync(
+                    cancellationToken);
+            } catch {
+                await transaction.RollbackAsync(
+                    cancellationToken);
+
+                throw;
+            }
+        }
+
         public async Task SaveChangesAsync(
             CancellationToken cancellationToken)
         {
             await _context.SaveChangesAsync(cancellationToken);
         }
-        public async Task<IReadOnlyCollection<Pelicula>> ObtenerTodasAsync(
-    CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<Pelicula>> ObtenerTodasAsync(CancellationToken cancellationToken)
         {
             return await _context.Peliculas
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<Pelicula?> ObtenerPorIdAsync(
-            int id,
-            CancellationToken cancellationToken)
+        public async Task<Pelicula?> ObtenerPorIdAsync(int id,CancellationToken cancellationToken)
         {
             return await _context.Peliculas
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        }
+
+        public async Task<bool> CambiarEstadoActivaAsync(int id,bool activa,CancellationToken cancellationToken)
+        {
+            var pelicula = await _context.Peliculas
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+            if (pelicula is null)
+                return false;
+
+            if (activa)
+                pelicula.Activar();
+            else
+                pelicula.Desactivar();
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return true;
         }
     }
 }

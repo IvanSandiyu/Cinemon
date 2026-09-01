@@ -1,4 +1,5 @@
 ﻿using Cinemon.Application.Abstractions;
+using Cinemon.Application.Interfaces;
 using Cinemon.Domain.Entidades.Butacas;
 using Cinemon.Domain.Entidades.Reservas;
 using Cinemon.Domain.Enums;
@@ -17,17 +18,20 @@ namespace Cinemon.Application.Reservas.Commands.CrearReserva
         private readonly IFuncionRepository _funcionRepository;
         private readonly IButacaRepository _butacaRepository;
         private readonly IReservaRepository _reservaRepository;
+        private readonly ICurrentUserService _currentUserService;
 
         public CrearReservaCommandHandler(
             IUsuarioRepository usuarioRepository,
             IFuncionRepository funcionRepository,
             IButacaRepository butacaRepository,
-            IReservaRepository reservaRepository)
+            IReservaRepository reservaRepository,
+            ICurrentUserService currentUserService)
         {
             _usuarioRepository = usuarioRepository;
             _funcionRepository = funcionRepository;
             _butacaRepository = butacaRepository;
             _reservaRepository = reservaRepository;
+            _currentUserService = currentUserService;
         }
 
         public async Task<int> Handle(
@@ -35,7 +39,7 @@ namespace Cinemon.Application.Reservas.Commands.CrearReserva
             CancellationToken cancellationToken)
         {
             var usuario = await _usuarioRepository.ObtenerPorIdAsync(
-                request.UsuarioId,
+                _currentUserService.UserId,
                 cancellationToken);
 
             if (usuario is null) {
@@ -49,7 +53,7 @@ namespace Cinemon.Application.Reservas.Commands.CrearReserva
             }
 
             var realizadaPor = await _usuarioRepository.ObtenerPorIdAsync(
-                request.RealizadaPorId,
+               _currentUserService.UserId,
                 cancellationToken);
 
             if (realizadaPor is null) {
@@ -104,9 +108,11 @@ namespace Cinemon.Application.Reservas.Commands.CrearReserva
             var total =
                 funcion.Precio * request.ButacasIds.Count;
 
+            var usuarioId = _currentUserService.UserId;
+
             var reserva = new Reserva(
-                request.UsuarioId,
-                request.RealizadaPorId,
+                usuarioId,
+                usuarioId,
                 request.FuncionId,
                 total);
 

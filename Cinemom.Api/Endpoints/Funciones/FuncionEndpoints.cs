@@ -11,7 +11,7 @@ namespace Cinemon.Api.Endpoints.Funciones
             var group = app.MapGroup("/api/funciones")
                 .WithTags("Funciones");
 
-            group.MapPost("/", CrearFuncion);
+            group.MapPost("/", CrearFuncion).RequireAuthorization(policy =>policy.RequireRole("Admin"));
             group.MapGet("/", ObtenerFunciones);
 
             return app;

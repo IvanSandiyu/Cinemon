@@ -11,12 +11,7 @@ namespace Cinemon.Application.Reservas.Commands.CrearReserva
     {
         public CrearReservaValidator()
         {
-            RuleFor(x => x.UsuarioId)
-                .GreaterThan(0);
-
-            RuleFor(x => x.RealizadaPorId)
-                .GreaterThan(0);
-
+          
             RuleFor(x => x.FuncionId)
                 .GreaterThan(0);
 

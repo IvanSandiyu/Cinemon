@@ -51,5 +51,23 @@ namespace Cinemon.Domain.Entidades.Peliculas
         {
             Activa = false;
         }
+
+        public void Actualizar(
+            string titulo,
+            string sinopsis,
+            int duracion,
+            DateTime fechaEstreno,
+            ClasificacionEdad clasificacionEdad,
+            string posterUrl,
+            string trailerUrl)
+        {
+            Titulo = titulo;
+            Sinopsis = sinopsis;
+            Duracion = duracion;
+            FechaEstreno = fechaEstreno;
+            ClasificacionEdad = clasificacionEdad;
+            PosterUrl = posterUrl;
+            TrailerUrl = trailerUrl;
+        }
     }
 }
