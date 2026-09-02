@@ -62,6 +62,7 @@ PublishScripts/
 
 # ASP.NET
 *.PublishProfiles/
+appsettings.json
 appsettings.Development.json
 appsettings.*.local.json
 

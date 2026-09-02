@@ -1,3 +1,4 @@
+using Cinemon.Api.Endpoints;
 using Cinemon.Api.Endpoints.Butacas;
 using Cinemon.Api.Endpoints.Funciones;
 using Cinemon.Api.Endpoints.Peliculas;
@@ -113,6 +114,7 @@ app.MapButacaEndpoints();
 app.MapFuncionEndpoints();
 app.MapReservaEndpoints();
 app.MapUsuarioEndpoints();
+app.MapTmdbEndpoints();
 
 using (var scope = app.Services.CreateScope()) {
     var context = scope.ServiceProvider

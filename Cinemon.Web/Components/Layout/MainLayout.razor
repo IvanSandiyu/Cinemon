@@ -1,0 +1,42 @@
+﻿@inherits LayoutComponentBase
+
+<RadzenLayout>
+
+    <RadzenHeader class="cinemon-header">
+        <div class="appbar-inner">
+
+            <a href="/"
+               role="button"
+               title="Ir al inicio"
+               class="app-brand app-brand-pulse">
+                CINEMON
+            </a>
+
+            <nav class="appbar-nav">
+                <RadzenLink Path="/cartelera" Text="Cartelera" class="app-nav-link" />
+                <RadzenLink Path="/proximos-estrenos" Text="Proximos estrenos" class="app-nav-link" />
+                <RadzenLink Path="/candy" Text="Candy" class="app-nav-link" />
+                @if (!_autenticado)
+                {
+                    <RadzenLink Path="/login" Icon="login" class="app-nav-link login-cta">Ingresar</RadzenLink>
+                }
+                else
+                {
+                    <RadzenIcon Icon="account_circle" class="cinemon-account-icon" style="cursor:pointer;" />
+                }
+            </nav>
+
+        </div>
+    </RadzenHeader>
+
+    <RadzenBody class="cinemon-body">
+        @Body
+    </RadzenBody>
+
+</RadzenLayout>
+
+@code {
+    // TODO: conectar con el estado de autenticación real (AuthService).
+    // Mientras tanto, se puede forzar desde el estado para probar el flujo logueado.
+    private bool _autenticado = false;
+}

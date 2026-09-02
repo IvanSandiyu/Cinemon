@@ -33,7 +33,9 @@ namespace Cinemon.Application.Peliculas.Queries.ObtenerPeliculas
                     pelicula.PosterUrl,
                     pelicula.TrailerUrl,
                     pelicula.Activa,
-                    new List<string>()))
+                    pelicula.Generos
+                        .Select(g => g.Genero.Nombre)
+                        .ToList()))
                 .ToList();
         }
     }

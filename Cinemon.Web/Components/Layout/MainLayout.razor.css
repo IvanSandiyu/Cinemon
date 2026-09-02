@@ -1,0 +1,170 @@
+/* ===== Header / marca ===== */
+.cinemon-header {
+    background-color: #0b0d1f;
+    border-bottom: 1px solid #2E1A63;
+    z-index: 10;
+}
+
+.appbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 64px;
+    padding: 0 1.25rem;
+}
+
+.appbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.app-brand {
+    color: #B14AED;
+    font-weight: 700;
+    letter-spacing: 4px;
+    font-size: 1.4rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.app-brand:hover {
+    opacity: 0.9;
+}
+
+/* Animación SIEMPRE activa: pulso de brillo púrpura */
+@keyframes appBrandPulse {
+    0%, 100% { opacity: 1; text-shadow: 0 0 8px rgba(177, 74, 237, 0.35); }
+    50%      { opacity: 0.82; text-shadow: 0 0 24px rgba(177, 74, 237, 0.75); }
+}
+
+.app-brand-pulse {
+    animation: appBrandPulse 3s ease-in-out infinite;
+}
+
+.cinemon-account-icon {
+    color: #E8EAF6;
+    font-size: 1.6rem;
+}
+
+/* Botones de navegación del header (minimalista, hover suave) */
+.app-nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 4px;
+    border: none;
+    border-radius: 0;
+    color: #B9BDD6;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    text-decoration: none;
+    background: none;
+    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Subrayado animado en lugar de fondo de bloque */
+.app-nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #B14AED, #5B2A86);
+    border-radius: 2px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* El icono del link vive dentro del RadzenLink (subcomponente) */
+:deep(.app-nav-link .rzi) {
+    color: #7c7fa3;
+    font-size: 1.05rem;
+    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.app-nav-link:hover {
+    color: #E8EAF6;
+}
+
+.app-nav-link:hover::after {
+    transform: scaleX(1);
+}
+
+:deep(.app-nav-link:hover .rzi) {
+    color: #B14AED;
+}
+
+/* Acción principal (Ingresar): pastilla outline que se rellena suavemente */
+.app-nav-link.login-cta {
+    padding: 6px 16px;
+    border: 1px solid rgba(177, 74, 237, 0.55);
+    border-radius: 20px;
+    color: #B14AED;
+    font-weight: 600;
+    background-color: rgba(177, 74, 237, 0.08);
+    overflow: hidden;
+    transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.app-nav-link.login-cta::after {
+    display: none;
+}
+
+:deep(.app-nav-link.login-cta .rzi) {
+    color: #B14AED;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.app-nav-link.login-cta:hover {
+    color: #05060E;
+    border-color: #B14AED;
+    background-color: #B14AED;
+    box-shadow: 0 4px 18px rgba(177, 74, 237, 0.35);
+}
+
+:deep(.app-nav-link.login-cta:hover .rzi) {
+    color: #05060E;
+    transform: translateX(2px);
+}
+
+/* ===== Body ===== */
+.cinemon-body {
+    background-color: #05060E;
+    min-height: calc(100vh - 64px);
+    padding: 0;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .appbar-inner {
+        height: auto;
+        min-height: 56px;
+        flex-wrap: wrap;
+        gap: 4px;
+        padding: 6px 0.75rem;
+    }
+    .appbar-nav {
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    .app-nav-link {
+        padding: 6px 2px;
+        font-size: 0.75rem;
+    }
+    .app-nav-link.login-cta {
+        padding: 5px 12px;
+    }
+    .app-brand {
+        font-size: 1.1rem;
+        letter-spacing: 3px;
+    }
+}

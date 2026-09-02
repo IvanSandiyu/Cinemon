@@ -1,0 +1,171 @@
+/* ===== Hero con trailer de fondo ===== */
+.cinemon-hero {
+    position: relative;
+    height: 100vh;
+    min-height: 480px;
+    width: 100%;
+    border-radius: 0;
+    overflow: hidden;
+    background-color: #05060E;
+    margin: 0;
+}
+
+.cinemon-hero-video,
+.cinemon-hero-fallback {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.cinemon-hero-video iframe {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1.15);
+    width: 100%;
+    height: 100%;
+    border: 0;
+    pointer-events: none;
+}
+
+.cinemon-hero-fallback {
+    background-size: cover;
+    background-position: center;
+}
+
+/* Overlay oscuro para garantizar legibilidad del texto */
+.cinemon-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg,
+        rgba(5, 6, 14, 0.96) 0%,
+        rgba(5, 6, 14, 0.82) 38%,
+        rgba(5, 6, 14, 0.45) 68%,
+        rgba(5, 6, 14, 0.25) 100%);
+}
+
+.cinemon-hero-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 40px 6vw;
+}
+
+.cinemon-hero-info {
+    max-width: 620px;
+}
+
+.cinemon-hero-title {
+    color: #F5F6FF;
+    font-weight: 800;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    line-height: 1.05;
+    margin-bottom: 0.9rem;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+}
+
+.cinemon-hero-synopsis {
+    color: #E3E6F5;
+    font-size: 1.05rem;
+    line-height: 1.55;
+    margin-bottom: 1.1rem;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+    /* clamp para leer toda la sinopsis (sin recortar) */
+    overflow: visible;
+}
+
+.cinemon-hero-meta {
+    color: #B9BDD6;
+    font-size: 0.95rem;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+}
+
+.cinemon-hero-meta strong {
+    color: #E8EAF6;
+}
+
+.cinemon-badge {
+    display: inline-block;
+    background: #B14AED;
+    color: #05060E;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.cinemon-badge-outline {
+    background: rgba(5, 6, 14, 0.45);
+    color: #B14AED;
+    border: 1px solid #B14AED;
+}
+
+.cinemon-title {
+    color: #F5F6FF;
+    font-weight: 700;
+}
+
+.cinemon-muted {
+    color: #9A9FBF;
+    font-size: 0.9rem;
+}
+
+.cinemon-hr {
+    border-color: #2E1A63;
+    opacity: 1;
+}
+
+/* La clase vive en el elemento raíz del RadzenCard (subcomponente) */
+:deep(.cinemon-funcion-card) {
+    background: #12163A;
+    border: 1px solid #2E1A63;
+    border-radius: 10px;
+    padding: 0;
+    height: 100%;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+:deep(.cinemon-funcion-card:hover) {
+    transform: translateY(-3px);
+    border-color: #B14AED;
+}
+
+.cinemon-hours {
+    color: #B14AED;
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+.cinemon-meta {
+    color: #9A9FBF;
+    font-size: 0.9rem;
+}
+
+.cinemon-meta strong {
+    color: #E8EAF6;
+}
+
+.small {
+    font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+    .cinemon-hero {
+        height: 100vh;
+        min-height: 460px;
+    }
+    .cinemon-hero-content {
+        padding: 24px 5vw;
+        align-items: flex-end;
+    }
+    .cinemon-hero-synopsis {
+        font-size: 0.95rem;
+    }
+    .cinemon-hero-title {
+        font-size: 1.7rem;
+    }
+}

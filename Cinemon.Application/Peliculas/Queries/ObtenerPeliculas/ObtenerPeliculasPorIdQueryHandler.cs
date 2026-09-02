@@ -1,5 +1,7 @@
 using Cinemon.Application.Abstractions;
 using MediatR;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Cinemon.Application.Peliculas.Queries.ObtenerPeliculas
 {
@@ -34,7 +36,9 @@ namespace Cinemon.Application.Peliculas.Queries.ObtenerPeliculas
                 pelicula.PosterUrl,
                 pelicula.TrailerUrl,
                 pelicula.Activa,
-                new List<string>());
+                pelicula.Generos
+                    .Select(g => g.Genero.Nombre)
+                    .ToList());
         }
     }
 }

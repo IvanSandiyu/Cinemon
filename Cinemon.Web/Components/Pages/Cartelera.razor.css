@@ -1,0 +1,130 @@
+/* ===== Header de la sección ===== */
+.cartelera-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(177, 74, 237, 0.18);
+    padding-bottom: 14px;
+    margin-bottom: 1.5rem;
+}
+
+.cinemon-kicker {
+    color: #F5F6FF;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 3px;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.cinemon-count {
+    color: #9A9FBF;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+/* ===== Animación de entrada ===== */
+@keyframes carteleraIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.cartelera-item {
+    animation: carteleraIn 0.55s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+/* ===== Tarjeta de película ===== */
+.cinemon-movie-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #0b0d1f;
+    border: 1px solid rgba(46, 26, 99, 0.5);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.3, 1),
+                border-color 0.3s ease;
+}
+
+.cinemon-movie-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(177, 74, 237, 0.45);
+}
+
+/* Póster: ratio fijo + object-fit contain => nunca se corta */
+.movie-poster-container {
+    background-color: #05060E;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    display: flex;
+}
+
+.movie-poster-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* ===== Información ===== */
+.movie-info {
+    padding: 14px 16px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-grow: 1;
+}
+
+.cinemon-card-title {
+    color: #F5F6FF;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.3;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.movie-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+}
+
+.cinemon-genres {
+    color: #9A9FBF;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cinemon-duration {
+    color: #9A9FBF;
+    white-space: nowrap;
+}
+
+.cinemon-divider {
+    width: 1px;
+    height: 12px;
+    background: #3A2A66;
+    flex-shrink: 0;
+}
+
+/* ===== Acción ===== */
+.movie-actions {
+    padding: 4px 16px 16px;
+}
+
+:deep(.cinemon-link) {
+    color: #B14AED;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:deep(.cinemon-link:hover) {
+    color: #d07df5;
+}

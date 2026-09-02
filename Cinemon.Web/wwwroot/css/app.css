@@ -1,0 +1,90 @@
+/* =========================================================
+   Cinemon - Estilos globales
+   Paleta "Neón Púrpura":
+     #05060E fondo base
+     #12163A superficie
+     #2E1A63 superficie elevada / bordes
+     #5B2A86 acento intermedio
+     #B14AED primario vivo
+   ========================================================= */
+
+/* ===== Pantalla / sala de butacas ===== */
+.screen {
+    width: 80%;
+    height: 12px;
+    margin: 0 auto 40px;
+    border-radius: 50%;
+    background: #5B2A86;
+    box-shadow: 0 5px 15px rgba(177, 74, 237, 0.4);
+}
+
+.seat-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-x: auto;
+}
+
+.seat-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    min-width: max-content;
+}
+
+.row-label {
+    width: 25px;
+    font-weight: bold;
+    color: #9A9FBF;
+}
+
+.seat {
+    width: 42px;
+    height: 38px;
+    border: none;
+    border-radius: 8px 8px 4px 4px;
+    cursor: pointer;
+    background: #2E1A63;
+    color: #F5F6FF;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.seat:hover {
+    transform: translateY(-2px);
+}
+
+.seat.selected {
+    background: #B14AED;
+    color: #05060E;
+    font-weight: 700;
+}
+
+.seat.occupied {
+    background: #2E1A63;
+    color: #6B6F8F;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-seat {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    background: #2E1A63;
+}
+
+.legend-seat.selected {
+    background: #B14AED;
+}
+
+.legend-seat.occupied {
+    background: #2E1A63;
+    opacity: 0.5;
+}

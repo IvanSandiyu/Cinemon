@@ -1,0 +1,30 @@
+.container-cinemon {
+    padding: 2rem 1rem;
+}
+
+/* La clase vive en el elemento raíz del RadzenCard (subcomponente) */
+:deep(.cinemon-success-panel) {
+    background: #12163A;
+    border: 1px solid #2E1A63;
+    border-radius: 10px;
+    max-width: 420px;
+    width: 100%;
+    padding: 1.5rem;
+}
+
+/* El icono vive dentro del RadzenIcon (subcomponente) */
+:deep(.cinemon-check-icon) {
+    color: #4CD964;
+    font-size: 3.5rem;
+    line-height: 1;
+}
+
+.cinemon-title {
+    color: #F5F6FF;
+    font-weight: 700;
+}
+
+.cinemon-muted {
+    color: #9A9FBF;
+    font-size: 0.95rem;
+}

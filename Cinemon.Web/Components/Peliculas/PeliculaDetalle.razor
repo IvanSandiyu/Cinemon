@@ -1,0 +1,226 @@
+@page "/peliculas/{Id:int}"
+@using Cinemon.Web.Models.DTOs
+@using Cinemon.Web.Services
+@inject PeliculaApiService PeliculaService
+@inject FuncionApiService FuncionService
+
+<PageTitle>
+    @(_pelicula?.Titulo ?? "Película") | Cinemon
+</PageTitle>
+
+@if (_cargando) {
+    <div class="d-flex justify-content-center mt-4">
+        <RadzenProgressBarCircular Indeterminate="true" />
+    </div>
+} else if (_pelicula is null) {
+    <RadzenAlert AlertStyle="AlertStyle.Danger">
+        No se encontró la película.
+    </RadzenAlert>
+} else {
+
+    <div class="cinemon-hero">
+
+        @if (!string.IsNullOrWhiteSpace(_pelicula.TrailerUrl)) {
+            <div class="cinemon-hero-video">
+                <iframe src="@ObtenerEmbedTrailer(_pelicula.TrailerUrl)"
+                        title="Trailer de @_pelicula.Titulo"
+                        frameborder="0"
+                        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
+                        allowfullscreen></iframe>
+            </div>
+            <div class="cinemon-hero-overlay"></div>
+        } else {
+            <div class="cinemon-hero-fallback" style="background-image: url('@_pelicula.PosterUrl');"></div>
+            <div class="cinemon-hero-overlay"></div>
+        }
+
+        <div class="cinemon-hero-content">
+            <div class="cinemon-hero-info">
+                <span class="cinemon-badge mb-3">@_pelicula.ClasificacionEdad</span>
+
+                <h1 class="cinemon-hero-title">@_pelicula.Titulo</h1>
+
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    @foreach (var genero in _pelicula.Generos) {
+                        <span class="cinemon-badge cinemon-badge-outline">@genero</span>
+                    }
+                </div>
+
+                <p class="cinemon-hero-synopsis">@_pelicula.Sinopsis</p>
+
+                <div class="d-flex flex-column gap-1 mb-1 cinemon-hero-meta">
+                    <span><strong>Duración:</strong> @_pelicula.Duracion minutos</span>
+                    <span><strong>Estreno:</strong> @_pelicula.FechaEstreno.ToString("dd/MM/yyyy")</span>
+                </div>
+
+                @if (!_pelicula.Activa) {
+                    <RadzenAlert AlertStyle="AlertStyle.Info" class="mt-3">
+                        Esta película todavía no se encuentra disponible.
+                    </RadzenAlert>
+                }
+            </div>
+        </div>
+
+    </div>
+
+    <hr class="my-4 cinemon-hr" />
+
+    <h4 class="cinemon-title mb-1">Funciones</h4>
+    <p class="cinemon-muted mb-4">Seleccioná el día y elegí el horario que prefieras.</p>
+
+    @if (_diasFunciones.Count == 0) {
+        <RadzenAlert AlertStyle="AlertStyle.Info">
+            No hay funciones disponibles para esta película.
+        </RadzenAlert>
+    } else {
+
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            @foreach (var dia in _diasFunciones) {
+                <RadzenButton Text="@dia.Key.ToString("ddd dd MMM")"
+                              Variant="@(dia.Key == _diaSeleccionado ? Variant.Filled : Variant.Outlined)"
+                              ButtonStyle="ButtonStyle.Primary"
+                              Size="ButtonSize.Medium"
+                              Click="@(() => _diaSeleccionado = dia.Key)" />
+            }
+        </div>
+
+        <div class="row g-3">
+            @foreach (var funcion in _funcionesDelDia) {
+                <div class="col-12 col-sm-6 col-md-4">
+                    <RadzenCard class="cinemon-funcion-card">
+                        <div class="p-3">
+                            <h5 class="cinemon-hours mb-1">@funcion.FechaHoraInicio.ToString("HH:mm")</h5>
+                            <div class="cinemon-meta small">Sala @funcion.SalaId</div>
+                            <div class="cinemon-meta small mb-2">@ObtenerIdioma(funcion.Idioma)</div>
+
+                            @if (funcion.EstadoFuncion == 1) {
+                                <RadzenButton Text="Continuar"
+                                              ButtonStyle="ButtonStyle.Primary"
+                                              Variant="Variant.Filled"
+                                              FullWidth="true"
+                                              Click="@(() => ContinuarReserva(funcion))" />
+                            } else {
+                                <RadzenButton Text="@ObtenerEstado(funcion.EstadoFuncion)"
+                                              ButtonStyle="ButtonStyle.Secondary"
+                                              Variant="Variant.Outlined"
+                                              Disabled="true"
+                                              FullWidth="true" />
+                            }
+                        </div>
+                    </RadzenCard>
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private PeliculaDto? _pelicula;
+    private IReadOnlyCollection<FuncionDto> _funciones = [];
+    private bool _cargando = true;
+
+    private IReadOnlyDictionary<DateTime, List<FuncionDto>> _diasFunciones = new Dictionary<DateTime, List<FuncionDto>>();
+    private DateTime _diaSeleccionado;
+
+    private IReadOnlyCollection<FuncionDto> _funcionesDelDia =>
+        _diasFunciones
+            .Where(x => x.Key == _diaSeleccionado)
+            .SelectMany(x => x.Value)
+            .OrderBy(x => x.FechaHoraInicio)
+            .ToList();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try {
+            _pelicula = await PeliculaService
+                .ObtenerPorIdAsync(Id);
+
+            var funciones = await FuncionService
+                .ObtenerTodasAsync();
+
+            _funciones = funciones
+                .Where(x => x.PeliculaId == Id)
+                .ToList();
+
+            _diasFunciones = _funciones
+                .GroupBy(x => x.FechaHoraInicio.Date)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.ToList());
+
+            _diaSeleccionado = _diasFunciones
+                .OrderBy(x => x.Key)
+                .Select(x => x.Key)
+                .FirstOrDefault();
+        } finally {
+            _cargando = false;
+        }
+    }
+
+    private void ContinuarReserva(FuncionDto funcion)
+    {
+        // TODO: redireccionar a reserva de butacas (o login si no está autenticado).
+        // Por ahora no hay navegación.
+    }
+
+    private static string ObtenerIdioma(int idioma)
+    {
+        return idioma switch
+        {
+            1 => "Español",
+            2 => "Subtitulada",
+            _ => "Desconocido"
+        };
+    }
+
+    private static string ObtenerEstado(int estado)
+    {
+        return estado switch
+        {
+            1 => "Programada",
+            2 => "Finalizada",
+            3 => "Cancelada",
+            _ => "Desconocido"
+        };
+    }
+
+    private static string ObtenerEmbedTrailer(string trailerUrl)
+    {
+        var id = ExtraerYouTubeId(trailerUrl);
+        if (id is not null)
+        {
+            return $"https://www.youtube.com/embed/{id}?autoplay=1&mute=1&controls=0&loop=1&playsinline=1&rel=0&iv_load_policy=3&playlist={id}";
+        }
+
+        // Si no es YouTube, usamos la URL tal cual (iframe directo).
+        return trailerUrl;
+    }
+
+    private static string? ExtraerYouTubeId(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url)) return null;
+
+        var patterns = new[]
+        {
+            @"youtube\.com/embed/(?<id>[\w-]{6,})",
+            @"youtube\.com/watch\?v=(?<id>[\w-]{6,})",
+            @"youtube\.com/watch\?(?:[^#]+&)v=(?<id>[\w-]{6,})",
+            @"youtu\.be/(?<id>[\w-]{6,})"
+        };
+
+        foreach (var pattern in patterns)
+        {
+            var match = System.Text.RegularExpressions.Regex.Match(url, pattern);
+            if (match.Success)
+            {
+                return match.Groups["id"].Value;
+            }
+        }
+
+        return null;
+    }
+}

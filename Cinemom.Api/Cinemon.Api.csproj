@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>cinemon-api-eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNjFmMTc4YjZiNTBkODMwN2M3NzE1ZDQ4NjY4MmE5YSIsIm5iZiI6MTc4ODM3OTk4Ni40MTY5OTk4LCJzdWIiOiI2YTk4ODM1MjliYTA0ZDhlZGM4YmVlODUiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.VonYWfedbUj5quB4zb22HQL1xpGn1QCjVxwqFNPtgcc</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

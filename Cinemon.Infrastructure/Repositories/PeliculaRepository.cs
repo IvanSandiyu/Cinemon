@@ -118,6 +118,8 @@ namespace Cinemon.Infrastructure.Repositories
         {
             return await _context.Peliculas
                 .AsNoTracking()
+                .Include(p => p.Generos)
+                .ThenInclude(g => g.Genero)
                 .ToListAsync(cancellationToken);
         }
 
@@ -125,6 +127,8 @@ namespace Cinemon.Infrastructure.Repositories
         {
             return await _context.Peliculas
                 .AsNoTracking()
+                .Include(p => p.Generos)
+                .ThenInclude(g => g.Genero)
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 

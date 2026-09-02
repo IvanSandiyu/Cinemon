@@ -1,0 +1,40 @@
+﻿@page "/reserva-confirmada"
+
+@inject NavigationManager Navigation
+
+<PageTitle>Reserva confirmada | Cinemon</PageTitle>
+
+<div class="container-cinemon d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <RadzenCard class="cinemon-success-panel">
+
+        <div class="text-center px-3 py-2">
+
+            <div class="cinemon-check-icon mb-3">
+                <RadzenIcon Icon="check_circle" />
+            </div>
+
+            <h4 class="cinemon-title mb-2">¡Reserva confirmada!</h4>
+
+            <p class="cinemon-muted">Tu compra fue realizada correctamente.</p>
+
+        </div>
+
+        <div class="p-3 pt-0">
+            <RadzenButton Text="Volver al inicio"
+                          ButtonStyle="ButtonStyle.Primary"
+                          Variant="Variant.Filled"
+                          FullWidth="true"
+                          Click="VolverInicio" />
+        </div>
+
+    </RadzenCard>
+</div>
+
+@code {
+
+    private void VolverInicio()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+}

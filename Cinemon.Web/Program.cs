@@ -1,0 +1,44 @@
+using Cinemon.Web.Components;
+using Cinemon.Web.Models.DTOs;
+using Cinemon.Web.Services;
+using MudBlazor.Services;
+using Radzen;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+
+builder.Services.AddHttpClient("CinemonApi", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7087/");
+});
+
+builder.Services.AddScoped<PeliculaApiService>();
+builder.Services.AddScoped<FuncionApiService>();
+builder.Services.AddScoped<ButacaApiService>();
+builder.Services.AddScoped<ReservaApiService>();
+builder.Services.AddScoped<AuthService>();
+
+builder.Services.AddMudServices();
+builder.Services.AddRadzenComponents();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment()) {
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+
+app.UseStaticFiles();
+app.UseAntiforgery();
+
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
+
+app.Run();

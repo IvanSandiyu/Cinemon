@@ -1,0 +1,200 @@
+@page "/funciones/{FuncionId:int}/confirmar"
+
+@using Cinemon.Web.Models.DTOs
+@using Cinemon.Web.Models.DTOs.Requests
+@using Cinemon.Web.Services
+@using Microsoft.AspNetCore.WebUtilities
+
+@inject FuncionApiService FuncionService
+@inject PeliculaApiService PeliculaService
+@inject ReservaApiService ReservaService
+@inject NavigationManager Navigation
+
+<PageTitle>Confirmar reserva | Cinemon</PageTitle>
+
+@if (_cargando) {
+    <div class="d-flex justify-content-center mt-4">
+        <RadzenProgressBarCircular Indeterminate="true" />
+    </div>
+} else if (_funcion is null || _pelicula is null) {
+    <RadzenAlert AlertStyle="AlertStyle.Danger">
+        No se pudo obtener la informaci�n de la funci�n.
+    </RadzenAlert>
+} else {
+
+    <h3 class="cinemon-title mb-4">Confirmar reserva</h3>
+
+    <div class="row g-3">
+
+        <div class="col-12 col-md-7">
+
+            <RadzenCard class="cinemon-panel">
+                <h5 class="cinemon-subtitle mb-2">@_pelicula.Titulo</h5>
+                <div class="cinemon-muted">@_funcion.FechaHoraInicio.ToString("dddd dd/MM/yyyy - HH:mm")</div>
+                <div class="cinemon-muted mt-1">Sala @_funcion.SalaId</div>
+            </RadzenCard>
+
+            <RadzenCard class="cinemon-panel">
+                <h6 class="cinemon-subtitle2 mb-3">Butacas seleccionadas</h6>
+                <div class="d-flex flex-wrap gap-1">
+                    @foreach (var butaca in _butacasSeleccionadas) {
+                        <span class="cinemon-butaca-chip">@butaca</span>
+                    }
+                </div>
+            </RadzenCard>
+
+        </div>
+
+        <div class="col-12 col-md-5">
+
+            <RadzenCard class="cinemon-panel">
+                <h6 class="cinemon-subtitle2 mb-3">Resumen</h6>
+
+                <hr class="cinemon-hr my-3" />
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="cinemon-muted">Precio por entrada</span>
+                    <span class="cinemon-muted">@_funcion.Precio.ToString("C")</span>
+                </div>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="cinemon-muted">Cantidad</span>
+                    <span class="cinemon-muted">@_butacasSeleccionadas.Count</span>
+                </div>
+
+                <hr class="cinemon-hr my-3" />
+
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="cinemon-subtitle2">Total</span>
+                    <span class="cinemon-price">@Total.ToString("C")</span>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <RadzenButton Text="Volver"
+                                  ButtonStyle="ButtonStyle.Secondary"
+                                  Variant="Variant.Outlined"
+                                  FullWidth="true"
+                                  Disabled="_procesando"
+                                  Click="Volver" />
+
+                    <RadzenButton Text="@(_procesando ? "Procesando..." : "Confirmar compra")"
+                                  ButtonStyle="ButtonStyle.Primary"
+                                  Variant="Variant.Filled"
+                                  FullWidth="true"
+                                  Disabled="_procesando"
+                                  Click="Confirmar" />
+                </div>
+            </RadzenCard>
+
+        </div>
+
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(_error)) {
+        <RadzenAlert AlertStyle="AlertStyle.Danger" class="mt-4">
+            @_error
+        </RadzenAlert>
+    }
+
+}
+
+@code {
+
+    [Parameter]
+    public int FuncionId { get; set; }
+
+    private FuncionDto? _funcion;
+    private PeliculaDto? _pelicula;
+
+    private List<int> _butacasSeleccionadas = [];
+
+    private bool _cargando = true;
+    private bool _procesando;
+    private string? _error;
+
+    private decimal Total =>
+        (_funcion?.Precio ?? 0) *
+        _butacasSeleccionadas.Count;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try {
+            var uri = Navigation.ToAbsoluteUri(
+                Navigation.Uri);
+
+            if (QueryHelpers.ParseQuery(uri.Query)
+                .TryGetValue("butacas", out var value)) {
+                _butacasSeleccionadas = value
+                    .ToString()
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(int.Parse)
+                    .ToList();
+            }
+
+            var funciones =
+                await FuncionService.ObtenerTodasAsync();
+
+            _funcion = funciones
+                .FirstOrDefault(x => x.Id == FuncionId);
+
+            if (_funcion is not null) {
+                _pelicula = await PeliculaService
+                    .ObtenerPorIdAsync(_funcion.PeliculaId);
+            }
+        } finally {
+            _cargando = false;
+        }
+    }
+
+    private async Task Confirmar()
+    {
+        _procesando = true;
+        _error = null;
+
+        try {
+            // Temporalmente utilizamos el usuario 1.
+            // Despu�s lo reemplazamos por el usuario
+            // autenticado mediante JWT.
+
+            var request = new CrearReservaRequest(
+                UsuarioId: 1,
+                RealizadaPorId: 1,
+                FuncionId: FuncionId,
+                ButacasIds: _butacasSeleccionadas);
+
+            var response = await ReservaService.CrearAsync(request);
+
+            if (response.IsSuccessStatusCode) {
+                Navigation.NavigateTo("/reserva-confirmada");
+                return;
+            }
+
+            if (response.StatusCode ==
+                System.Net.HttpStatusCode.Unauthorized) {
+                _error = "Deb�s iniciar sesi�n para comprar entradas.";
+                return;
+            }
+
+            if (response.StatusCode ==
+                System.Net.HttpStatusCode.BadRequest) {
+                _error =
+                    "No se pudo realizar la reserva. " +
+                    "Una o m�s butacas podr�an haber sido reservadas.";
+                return;
+            }
+
+            _error = "Ocurri� un error al realizar la reserva.";
+        } catch {
+            _error =
+                "No se pudo conectar con el servidor.";
+        } finally {
+            _procesando = false;
+        }
+    }
+
+    private void Volver()
+    {
+        Navigation.NavigateTo(
+            $"/funciones/{FuncionId}/butacas");
+    }
+}
