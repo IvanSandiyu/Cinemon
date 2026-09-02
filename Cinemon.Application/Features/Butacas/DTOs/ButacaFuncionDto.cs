@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cinemon.Application.Butacas.Queries.ObtenerButacasPorSala
+namespace Cinemon.Application.Features.Butacas.DTOs
 {
-    public sealed record ButacaDto(
+    public sealed record ButacaFuncionDto(
     int Id,
     string Fila,
-    int Numero);
+    int Numero,
+    bool Ocupada);
 }

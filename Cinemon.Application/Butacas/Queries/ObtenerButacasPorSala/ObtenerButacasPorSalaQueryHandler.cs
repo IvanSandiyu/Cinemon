@@ -1,5 +1,4 @@
 ﻿using Cinemon.Application.Abstractions;
-using Cinemon.Application.Butacas.Queries.ObtenerButacasPorSala;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Cinemon.Application.Butacas.Queries
+namespace Cinemon.Application.Butacas.Queries.ObtenerButacasPorSala
 {
     public sealed class ObtenerButacasPorSalaQueryHandler: IRequestHandler<ObtenerButacasPorSalaQuery,IReadOnlyCollection<ButacaDto>>
     {

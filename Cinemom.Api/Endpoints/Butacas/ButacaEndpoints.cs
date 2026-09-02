@@ -1,4 +1,5 @@
-﻿using Cinemon.Application.Butacas.Queries;
+﻿using Cinemon.Application.Butacas.Queries.ObtenerButacasPorFuncion;
+using Cinemon.Application.Butacas.Queries.ObtenerButacasPorSala;
 using MediatR;
 
 namespace Cinemon.Api.Endpoints.Butacas
@@ -11,8 +12,18 @@ namespace Cinemon.Api.Endpoints.Butacas
                 .WithTags("Butacas");
 
             group.MapGet("/sala/{salaId:int}", ObtenerButacasPorSala);
+            group.MapGet("/funcion/{funcionId:int}", ObtenerButacasPorFuncion);
 
             return app;
+        }
+
+        private static async Task<IResult> ObtenerButacasPorFuncion(int funcionId,ISender sender,CancellationToken cancellationToken)
+        {
+            var result = await sender.Send(
+            new ObtenerButacasPorFuncionQuery(funcionId),
+            cancellationToken);
+
+            return Results.Ok(result);
         }
 
         private static async Task<IResult> ObtenerButacasPorSala(

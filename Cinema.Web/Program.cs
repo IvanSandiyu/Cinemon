@@ -1,10 +1,26 @@
 using Cinemon.Web.Components;
+using Cinemon.Web.Models.DTOs;
+using Cinemon.Web.Services;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddHttpClient("CinemonApi", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7087/");
+});
+
+builder.Services.AddScoped<PeliculaApiService>();
+builder.Services.AddScoped<FuncionApiService>();
+builder.Services.AddScoped<ButacaApiService>();
+builder.Services.AddScoped<ReservaApiService>();
+builder.Services.AddScoped<AuthService>();
+
+builder.Services.AddMudServices();
 
 var app = builder.Build();
 

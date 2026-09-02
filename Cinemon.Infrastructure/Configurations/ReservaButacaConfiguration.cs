@@ -46,15 +46,11 @@ namespace Cinemon.Infrastructure.Configurations
                 .HasForeignKey(x => x.ButacaId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Property(x => x.FuncionId).IsRequired();
-
             builder.HasIndex(x => new
             {
                 x.FuncionId,
                 x.ButacaId
             }).IsUnique();
-
-            builder.Property(x => x.FuncionId).IsRequired();
         }
     }
 }

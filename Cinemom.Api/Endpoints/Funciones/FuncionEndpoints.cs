@@ -21,20 +21,25 @@ namespace Cinemon.Api.Endpoints.Funciones
             group.MapPut("/{id:int}", EditarFuncion).RequireAuthorization(policy =>policy.RequireRole("Admin"));
             group.MapPatch("/{id:int}/cancelar", CancelarFuncion).RequireAuthorization(policy =>policy.RequireRole("Admin"));
             group.MapPatch("/{id:int}/finalizar", FinalizarFuncion).RequireAuthorization(policy =>policy.RequireRole("Admin"));
-
+            group.MapGet("/{funcionId:int}/butacas", Butacas);
             return app;
+        }
+
+        private static async Task Butacas(HttpContext context)
+        {
+            throw new NotImplementedException();
         }
 
         private static async Task<IResult> EditarFuncion(int id,FuncionDto request,ISender sender,CancellationToken cancellationToken)
         {
             var command = new EditarFuncionCommand(
                 id,
-                request.peliculaId,
-                request.salaId,
-                request.fechaHoraInicio,
-                request.idioma,
-                request.formato,
-                request.precio);
+                request.PeliculaId,
+                request.SalaId,
+                request.FechaHoraInicio,
+                request.Idioma,
+                request.Formato,
+                request.Precio);
 
             await sender.Send(command, cancellationToken);
 

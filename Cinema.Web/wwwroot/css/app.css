@@ -1,0 +1,74 @@
+.screen {
+    width: 80%;
+    height: 12px;
+    margin: 0 auto 40px;
+    border-radius: 50%;
+    background: #ddd;
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+}
+
+.seat-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-x: auto;
+}
+
+.seat-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    min-width: max-content;
+}
+
+.row-label {
+    width: 25px;
+    font-weight: bold;
+}
+
+.seat {
+    width: 42px;
+    height: 38px;
+    border: none;
+    border-radius: 8px 8px 4px 4px;
+    cursor: pointer;
+    background: #e0e0e0;
+    transition: transform 0.15s ease;
+}
+
+    .seat:hover {
+        transform: translateY(-2px);
+    }
+
+    .seat.selected {
+        background: #8B0000;
+        color: white;
+    }
+
+    .seat.occupied {
+        background: #555;
+        color: white;
+        cursor: not-allowed;
+    }
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-seat {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    background: #e0e0e0;
+}
+
+    .legend-seat.selected {
+        background: #8B0000;
+    }
+
+    .legend-seat.occupied {
+        background: #555;
+    }

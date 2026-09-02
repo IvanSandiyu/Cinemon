@@ -1,23 +1,84 @@
-﻿@inherits LayoutComponentBase
+﻿@using Cinemon.Web.Theme
+@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<MudThemeProvider Theme="CinemonTheme.Default" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+<MudLayout>
 
-        <article class="content px-4">
+    <MudAppBar Elevation="2">
+
+        <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                       Color="Color.Inherit"
+                       Edge="Edge.Start"
+                       OnClick="ToggleDrawer" />
+
+        <MudText Typo="Typo.h6">
+            CINEMON
+        </MudText>
+
+        <MudSpacer />
+
+        <MudButton Variant="Variant.Text"
+                   Color="Color.Inherit"
+                   Href="/peliculas">
+            Películas
+        </MudButton>
+
+        <MudButton Variant="Variant.Text"
+                   Color="Color.Inherit"
+                   Href="/login">
+            Iniciar sesión
+        </MudButton>
+
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="_drawerOpen"
+               Elevation="1">
+
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">
+                CINEMON
+            </MudText>
+        </MudDrawerHeader>
+
+        <MudNavMenu>
+
+            <MudNavLink Href="/"
+                        Icon="@Icons.Material.Filled.Home">
+                Inicio
+            </MudNavLink>
+
+            <MudNavLink Href="/peliculas"
+                        Icon="@Icons.Material.Filled.Movie">
+                Películas
+            </MudNavLink>
+
+            <MudNavLink Href="/mis-reservas"
+                        Icon="@Icons.Material.Filled.ConfirmationNumber">
+                Mis reservas
+            </MudNavLink>
+
+        </MudNavMenu>
+
+    </MudDrawer>
+
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.False" Class="pa-6">
             @Body
-        </article>
-    </main>
-</div>
+        </MudContainer>
+    </MudMainContent>
 
-<div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
-</div>
+</MudLayout>
+
+@code {
+
+    private bool _drawerOpen = true;
+
+    private void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}

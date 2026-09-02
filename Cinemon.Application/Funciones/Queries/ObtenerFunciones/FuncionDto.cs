@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace Cinemon.Application.Funciones.Queries.ObtenerFunciones
 {
-    public sealed record FuncionDto
-    ( 
-        int peliculaId,
-        int salaId,
-        DateTime fechaHoraInicio,
-        IdiomaFuncion idioma,
-        Formato formato,
-        decimal precio,
-        IReadOnlyCollection<string> Funciones);
+    public sealed record FuncionDto(
+    int Id,
+    int PeliculaId,
+    int SalaId,
+    DateTime FechaHoraInicio,
+    IdiomaFuncion Idioma,
+    Formato Formato,
+    decimal Precio,
+    EstadoFuncion EstadoFuncion);
 }

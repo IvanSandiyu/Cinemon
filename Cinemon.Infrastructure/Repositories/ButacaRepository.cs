@@ -1,5 +1,6 @@
 ﻿using Cinemon.Application.Abstractions;
 using Cinemon.Domain.Entidades.Butacas;
+using Cinemon.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,34 @@ namespace Cinemon.Infrastructure.Repositories
                 .Where(x => x.SalaId == salaId)
                 .OrderBy(x => x.Fila)
                 .ThenBy(x => x.Numero)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<IReadOnlyCollection<Butaca>> ObtenerPorFuncionAsync(int funcionId,CancellationToken cancellationToken)
+        {
+            var funcion = await _context.Funciones
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    x => x.Id == funcionId,
+                    cancellationToken);
+
+            if (funcion is null)
+                return [];
+
+            return await _context.Butacas
+                .AsNoTracking()
+                .Where(x => x.SalaId == funcion.SalaId)
+                .OrderBy(x => x.Fila)
+                .ThenBy(x => x.Numero)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<IReadOnlyCollection<int>> ObtenerIdsOcupadosPorFuncionAsync(int funcionId,CancellationToken cancellationToken)
+        {
+            return await _context.ReservasButacas
+                .AsNoTracking()
+                .Where(x => x.FuncionId == funcionId)
+                .Select(x => x.ButacaId)
                 .ToListAsync(cancellationToken);
         }
     }

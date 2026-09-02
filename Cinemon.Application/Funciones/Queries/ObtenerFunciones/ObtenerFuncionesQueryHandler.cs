@@ -21,13 +21,14 @@ namespace Cinemon.Application.Funciones.Queries.ObtenerFunciones
             var funciones = await _funcionRepository.ObtenerFuncionesAsync(cancellationToken);
 
             return funciones.Select(funcion => new FuncionDto(
+                funcion.Id,
                 funcion.PeliculaId,
                 funcion.SalaId,
                 funcion.FechaHoraInicio,
                 funcion.Idioma,
                 funcion.Formato,
                 funcion.Precio,
-                new List<string>())).ToList();
+                funcion.EstadoFuncion)).ToList();
         }
     }
 }
