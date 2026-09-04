@@ -1,45 +1,45 @@
 .cinemon-title {
-    color: #F5F6FF;
+    color: #E7F3F2;
     font-weight: 700;
 }
 
 .cinemon-subtitle {
-    color: #F5F6FF;
+    color: #E7F3F2;
     font-weight: 600;
 }
 
 .cinemon-subtitle2 {
-    color: #F5F6FF;
+    color: #E7F3F2;
     font-weight: 500;
 }
 
 .cinemon-muted {
-    color: #9A9FBF;
+    color: #8AB8BB;
     font-size: 0.9rem;
 }
 
 /* La clase vive en el elemento raíz del RadzenCard (subcomponente) */
-:deep(.cinemon-panel) {
-    background: #12163A;
-    border: 1px solid #2E1A63;
+::deep .cinemon-panel {
+    background: #0F2D3A;
+    border: 1px solid #1E6F7D;
     border-radius: 10px;
     padding: 1.25rem;
     margin-bottom: 1rem;
 }
 
 .cinemon-hr {
-    border-color: #2E1A63;
+    border-color: #1E6F7D;
     opacity: 1;
 }
 
 .cinemon-price {
-    color: #B14AED;
+    color: #7BC6C9;
     font-weight: 600;
 }
 
 .cinemon-butaca-chip {
-    background: #2E1A63;
-    color: #B14AED;
+    background: #1E6F7D;
+    color: #E7F3F2;
     border-radius: 6px;
     padding: 3px 10px;
     font-weight: 600;

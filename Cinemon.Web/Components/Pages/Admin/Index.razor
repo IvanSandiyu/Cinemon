@@ -1,0 +1,74 @@
+﻿@page "/admin"
+
+<PageTitle>Admin | Cinemon</PageTitle>
+
+<div class="admin-page">
+
+    <div class="admin-header reveal">
+        <span class="cinemon-kicker">Administración</span>
+        <h1 class="admin-title">Panel de control</h1>
+        <p class="admin-subtitle">
+            Gestioná películas, funciones, reservas y usuarios.
+        </p>
+    </div>
+
+    <div class="admin-grid">
+
+        <a href="/admin/peliculas" class="admin-card reveal" style="--reveal-delay: 50ms;">
+            <div class="admin-card-icon">
+                <RadzenIcon Icon="movie" />
+            </div>
+            <div class="admin-card-body">
+                <h3>Películas</h3>
+                <p>Crear, editar, activar y administrar películas.</p>
+            </div>
+            <span class="admin-card-arrow">→</span>
+        </a>
+
+        <a href="/admin/funciones" class="admin-card reveal" style="--reveal-delay: 100ms;">
+            <div class="admin-card-icon">
+                <RadzenIcon Icon="event" />
+            </div>
+            <div class="admin-card-body">
+                <h3>Funciones</h3>
+                <p>Administrar horarios, salas y precios.</p>
+            </div>
+            <span class="admin-card-arrow">→</span>
+        </a>
+
+        <a href="/admin/reservas" class="admin-card reveal" style="--reveal-delay: 150ms;">
+            <div class="admin-card-icon">
+                <RadzenIcon Icon="confirmation_number" />
+            </div>
+            <div class="admin-card-body">
+                <h3>Reservas</h3>
+                <p>Consultar y administrar las reservas.</p>
+            </div>
+            <span class="admin-card-arrow">→</span>
+        </a>
+
+        <a href="/admin/usuarios" class="admin-card reveal" style="--reveal-delay: 200ms;">
+            <div class="admin-card-icon">
+                <RadzenIcon Icon="people" />
+            </div>
+            <div class="admin-card-body">
+                <h3>Usuarios</h3>
+                <p>Gestionar clientes y administradores.</p>
+            </div>
+            <span class="admin-card-arrow">→</span>
+        </a>
+
+        <a href="/admin/salas" class="admin-card reveal" style="--reveal-delay: 250ms;">
+            <div class="admin-card-icon">
+                <RadzenIcon Icon="meeting_room" />
+            </div>
+            <div class="admin-card-body">
+                <h3>Salas</h3>
+                <p>Consultar salas y distribución de butacas.</p>
+            </div>
+            <span class="admin-card-arrow">→</span>
+        </a>
+
+    </div>
+
+</div>

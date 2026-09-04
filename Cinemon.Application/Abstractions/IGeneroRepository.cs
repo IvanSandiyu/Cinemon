@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cinemon.Domain.Entidades.Generos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,8 @@ namespace Cinemon.Application.Abstractions
 {
     public interface IGeneroRepository
     {
-        Task<bool> ExistAllAsync(
-            IReadOnlyCollection<int> generoIds,
-            CancellationToken cancellationToken);
+        Task<bool> ExistAllAsync(IReadOnlyCollection<int> generoIds,CancellationToken cancellationToken);
+
+        Task<IReadOnlyCollection<Genero>> ObtenerTodosAsync(CancellationToken cancellationToken);
     }
 }

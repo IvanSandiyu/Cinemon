@@ -9,8 +9,7 @@ namespace Cinemon.Application.Interfaces
 {
     public interface ITmdbService
     {
-        Task<IReadOnlyCollection<TmdbMovieDto>> BuscarPeliculasAsync(
-            string query,
-            CancellationToken cancellationToken);
+        Task<IReadOnlyCollection<TmdbMovieDto>> BuscarPeliculasAsync(string query,CancellationToken cancellationToken);
+        Task<TmdbMovieDto?> ObtenerPeliculaAsync(int tmdbId,CancellationToken cancellationToken);
     }
 }

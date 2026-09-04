@@ -1,6 +1,6 @@
 ﻿using Cinemon.Web.Models.DTOs.Requests;
 
-namespace Cinemon.Web.Models.DTOs
+namespace Cinemon.Web.Services
 {
     public sealed class ReservaApiService
     {

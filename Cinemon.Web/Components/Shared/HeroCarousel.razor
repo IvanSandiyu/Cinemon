@@ -1,0 +1,105 @@
+@implements IDisposable
+@using Cinemon.Web.Models.DTOs
+
+@if (ItemCount == 0)
+{
+    return;
+}
+
+<div id="cinemon-carousel"
+     class="carousel slide carousel-fade"
+     @onmouseenter="PausarAutoplay"
+     @onmouseleave="ReanudarAutoplay">
+
+    <div class="carousel-inner">
+        @for (var i = 0; i < ItemCount; i++)
+        {
+            var idx = i;
+            var peli = _items![idx];
+            <div class="carousel-item @(idx == _indiceActual ? "active" : null)"
+                 style="cursor: pointer;"
+                 @onclick="() => Navegar(peli)">
+                <img src="@(peli.TmdbBackdropUrl ?? peli.PosterUrl)"
+                     class="d-block w-100"
+                     alt="@peli.Titulo" />
+            </div>
+        }
+    </div>
+
+    @if (MultiSlide)
+    {
+        <button class="carousel-control-prev" type="button" @onclick="PrevSlide">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span class="carousel-control-prev-icon visually-hidden" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" @onclick="NextSlide">
+            <i class="fa-solid fa-arrow-right"></i>
+            <span class="carousel-control-next-icon visually-hidden" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public IReadOnlyCollection<PeliculaDto>? Peliculas { get; set; }
+
+    private IReadOnlyList<PeliculaDto>? _items;
+
+    private int ItemCount => _items?.Count ?? 0;
+    private bool MultiSlide => ItemCount > 1;
+    private int _indiceActual;
+
+    private System.Threading.Timer? _autoplayTimer;
+    private const int AutoplayIntervalMs = 5000;
+    private bool _pauseAutoplay;
+
+    protected override void OnParametersSet()
+    {
+        _items = Peliculas?.ToList();
+
+        if (_autoplayTimer is null && MultiSlide)
+        {
+            _autoplayTimer = new System.Threading.Timer(_ => AutoAvanzar(), null, AutoplayIntervalMs, AutoplayIntervalMs);
+        }
+    }
+
+    public void Dispose()
+    {
+        _autoplayTimer?.Dispose();
+        _autoplayTimer = null;
+    }
+
+    private void AutoAvanzar()
+    {
+        if (_pauseAutoplay || !MultiSlide) return;
+
+        _ = InvokeAsync(() =>
+        {
+            _indiceActual = (_indiceActual + 1) % ItemCount;
+            StateHasChanged();
+        });
+    }
+
+    private void PrevSlide()
+    {
+        if (!MultiSlide) return;
+        _indiceActual = (_indiceActual - 1 + ItemCount) % ItemCount;
+        StateHasChanged();
+    }
+
+    private void NextSlide()
+    {
+        if (!MultiSlide) return;
+        _indiceActual = (_indiceActual + 1) % ItemCount;
+        StateHasChanged();
+    }
+
+    private void PausarAutoplay() => _pauseAutoplay = true;
+    private void ReanudarAutoplay() => _pauseAutoplay = false;
+
+    private void Navegar(PeliculaDto pelicula) => Navigation.NavigateTo($"/peliculas/{pelicula.Id}");
+
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+}

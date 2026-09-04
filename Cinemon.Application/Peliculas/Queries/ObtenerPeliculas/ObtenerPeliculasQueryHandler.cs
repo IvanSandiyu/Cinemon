@@ -1,4 +1,6 @@
 ﻿using Cinemon.Application.Abstractions;
+using Cinemon.Application.Common;
+using Cinemon.Domain.Entidades.Peliculas;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -33,10 +35,9 @@ namespace Cinemon.Application.Peliculas.Queries.ObtenerPeliculas
                     pelicula.PosterUrl,
                     pelicula.TrailerUrl,
                     pelicula.Activa,
-                    pelicula.Generos
-                        .Select(g => g.Genero.Nombre)
-                        .ToList()))
-                .ToList();
+                    pelicula.Generos.Select(g => g.Genero.Nombre).ToList(),
+                TmdbImageUrlHelper.BuildPosterUrl(pelicula.TmdbPosterPath),
+                TmdbImageUrlHelper.BuildBackdropUrl(pelicula.TmdbBackdropPath))).ToList();
         }
     }
 }

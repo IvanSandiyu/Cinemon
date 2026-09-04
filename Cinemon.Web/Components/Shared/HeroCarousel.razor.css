@@ -1,0 +1,130 @@
+/* ===== Carousel wrapper ===== */
+#cinemon-carousel {
+    position: relative;
+    overflow: hidden;
+    background-color: #08121A;
+    height: 70vh;
+    min-height: 460px;
+    /* Rompe el padding del contenedor RadzenBody => ancho total */
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    /* Animación de entrada: se despliega desde arriba */
+    animation: cinemonUnfold 0.9s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+@keyframes cinemonUnfold {
+    from {
+        opacity: 0;
+        transform: translateY(-48px);
+        clip-path: inset(0 0 100% 0);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        clip-path: inset(0 0 0% 0);
+    }
+}
+
+/* ===== Carousel inner (contenedor de los slides) ===== */
+.carousel-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+    /* ===== Item del carousel ===== */
+    .carousel-inner .carousel-item {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        pointer-events: none; /* evita clicks en slides ocultos */
+    }
+
+        .carousel-inner .carousel-item.active {
+            pointer-events: auto;
+        }
+
+        /* ===== Imagen ===== */
+        .carousel-inner .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            will-change: transform;
+        }
+
+        /* Zoom lento de la imagen activa (Ken Burns) */
+        .carousel-inner .carousel-item.active img {
+            animation: cinemonKenBurns 8s ease-in-out forwards;
+        }
+
+@keyframes cinemonKenBurns {
+    from { transform: scale(1.0); }
+    to   { transform: scale(1.08); }
+}
+
+/* ===== Fade transition (Bootstrap 5 style) ===== */
+.carousel-fade .carousel-item {
+    opacity: 0;
+    z-index: 1;
+    transition-property: opacity;
+    transition-duration: 0.6s;
+    transition-timing-function: ease-in-out;
+}
+
+    .carousel-fade .carousel-item.active {
+        opacity: 1;
+        z-index: 2;
+    }
+
+/* ===== Flechas ===== */
+i.fa-arrow-left,
+i.fa-arrow-right {
+    background-color: rgba(8, 18, 26, 0.5);
+    padding: 14px;
+    border-radius: 100px;
+    color: #E7F3F2;
+    font-size: 0.8rem;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+    i.fa-arrow-left:hover,
+    i.fa-arrow-right:hover {
+        background-color: #7BC6C9;
+        color: #08121A;
+    }
+
+.carousel-control-prev {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 1.25em;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+}
+
+.carousel-control-next {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 1.25em;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    #cinemon-carousel {
+        height: 62vh !important;
+    }
+}

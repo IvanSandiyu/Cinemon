@@ -1,7 +1,9 @@
 ﻿@page "/"
+
+@rendermode InteractiveServer
 @using Cinemon.Web.Models.DTOs
 @using Cinemon.Web.Services
-@implements IDisposable
+@using Cinemon.Web.Components.Shared
 @inject PeliculaApiService PeliculaService
 
 <PageTitle>Inicio | Cinemon</PageTitle>
@@ -20,73 +22,18 @@ else if (_peliculas.Count == 0)
 }
 else
 {
-    <div class="home-carousel-wrap">
-        <div class="home-carousel" style="height: 70vh; min-height: 460px;"
-             @onmouseenter="PausarAutoplay"
-             @onmouseleave="ReanudarAutoplay">
+    <HeroCarousel Peliculas="_peliculas" />
 
-            @foreach (var (pelicula, index) in _peliculas.Select((p, i) => (p, i)))
-            {
-                <div class="home-slide @(index == _indiceActual ? "is-active" : null)"
-                     @onclick="() => IrAPelicula(pelicula.Id)">
-
-                    <div class="home-slide-bg" style="background-image: url('@pelicula.PosterUrl');"></div>
-
-                    <div class="home-slide-overlay"></div>
-
-                    <div class="home-slide-content">
-                        <div class="home-slide-info">
-                            <span class="cinemon-badge mb-3">@pelicula.ClasificacionEdad</span>
-
-                            <h2 class="cinemon-title">@pelicula.Titulo</h2>
-
-                            <p class="cinemon-subtitle mb-4 home-slide-synopsis">
-                                @(pelicula.Generos != null ? string.Join(" · ", pelicula.Generos) : "Cine") • @pelicula.Duracion min
-                            </p>
-
-                            <RadzenLink Path="@($"/peliculas/{pelicula.Id}")"
-                                        Icon="movie"
-                                        Text="Ver funciones"
-                                        class="cinemon-link-btn" />
-                        </div>
-                    </div>
-                </div>
-            }
-
-            @if (_peliculas.Count > 1)
-            {
-                <button type="button" class="home-carousel-arrow prev" @onclick="PrevSlide">‹</button>
-                <button type="button" class="home-carousel-arrow next" @onclick="NextSlide">›</button>
-
-                <div class="home-carousel-dots">
-                    @for (var i = 0; i < _peliculas.Count; i++)
-                    {
-                        <button type="button"
-                                class="home-carousel-dot @(i == _indiceActual ? "is-active" : null)"
-                                aria-label="Ir a la película @(i + 1)"
-                                @onclick="() => IrASlide(i)"></button>
-                    }
-                </div>
-            }
-        </div>
+    <div class="cartelera-head mt-5 mb-4 reveal">
+        <h5 class="cinemon-kicker">En cartelera</h5>
     </div>
 
-    <div class="d-flex justify-content-center pt-4 pb-3">
-        <RadzenLink Path="/cartelera"
-                    Text="Ver cartelera completa"
-                    class="cinemon-link-outline" />
-    </div>
-
+    <CarteleraGrid />
 }
 
 @code {
     private IReadOnlyCollection<PeliculaDto> _peliculas = [];
     private bool _cargando = true;
-    private int _indiceActual;
-
-    private System.Threading.Timer? _autoplayTimer;
-    private const int AutoplayIntervalMs = 5000;
-    private bool _pauseAutoplay;
 
     protected override async Task OnInitializedAsync()
     {
@@ -98,72 +45,5 @@ else
         {
             _cargando = false;
         }
-
-        if (_peliculas.Count > 1)
-        {
-            _autoplayTimer = new System.Threading.Timer(_ => AutoAvanzar(), null, AutoplayIntervalMs, AutoplayIntervalMs);
-        }
     }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if (_peliculas.Count == 0 && _indiceActual != 0)
-        {
-            _indiceActual = 0;
-        }
-        await base.OnParametersSetAsync();
-    }
-
-    public void Dispose()
-    {
-        _autoplayTimer?.Dispose();
-        _autoplayTimer = null;
-    }
-
-    private void AutoAvanzar()
-    {
-        if (_pauseAutoplay || _peliculas.Count < 2)
-            return;
-
-        _ = InvokeAsync(() =>
-        {
-            _indiceActual =
-                (_indiceActual + 1) % _peliculas.Count;
-
-            StateHasChanged();
-        });
-    }
-
-    private void PrevSlide()
-    {
-        if (_peliculas.Count < 2)
-        {
-            return;
-        }
-        _indiceActual = (_indiceActual - 1 + _peliculas.Count) % _peliculas.Count;
-        StateHasChanged();
-    }
-
-    private void NextSlide()
-    {
-        if (_peliculas.Count < 2)
-        {
-            return;
-        }
-        _indiceActual = (_indiceActual + 1) % _peliculas.Count;
-        StateHasChanged();
-    }
-
-    private void IrASlide(int index)
-    {
-        _indiceActual = index;
-        StateHasChanged();
-    }
-
-    private void PausarAutoplay() => _pauseAutoplay = true;
-    private void ReanudarAutoplay() => _pauseAutoplay = false;
-
-    private void IrAPelicula(int id) => Navigation.NavigateTo($"/peliculas/{id}");
-
-    [Inject] private NavigationManager Navigation { get; set; } = default!;
 }

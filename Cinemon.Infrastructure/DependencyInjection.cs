@@ -1,4 +1,5 @@
 ﻿using Cinemon.Application.Abstractions;
+using Cinemon.Application.Interfaces;
 using Cinemon.Application.Usuarios;
 using Cinemon.Application.Usuarios.Interfaces;
 using Cinemon.Infrastructure.Authentication;

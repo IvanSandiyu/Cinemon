@@ -37,6 +37,19 @@ namespace Cinemon.Infrastructure.Configurations
 
             builder.Property(x => x.Activa)
                 .IsRequired();
+
+            builder.Property(x => x.TmdbId)
+                .IsRequired(false);
+
+            builder.Property(x => x.TmdbId).IsRequired(false);
+
+            builder.Property(x => x.TmdbPosterPath)
+                .HasMaxLength(500)
+                .IsRequired(false);
+
+            builder.Property(x => x.TmdbBackdropPath)
+                .HasMaxLength(500)
+                .IsRequired(false);
         }
     }
 }

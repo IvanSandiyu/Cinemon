@@ -1,7 +1,7 @@
 /* ===== Header / marca ===== */
 .cinemon-header {
-    background-color: #0b0d1f;
-    border-bottom: 1px solid #2E1A63;
+    background-color: #0F2D3A;
+    border-bottom: 1px solid #1E6F7D;
     z-index: 10;
 }
 
@@ -21,7 +21,7 @@
 }
 
 .app-brand {
-    color: #B14AED;
+    color: #7BC6C9;
     font-weight: 700;
     letter-spacing: 4px;
     font-size: 1.4rem;
@@ -34,10 +34,10 @@
     opacity: 0.9;
 }
 
-/* Animación SIEMPRE activa: pulso de brillo púrpura */
+/* Animación SIEMPRE activa: pulso de brillo teal */
 @keyframes appBrandPulse {
-    0%, 100% { opacity: 1; text-shadow: 0 0 8px rgba(177, 74, 237, 0.35); }
-    50%      { opacity: 0.82; text-shadow: 0 0 24px rgba(177, 74, 237, 0.75); }
+    0%, 100% { opacity: 1; text-shadow: 0 0 8px rgba(123, 198, 201, 0.35); }
+    50%      { opacity: 0.82; text-shadow: 0 0 24px rgba(123, 198, 201, 0.75); }
 }
 
 .app-brand-pulse {
@@ -45,12 +45,13 @@
 }
 
 .cinemon-account-icon {
-    color: #E8EAF6;
+    color: #E7F3F2;
     font-size: 1.6rem;
 }
 
-/* Botones de navegación del header (minimalista, hover suave) */
-.app-nav-link {
+/* Botones de navegación del header: la clase vive en el <a> que renderiza
+   el RadzenLink (subcomponente), por eso todos los selectores van con ::deep. */
+::deep .app-nav-link {
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -58,24 +59,27 @@
     padding: 6px 4px;
     border: none;
     border-radius: 0;
-    color: #B9BDD6;
+    color: #E7F3F2;
     font-size: 0.85rem;
     font-weight: 500;
     letter-spacing: 0.2px;
     text-decoration: none;
     background: none;
-    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0);
+    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.3s cubic-bezier(0.2, 0.7, 0.3, 1),
+                text-shadow 0.3s ease;
 }
 
 /* Subrayado animado en lugar de fondo de bloque */
-.app-nav-link::after {
+::deep .app-nav-link::after {
     content: "";
     position: absolute;
     left: 0;
     bottom: 0;
     width: 100%;
     height: 2px;
-    background: linear-gradient(90deg, #B14AED, #5B2A86);
+    background: linear-gradient(90deg, #7BC6C9, #1E6F7D);
     border-radius: 2px;
     transform: scaleX(0);
     transform-origin: left;
@@ -83,62 +87,64 @@
 }
 
 /* El icono del link vive dentro del RadzenLink (subcomponente) */
-:deep(.app-nav-link .rzi) {
-    color: #7c7fa3;
+::deep .app-nav-link .rzi {
+    color: #5A9A9D;
     font-size: 1.05rem;
     transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.app-nav-link:hover {
-    color: #E8EAF6;
+::deep .app-nav-link:hover {
+    color: #7BC6C9;
+    transform: translateY(-2px);
+    text-shadow: 0 2px 12px rgba(123, 198, 201, 0.35);
 }
 
-.app-nav-link:hover::after {
+::deep .app-nav-link:hover::after {
     transform: scaleX(1);
 }
 
-:deep(.app-nav-link:hover .rzi) {
-    color: #B14AED;
+::deep .app-nav-link:hover .rzi {
+    color: #7BC6C9;
 }
 
 /* Acción principal (Ingresar): pastilla outline que se rellena suavemente */
-.app-nav-link.login-cta {
+::deep .app-nav-link.login-cta {
     padding: 6px 16px;
-    border: 1px solid rgba(177, 74, 237, 0.55);
+    border: 1px solid rgba(123, 198, 201, 0.55);
     border-radius: 20px;
-    color: #B14AED;
+    color: #7BC6C9;
     font-weight: 600;
-    background-color: rgba(177, 74, 237, 0.08);
+    background-color: rgba(123, 198, 201, 0.08);
     overflow: hidden;
     transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
                 border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
                 box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.app-nav-link.login-cta::after {
+::deep .app-nav-link.login-cta::after {
     display: none;
 }
 
-:deep(.app-nav-link.login-cta .rzi) {
-    color: #B14AED;
+::deep .app-nav-link.login-cta .rzi {
+    color: #7BC6C9;
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.app-nav-link.login-cta:hover {
-    color: #05060E;
-    border-color: #B14AED;
-    background-color: #B14AED;
-    box-shadow: 0 4px 18px rgba(177, 74, 237, 0.35);
+::deep .app-nav-link.login-cta:hover {
+    color: #08121A;
+    border-color: #7BC6C9;
+    background-color: #7BC6C9;
+    box-shadow: 0 4px 18px rgba(123, 198, 201, 0.35);
 }
 
-:deep(.app-nav-link.login-cta:hover .rzi) {
-    color: #05060E;
+::deep .app-nav-link.login-cta:hover .rzi {
+    color: #08121A;
     transform: translateX(2px);
 }
 
 /* ===== Body ===== */
 .cinemon-body {
-    background-color: #05060E;
+    background-color: #08121A;
     min-height: calc(100vh - 64px);
     padding: 0;
     margin: 0;

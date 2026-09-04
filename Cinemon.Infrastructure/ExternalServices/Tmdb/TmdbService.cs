@@ -1,4 +1,5 @@
-﻿using Cinemon.Application.DTOs.Tmdb;
+﻿using Cinemon.Application.Interfaces;
+using Cinemon.Application.DTOs.Tmdb;
 using Cinemon.Infrastructure.ExternalServices.Tmdb.Models;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Cinemon.Infrastructure.ExternalServices.Tmdb
 {
-    public sealed class TmdbService : ITmdbService
+    public sealed class TmdbService : ITmdbService, ITmdbImageUrlBuilder
     {
         private readonly HttpClient _httpClient;
 
@@ -34,8 +35,9 @@ namespace Cinemon.Infrastructure.ExternalServices.Tmdb
                     movie.Overview,
                     movie.PosterPath,
                     movie.BackdropPath,
-                    ParseReleaseDate(movie.ReleaseDate)))
-                .ToList();
+                    ParseReleaseDate(movie.ReleaseDate),
+                    movie.Runtime,
+                    movie.Certificacion)).ToList();
         }
 
         private static DateTime? ParseReleaseDate(string? releaseDate)
@@ -48,7 +50,36 @@ namespace Cinemon.Infrastructure.ExternalServices.Tmdb
 
             return null;
         }
+        public async Task<TmdbMovieDto?> ObtenerPeliculaAsync(int tmdbId,CancellationToken cancellationToken)
+        {
+            var movie = await _httpClient.GetFromJsonAsync<TmdbMovieResponse>(
+                $"movie/{tmdbId}?language=es-AR",
+                cancellationToken);
 
-       
+            if (movie is null)
+                return null;
+
+            return new TmdbMovieDto(
+                movie.Id,
+                movie.Title,
+                movie.Overview,
+                movie.PosterPath,
+                movie.BackdropPath,
+                ParseReleaseDate(movie.ReleaseDate),
+                movie.Runtime,
+                movie.Certificacion);
+        }
+
+        public string? ObtenerPosterUrl(string? posterPath)
+        {
+            return TmdbImageUrlBuilder.BuildPosterUrl(posterPath);
+        }
+
+        public string? ObtenerBackdropUrl(string? backdropPath)
+        {
+            return TmdbImageUrlBuilder.BuildBackdropUrl(backdropPath);
+        }
+
+
     }
 }

@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Entidades\ReservaSeat\" />
     <Folder Include="Interfaces\" />
   </ItemGroup>
 

@@ -1,9 +1,11 @@
 ﻿using Cinemon.Application.Peliculas.Commands.CambiarEstadoPelicula;
 using Cinemon.Application.Peliculas.Commands.CrearPelicula;
 using Cinemon.Application.Peliculas.Commands.EditarPelicula;
+using Cinemon.Application.Peliculas.Commands.VincularTmdb;
 using Cinemon.Application.Peliculas.Queries.ObtenerPeliculas;
 
 using MediatR;
+using static Cinemon.Api.Endpoints.TmdbEndpoints;
 
 namespace Cinemon.Api.Endpoints.Peliculas
 {
@@ -25,6 +27,8 @@ namespace Cinemon.Api.Endpoints.Peliculas
             group.MapPatch("/{id}/activar", ActivarPeliculas).RequireAuthorization(policy => policy.RequireRole("Admin"));
 
             group.MapPatch("/{id}/desactivar", DesactivarPeliculas).RequireAuthorization(policy => policy.RequireRole("Admin"));
+
+            group.MapPost("/{id:int}/tmdb", VincularTmdb).RequireAuthorization(policy => policy.RequireRole("Admin"));
 
             return app;
         }
@@ -54,7 +58,7 @@ namespace Cinemon.Api.Endpoints.Peliculas
               command,
               cancellationToken);
 
-            return Results.Created();
+            return Results.Created($"/api/peliculas/{peliculaId}", peliculaId);
 
         }
 
@@ -105,6 +109,14 @@ namespace Cinemon.Api.Endpoints.Peliculas
             return cambiada ? Results.NoContent() : Results.NotFound();
         }
 
-       
+        private static async Task<IResult> VincularTmdb(int id, VincularTmdbRequest request, ISender sender, CancellationToken cancellationToken)
+        {
+            await sender.Send(
+                new VincularTmdbCommand(id,request.TmdbId),cancellationToken);
+
+            return Results.NoContent();
+        }
+
+        public sealed record VincularTmdbRequest(int TmdbId);
     }
 }

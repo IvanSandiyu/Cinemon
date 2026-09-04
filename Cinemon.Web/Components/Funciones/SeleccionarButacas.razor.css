@@ -1,40 +1,40 @@
 .cinemon-title {
-    color: #F5F6FF;
+    color: #E7F3F2;
     font-weight: 700;
 }
 
 .cinemon-muted {
-    color: #9A9FBF;
+    color: #8AB8BB;
     font-size: 0.95rem;
 }
 
 /* La clase vive en el elemento raíz del RadzenCard (subcomponente) */
-:deep(.cinemon-panel) {
-    background: #12163A;
-    border: 1px solid #2E1A63;
+::deep .cinemon-panel {
+    background: #0F2D3A;
+    border: 1px solid #1E6F7D;
     border-radius: 10px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
 }
 
 .cinemon-screen-label {
-    color: #B14AED;
+    color: #7BC6C9;
     font-weight: 700;
     letter-spacing: 3px;
 }
 
 .cinemon-hr {
-    border-color: #2E1A63;
+    border-color: #1E6F7D;
     opacity: 1;
 }
 
 .cinemon-subtitle2 {
-    color: #F5F6FF;
+    color: #E7F3F2;
     font-weight: 500;
 }
 
 .cinemon-price {
-    color: #B14AED;
+    color: #7BC6C9;
     font-weight: 600;
     margin-top: 0.25rem;
 }

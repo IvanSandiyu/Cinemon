@@ -6,7 +6,7 @@
     width: 100%;
     border-radius: 0;
     overflow: hidden;
-    background-color: #05060E;
+    background-color: #08121A;
     margin: 0;
 }
 
@@ -39,10 +39,10 @@
     position: absolute;
     inset: 0;
     background: linear-gradient(90deg,
-        rgba(5, 6, 14, 0.96) 0%,
-        rgba(5, 6, 14, 0.82) 38%,
-        rgba(5, 6, 14, 0.45) 68%,
-        rgba(5, 6, 14, 0.25) 100%);
+        rgba(8, 18, 26, 0.96) 0%,
+        rgba(8, 18, 26, 0.82) 38%,
+        rgba(8, 18, 26, 0.45) 68%,
+        rgba(8, 18, 26, 0.25) 100%);
 }
 
 .cinemon-hero-content {
@@ -59,7 +59,7 @@
 }
 
 .cinemon-hero-title {
-    color: #F5F6FF;
+    color: #E7F3F2;
     font-weight: 800;
     font-size: clamp(2rem, 5vw, 3.2rem);
     line-height: 1.05;
@@ -68,29 +68,28 @@
 }
 
 .cinemon-hero-synopsis {
-    color: #E3E6F5;
+    color: #E7F3F2;
     font-size: 1.05rem;
     line-height: 1.55;
     margin-bottom: 1.1rem;
     text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
-    /* clamp para leer toda la sinopsis (sin recortar) */
     overflow: visible;
 }
 
 .cinemon-hero-meta {
-    color: #B9BDD6;
+    color: #E7F3F2;
     font-size: 0.95rem;
     text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
 }
 
 .cinemon-hero-meta strong {
-    color: #E8EAF6;
+    color: #E7F3F2;
 }
 
 .cinemon-badge {
     display: inline-block;
-    background: #B14AED;
-    color: #05060E;
+    background: #7BC6C9;
+    color: #08121A;
     font-weight: 600;
     font-size: 0.75rem;
     padding: 4px 12px;
@@ -99,54 +98,54 @@
 }
 
 .cinemon-badge-outline {
-    background: rgba(5, 6, 14, 0.45);
-    color: #B14AED;
-    border: 1px solid #B14AED;
+    background: rgba(8, 18, 26, 0.45);
+    color: #7BC6C9;
+    border: 1px solid #7BC6C9;
 }
 
 .cinemon-title {
-    color: #F5F6FF;
+    color: #E7F3F2;
     font-weight: 700;
 }
 
 .cinemon-muted {
-    color: #9A9FBF;
+    color: #8AB8BB;
     font-size: 0.9rem;
 }
 
 .cinemon-hr {
-    border-color: #2E1A63;
+    border-color: #1E6F7D;
     opacity: 1;
 }
 
 /* La clase vive en el elemento raíz del RadzenCard (subcomponente) */
-:deep(.cinemon-funcion-card) {
-    background: #12163A;
-    border: 1px solid #2E1A63;
+::deep .cinemon-funcion-card {
+    background: #0F2D3A;
+    border: 1px solid #1E6F7D;
     border-radius: 10px;
     padding: 0;
     height: 100%;
     transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
-:deep(.cinemon-funcion-card:hover) {
+::deep .cinemon-funcion-card:hover {
     transform: translateY(-3px);
-    border-color: #B14AED;
+    border-color: #7BC6C9;
 }
 
 .cinemon-hours {
-    color: #B14AED;
+    color: #7BC6C9;
     font-weight: 600;
     font-size: 1.3rem;
 }
 
 .cinemon-meta {
-    color: #9A9FBF;
+    color: #8AB8BB;
     font-size: 0.9rem;
 }
 
 .cinemon-meta strong {
-    color: #E8EAF6;
+    color: #E7F3F2;
 }
 
 .small {

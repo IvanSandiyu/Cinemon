@@ -1,0 +1,180 @@
+/* ===== Admin: Panel de control ===== */
+.admin-page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+/* ===== Header ===== */
+.admin-header {
+    margin-bottom: 2.5rem;
+}
+
+.cinemon-kicker {
+    display: inline-block;
+    color: #7BC6C9;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+}
+
+.admin-title {
+    color: #E7F3F2;
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 0.3rem;
+}
+
+.admin-subtitle {
+    color: #8AB8BB;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* ===== Grid de cards ===== */
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+/* ===== Card ===== */
+.admin-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.25rem 1.25rem 1.1rem;
+    background: #0F2D3A;
+    border: 1px solid rgba(30, 111, 125, 0.45);
+    border-radius: 12px;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.22s cubic-bezier(0.2, 0.7, 0.3, 1),
+                border-color 0.22s ease,
+                box-shadow 0.22s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.admin-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(123, 198, 201, 0.06) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.admin-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(123, 198, 201, 0.55);
+    box-shadow: 0 8px 24px rgba(123, 198, 201, 0.12);
+}
+
+.admin-card:hover::before {
+    opacity: 1;
+}
+
+.admin-card:active {
+    transform: translateY(-1px) scale(0.985);
+}
+
+/* ===== Icono ===== */
+.admin-card-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(123, 198, 201, 0.1);
+    border-radius: 12px;
+    color: #7BC6C9;
+    font-size: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.admin-card:hover .admin-card-icon {
+    background: rgba(123, 198, 201, 0.18);
+    color: #A5E0E3;
+}
+
+/* ===== Texto ===== */
+.admin-card-body {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.admin-card-body h3 {
+    color: #E7F3F2;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.15rem;
+    line-height: 1.3;
+}
+
+.admin-card-body p {
+    color: #8AB8BB;
+    font-size: 0.8rem;
+    margin: 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ===== Flecha ===== */
+.admin-card-arrow {
+    flex-shrink: 0;
+    color: #1E6F7D;
+    font-size: 1.3rem;
+    font-weight: 600;
+    transition: color 0.2s ease, transform 0.2s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.admin-card:hover .admin-card-arrow {
+    color: #7BC6C9;
+    transform: translateX(3px);
+}
+
+/* ===== Animación de aparición al hacer scroll ===== */
+.reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s cubic-bezier(0.2, 0.7, 0.3, 1),
+                transform 0.6s cubic-bezier(0.2, 0.7, 0.3, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+    .admin-page {
+        padding: 1.25rem 1rem;
+    }
+    .admin-title {
+        font-size: 1.5rem;
+    }
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
+}

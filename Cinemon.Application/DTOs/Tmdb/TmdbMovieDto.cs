@@ -12,5 +12,7 @@ namespace Cinemon.Application.DTOs.Tmdb
     string? Overview,
     string? PosterPath,
     string? BackdropPath,
-    DateTime? ReleaseDate);
+    DateTime? ReleaseDate,
+    int? Runtime,
+    string? Certificacion);
 }

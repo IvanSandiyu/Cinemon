@@ -1,0 +1,255 @@
+﻿@page "/admin/peliculas"
+
+@using Cinemon.Web.Models.DTOs
+@using Cinemon.Web.Services
+
+@inject PeliculaApiService PeliculaService
+@inject NavigationManager Navigation
+
+<PageTitle>Películas | Admin | Cinemon</PageTitle>
+
+<div class="admin-page">
+
+    <div class="admin-header admin-section-header">
+
+        <div>
+            <span class="cinemon-kicker">Administración</span>
+
+            <h1 class="admin-title">
+                Películas
+            </h1>
+
+            <p class="admin-subtitle">
+                Gestioná las películas disponibles en Cinemon.
+            </p>
+        </div>
+
+        <RadzenButton Text="Nueva película"
+                      Icon="add"
+                      Click="@NuevaPelicula"
+                      ButtonStyle="ButtonStyle.Primary"
+                      class="admin-primary-button" />
+
+    </div>
+
+    @if (_cargando) {
+        <div class="d-flex justify-content-center py-5">
+            <RadzenProgressBarCircular Indeterminate="true" />
+        </div>
+    } else {
+        <div class="admin-toolbar">
+
+            <div class="admin-search">
+                <span class="material-icons">search</span>
+
+                <input type="text"
+                       placeholder="Buscar película..."
+                       @bind="_busqueda"
+                       @bind:event="oninput" />
+            </div>
+
+            <div class="admin-filters">
+
+                <button class="admin-filter @( _filtro == FiltroPeliculas.Todas ? "active" : "")"
+                        @onclick="() => CambiarFiltro(FiltroPeliculas.Todas)">
+                    Todas
+                </button>
+
+                <button class="admin-filter @( _filtro == FiltroPeliculas.Activas ? "active" : "")"
+                        @onclick="() => CambiarFiltro(FiltroPeliculas.Activas)">
+                    Activas
+                </button>
+
+                <button class="admin-filter @( _filtro == FiltroPeliculas.Inactivas ? "active" : "")"
+                        @onclick="() => CambiarFiltro(FiltroPeliculas.Inactivas)">
+                    Inactivas
+                </button>
+
+            </div>
+
+        </div>
+
+        @if (PeliculasFiltradas.Count() == 0) {
+            <div class="admin-empty">
+                <span class="material-icons">movie</span>
+
+                <h3>No se encontraron películas</h3>
+
+                <p>
+                    Probá con otro término de búsqueda o modificá los filtros.
+                </p>
+            </div>
+        } else {
+            <div class="admin-movie-grid">
+
+                @foreach (var pelicula in PeliculasFiltradas) {
+                    <article class="admin-movie-card">
+
+                        <div class="admin-movie-poster">
+
+                            <img src="@(pelicula.TmdbPosterUrl ?? pelicula.PosterUrl)"
+                                 alt="@pelicula.Titulo"
+                                 loading="lazy" />
+
+                            <span class="admin-status @(pelicula.Activa ? "active" : "inactive")">
+                                @(pelicula.Activa ? "Activa" : "Inactiva")
+                            </span>
+
+                        </div>
+
+                        <div class="admin-movie-content">
+
+                            <h3>@pelicula.Titulo</h3>
+
+                            <div class="admin-movie-meta">
+
+                                <span>
+                                    @(pelicula.Generos?.Count > 0
+                                                            ? string.Join(" · ", pelicula.Generos)
+                                                            : "Sin género")
+                    </span>
+
+                                <span>•</span>
+
+                                <span>
+                                    @pelicula.Duracion min
+                                </span>
+
+                            </div>
+
+                            <div class="admin-movie-release">
+                                Estreno:
+                                @pelicula.FechaEstreno.ToString("dd/MM/yyyy")
+                            </div>
+
+                @if (pelicula.TmdbPosterUrl is not null) {
+                                <div class="admin-tmdb-linked">
+                                    <span class="material-icons">link</span>
+                                    TMDB vinculado
+                                </div>
+                            }
+
+                        </div>
+
+                        <div class="admin-movie-actions">
+
+                            <RadzenButton Icon="edit"
+                                          Text="Editar"
+                                          ButtonStyle="ButtonStyle.Light"
+                                          Click="@(() => EditarPelicula(pelicula.Id))"
+                                          class="admin-action-button" />
+
+                            @if (pelicula.Activa) {
+                                <RadzenButton Icon="visibility_off"
+                                              Text="Desactivar"
+                                              ButtonStyle="ButtonStyle.Light"
+                                              Click="@(() => DesactivarPelicula(pelicula.Id))"
+                                              class="admin-action-button danger" />
+                            } else {
+                                <RadzenButton Icon="visibility"
+                                              Text="Activar"
+                                              ButtonStyle="ButtonStyle.Light"
+                                              Click="@(() => ActivarPelicula(pelicula.Id))"
+                                              class="admin-action-button success" />
+                            }
+
+                        </div>
+
+                    </article>
+                }
+
+            </div>
+        }
+
+    }
+
+</div>
+
+@code {
+
+    private IReadOnlyCollection<PeliculaDto> _peliculas = [];
+    private bool _cargando = true;
+
+    private string _busqueda = string.Empty;
+    private FiltroPeliculas _filtro = FiltroPeliculas.Todas;
+
+    private IEnumerable<PeliculaDto> PeliculasFiltradas =>
+        _peliculas
+            .Where(PerteneceAlFiltro)
+            .Where(PerteneceALaBusqueda);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarPeliculas();
+    }
+
+    private async Task CargarPeliculas()
+    {
+        _cargando = true;
+
+        try {
+            _peliculas = await PeliculaService.ObtenerTodasAsync();
+        } finally {
+            _cargando = false;
+        }
+    }
+
+    private bool PerteneceAlFiltro(PeliculaDto pelicula)
+    {
+        return _filtro switch
+        {
+            FiltroPeliculas.Activas => pelicula.Activa,
+            FiltroPeliculas.Inactivas => !pelicula.Activa,
+            _ => true
+        };
+    }
+
+    private bool PerteneceALaBusqueda(PeliculaDto pelicula)
+    {
+        if (string.IsNullOrWhiteSpace(_busqueda))
+            return true;
+
+        return pelicula.Titulo.Contains(
+                   _busqueda,
+                   StringComparison.OrdinalIgnoreCase)
+               ||
+               pelicula.Generos.Any(g =>
+                   g.Contains(
+                       _busqueda,
+                       StringComparison.OrdinalIgnoreCase));
+    }
+
+    private void CambiarFiltro(FiltroPeliculas filtro)
+    {
+        _filtro = filtro;
+    }
+
+    private void NuevaPelicula()
+    {
+        Navigation.NavigateTo("/admin/peliculas/nueva");
+    }
+
+    private void EditarPelicula(int id)
+    {
+        Navigation.NavigateTo($"/admin/peliculas/{id}/editar");
+    }
+
+    private async Task ActivarPelicula(int id)
+    {
+        await PeliculaService.ActivarAsync(id);
+        await CargarPeliculas();
+    }
+
+    private async Task DesactivarPelicula(int id)
+    {
+        await PeliculaService.DesactivarAsync(id);
+        await CargarPeliculas();
+    }
+
+    private enum FiltroPeliculas
+    {
+        Todas,
+        Activas,
+        Inactivas
+    }
+}

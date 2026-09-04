@@ -7,13 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Blazor\" />
-    <Folder Include="Components\Butacas\" />
-    <Folder Include="MudBlazor\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="MudBlazor" Version="9.9.0" />
     <PackageReference Include="Radzen.Blazor" Version="11.3.0" />
   </ItemGroup>
 

@@ -20,6 +20,10 @@ namespace Cinemon.Domain.Entidades.Peliculas
         public string TrailerUrl { get; private set; }
         public bool Activa { get; private set; }
         public ICollection<PeliculaGenero> Generos { get; private set; } = [];
+        public int? TmdbId { get; private set; }
+        public string? TmdbPosterPath { get; private set; }
+
+        public string? TmdbBackdropPath { get; private set; }
 
         //Creamos la pelicula y automaticamente Activo es false ya que no nos interesa que se pueda ver todavia
         //Creamos aca y no en application pq es mas sencillo y automaticamente esta en "stand by"
@@ -68,6 +72,13 @@ namespace Cinemon.Domain.Entidades.Peliculas
             ClasificacionEdad = clasificacionEdad;
             PosterUrl = posterUrl;
             TrailerUrl = trailerUrl;
+        }
+
+        public void AsignarTmdb(int tmdbId,string? posterPath,string? backdropPath)
+        {
+            TmdbId = tmdbId;
+            TmdbPosterPath = posterPath;
+            TmdbBackdropPath = backdropPath;
         }
     }
 }

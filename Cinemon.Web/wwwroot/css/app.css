@@ -1,11 +1,11 @@
 /* =========================================================
    Cinemon - Estilos globales
-   Paleta "Neón Púrpura":
-     #05060E fondo base
-     #12163A superficie
-     #2E1A63 superficie elevada / bordes
-     #5B2A86 acento intermedio
-     #B14AED primario vivo
+   Paleta "Teal Oscuro":
+     #08121A fondo base
+     #0F2D3A superficie
+     #1E6F7D bordes / acento
+     #7BC6C9 primario vivo
+     #E7F3F2 texto claro
    ========================================================= */
 
 /* ===== Pantalla / sala de butacas ===== */
@@ -14,8 +14,8 @@
     height: 12px;
     margin: 0 auto 40px;
     border-radius: 50%;
-    background: #5B2A86;
-    box-shadow: 0 5px 15px rgba(177, 74, 237, 0.4);
+    background: #1E6F7D;
+    box-shadow: 0 5px 15px rgba(30, 111, 125, 0.4);
 }
 
 .seat-container {
@@ -36,7 +36,7 @@
 .row-label {
     width: 25px;
     font-weight: bold;
-    color: #9A9FBF;
+    color: #8AB8BB;
 }
 
 .seat {
@@ -45,8 +45,8 @@
     border: none;
     border-radius: 8px 8px 4px 4px;
     cursor: pointer;
-    background: #2E1A63;
-    color: #F5F6FF;
+    background: #1E6F7D;
+    color: #E7F3F2;
     transition: transform 0.15s ease, background-color 0.15s ease;
 }
 
@@ -55,14 +55,14 @@
 }
 
 .seat.selected {
-    background: #B14AED;
-    color: #05060E;
+    background: #7BC6C9;
+    color: #08121A;
     font-weight: 700;
 }
 
 .seat.occupied {
-    background: #2E1A63;
-    color: #6B6F8F;
+    background: #1E6F7D;
+    color: #6B8E8F;
     cursor: not-allowed;
     opacity: 0.5;
 }
@@ -77,14 +77,14 @@
     width: 20px;
     height: 20px;
     border-radius: 5px;
-    background: #2E1A63;
+    background: #1E6F7D;
 }
 
 .legend-seat.selected {
-    background: #B14AED;
+    background: #7BC6C9;
 }
 
 .legend-seat.occupied {
-    background: #2E1A63;
+    background: #1E6F7D;
     opacity: 0.5;
 }

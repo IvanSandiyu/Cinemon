@@ -1,0 +1,455 @@
+﻿@page "/admin/peliculas/nueva"
+
+@using Cinemon.Web.Models.DTOs
+@using Cinemon.Web.Models.DTOs.Requests
+@using Cinemon.Web.Services
+@using Microsoft.AspNetCore.Components.Web
+
+@inject GeneroApiService GeneroService
+@inject PeliculaApiService PeliculaService
+@inject TmdbApiService TmdbService
+@inject NavigationManager Navigation
+
+<PageTitle>Nueva película | Admin | Cinemon</PageTitle>
+
+<div class="admin-page">
+
+    <div class="admin-header">
+
+        <span class="cinemon-kicker">
+            Administración
+        </span>
+
+        <h1 class="admin-title">
+            Nueva película
+        </h1>
+
+        <p class="admin-subtitle">
+            Agregá una película a la cartelera de Cinemon.
+        </p>
+
+    </div>
+
+    <div class="admin-create-layout">
+
+        <!-- TMDB -->
+
+        <section class="admin-form-section">
+
+            <div class="admin-form-section-header">
+
+                <div>
+                    <h2>Buscar en TMDB</h2>
+
+                    <p>
+                        Buscá una película para completar automáticamente
+                        sus datos.
+                    </p>
+                </div>
+
+                <span class="admin-tmdb-label">
+                    TMDB
+                </span>
+
+            </div>
+
+            <div class="tmdb-search">
+
+                <input type="text"
+                       placeholder="Ej: Interstellar, Spider-Man..."
+                       @bind="_busquedaTmdb"
+                       @bind:event="oninput"
+                       @onkeydown="BuscarConEnter" />
+
+                <RadzenButton Text="Buscar"
+                              Icon="search"
+                              Click="BuscarTmdb"
+                              ButtonStyle="ButtonStyle.Primary"
+                              Disabled="@_buscandoTmdb" />
+
+            </div>
+
+            @if (_buscandoTmdb) {
+                <div class="tmdb-loading">
+                    <RadzenProgressBarCircular Indeterminate="true" />
+                </div>
+            } else if (_resultadosTmdb.Count > 0) {
+                <div class="tmdb-results">
+
+                    @foreach (var pelicula in _resultadosTmdb) {
+                        <button type="button"
+                                class="tmdb-result"
+                                @onclick="() => SeleccionarTmdb(pelicula)">
+
+                            <div class="tmdb-result-poster">
+
+                                @if (!string.IsNullOrWhiteSpace(pelicula.PosterPath)) {
+                                    <img src="@GetTmdbPosterUrl(pelicula.PosterPath)"
+                                         alt="@pelicula.Title" />
+                                } else {
+                                    <span class="material-icons">
+                                        movie
+                                    </span>
+                                }
+
+                            </div>
+
+                            <div class="tmdb-result-info">
+
+                                <strong>
+                                    @pelicula.Title
+                                </strong>
+
+                                @if (pelicula.ReleaseDate.HasValue) {
+                                    <span>
+                                        @pelicula.ReleaseDate.Value.Year
+                                    </span>
+                                }
+
+                                @if (!string.IsNullOrWhiteSpace(pelicula.Overview)) {
+                                    <p>
+                                        @pelicula.Overview
+                                    </p>
+                                }
+
+                            </div>
+
+                            <span class="material-icons tmdb-result-arrow">
+                                arrow_forward
+                            </span>
+
+                        </button>
+                    }
+
+                </div>
+            } else if (_busquedaRealizada) {
+                <div class="tmdb-no-results">
+                    No encontramos resultados para esa búsqueda.
+                </div>
+            }
+
+        </section>
+
+        <!-- FORMULARIO -->
+
+        <section class="admin-form-section">
+
+            <div class="admin-form-section-header">
+
+                <div>
+                    <h2>Datos de la película</h2>
+
+                    <p>
+                        Podés modificar cualquier dato antes de guardar.
+                    </p>
+                </div>
+
+                @if (_tmdbSeleccionado is not null) {
+                    <span class="admin-tmdb-selected">
+                        <span class="material-icons">check</span>
+                        TMDB vinculado
+                    </span>
+                }
+
+            </div>
+
+            <div class="admin-form">
+
+                <div class="admin-form-field">
+
+                    <label>
+                        Título
+                    </label>
+
+                    <input type="text"
+                           @bind="_titulo"
+                           placeholder="Título de la película" />
+
+                </div>
+
+                <div class="admin-form-field">
+
+                    <label>
+                        Sinopsis
+                    </label>
+
+                    <textarea rows="5"
+                              @bind="_sinopsis"
+                              placeholder="Sinopsis de la película"></textarea>
+
+                </div>
+
+                <div class="admin-form-row">
+
+                    <div class="admin-form-field">
+
+                        <label>
+                            Duración
+                        </label>
+
+                        <input type="number"
+                               min="1"
+                               @bind="_duracion" />
+
+                    </div>
+
+                    <div class="admin-form-field">
+
+                        <label>
+                            Fecha de estreno
+                        </label>
+
+                        <input type="date"
+                               @bind="_fechaEstreno" />
+
+                    </div>
+
+                    <div class="admin-form-field">
+
+                        <label>
+                            Clasificación
+                        </label>
+
+                        <input type="text"
+                               @bind="_clasificacion"
+                               placeholder="ATP, +13, +16..." />
+
+                    </div>
+
+                </div>
+
+                <div class="admin-form-field">
+
+                    <label>
+                        Géneros
+                    </label>
+
+                    <div class="genre-selector">
+
+                        @foreach (var genero in _generos) {
+                            <button type="button"
+                                    class="genre-option @(_generosSeleccionados.Contains(genero.Id) ? "selected" : "")"
+                                    @onclick="() => ToggleGenero(genero.Id)">
+
+                                @if (_generosSeleccionados.Contains(genero.Id)) {
+                                    <span class="material-icons">check</span>
+                                }
+
+                                @genero.Nombre
+
+                            </button>
+                        }
+
+                    </div>
+
+                </div>
+
+                <div class="admin-form-field">
+
+                    <label>
+                        Poster URL
+                    </label>
+
+                    <input type="text"
+                           @bind="_posterUrl"
+                           placeholder="https://..." />
+
+                </div>
+
+                <div class="admin-form-field">
+
+                    <label>
+                        Trailer URL
+                    </label>
+
+                    <input type="text"
+                           @bind="_trailerUrl"
+                           placeholder="https://youtube.com/..." />
+
+                </div>
+
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(_error)) {
+                <div class="admin-form-error">
+                    @_error
+                </div>
+            }
+
+            <div class="admin-form-actions">
+
+                <RadzenButton Text="Cancelar"
+                              ButtonStyle="ButtonStyle.Light"
+                              Click="Cancelar"
+                              class="admin-cancel-button" />
+
+                <RadzenButton Text="Guardar película"
+                              Icon="save"
+                              ButtonStyle="ButtonStyle.Primary"
+                              Click="Guardar"
+                              Disabled="@_guardando" />
+
+            </div>
+
+        </section>
+
+    </div>
+
+</div>
+
+@code {
+
+    private string _busquedaTmdb = string.Empty;
+
+    private IReadOnlyCollection<TmdbMovieDto> _resultadosTmdb = [];
+
+    private TmdbMovieDto? _tmdbSeleccionado;
+
+    private bool _buscandoTmdb;
+    private bool _busquedaRealizada;
+    private bool _guardando;
+
+    private string? _error;
+
+    private string _titulo = string.Empty;
+    private string _sinopsis = string.Empty;
+    private int _duracion;
+    private DateTime _fechaEstreno = DateTime.Today;
+    private string _clasificacion = string.Empty;
+    private string _posterUrl = string.Empty;
+    private string _trailerUrl = string.Empty;
+
+    private IReadOnlyCollection<GeneroDto> _generos = [];
+    private readonly HashSet<int> _generosSeleccionados = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarGeneros();
+    }
+
+    private async Task BuscarTmdb()
+    {
+        if (string.IsNullOrWhiteSpace(_busquedaTmdb))
+            return;
+
+        _buscandoTmdb = true;
+        _busquedaRealizada = false;
+        _error = null;
+
+        try {
+            _resultadosTmdb =
+                await TmdbService.BuscarAsync(_busquedaTmdb);
+
+            _busquedaRealizada = true;
+        } catch {
+            _error = "No se pudo realizar la búsqueda en TMDB.";
+        } finally {
+            _buscandoTmdb = false;
+        }
+    }
+
+    private async Task BuscarConEnter(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter") {
+            await BuscarTmdb();
+        }
+    }
+
+    private void SeleccionarTmdb(TmdbMovieDto pelicula)
+    {
+        _tmdbSeleccionado = pelicula;
+
+        _titulo = pelicula.Title;
+        _sinopsis = pelicula.Overview;
+
+        if (pelicula.ReleaseDate.HasValue) {
+            _fechaEstreno = pelicula.ReleaseDate.Value;
+        }
+
+        _posterUrl = GetTmdbPosterUrl(pelicula.PosterPath);
+
+        _resultadosTmdb = [];
+    }
+
+    private static string GetTmdbPosterUrl(string? posterPath)
+    {
+        if (string.IsNullOrWhiteSpace(posterPath))
+            return string.Empty;
+
+        return $"https://image.tmdb.org/t/p/w185{posterPath}";
+    }
+
+    private async Task Guardar()
+    {
+        if (string.IsNullOrWhiteSpace(_titulo)) {
+            _error = "El título es obligatorio.";
+            return;
+        }
+
+        if (_duracion <= 0) {
+            _error = "La duración debe ser mayor a 0.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(_clasificacion)) {
+            _error = "La clasificación es obligatoria.";
+            return;
+        }
+
+        if (_generosSeleccionados.Count == 0) {
+            _error = "Seleccioná al menos un género.";
+            return;
+        }
+
+        _guardando = true;
+        _error = null;
+
+        try {
+            var request = new CrearPeliculaRequest(
+      _titulo,
+      _sinopsis,
+      _duracion,
+      _fechaEstreno,
+      _clasificacion,
+      _posterUrl,
+      _trailerUrl,
+      _generosSeleccionados.ToList());
+
+            var peliculaId = await PeliculaService.CrearAsync(request);
+
+            if (_tmdbSeleccionado is not null) {
+                await TmdbService.VincularAsync(
+                    peliculaId,
+                    _tmdbSeleccionado.Id);
+            }
+
+            Navigation.NavigateTo("/admin/peliculas");
+        } catch (HttpRequestException) {
+            _error = "No se pudo guardar la película.";
+        } finally {
+            _guardando = false;
+        }
+    }
+
+    private void Cancelar()
+    {
+        Navigation.NavigateTo("/admin/peliculas");
+    }
+
+    private async Task CargarGeneros()
+    {
+        try {
+            _generos = await GeneroService.ObtenerTodosAsync();
+        } catch {
+            _error = "No se pudieron cargar los géneros.";
+        }
+    }
+
+    private void ToggleGenero(int generoId)
+    {
+
+        if (!_generosSeleccionados.Add(generoId)) {
+            _generosSeleccionados.Remove(generoId);
+        }
+    }
+}

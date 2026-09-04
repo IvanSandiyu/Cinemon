@@ -1,7 +1,5 @@
 using Cinemon.Web.Components;
-using Cinemon.Web.Models.DTOs;
 using Cinemon.Web.Services;
-using MudBlazor.Services;
 using Radzen;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,8 +18,10 @@ builder.Services.AddScoped<FuncionApiService>();
 builder.Services.AddScoped<ButacaApiService>();
 builder.Services.AddScoped<ReservaApiService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<TmdbApiService>();
+builder.Services.AddScoped<GeneroApiService>();
 
-builder.Services.AddMudServices();
+
 builder.Services.AddRadzenComponents();
 
 var app = builder.Build();

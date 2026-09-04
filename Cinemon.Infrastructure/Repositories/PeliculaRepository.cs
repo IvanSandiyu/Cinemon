@@ -149,5 +149,12 @@ namespace Cinemon.Infrastructure.Repositories
 
             return true;
         }
+
+        public async Task UpdateAsync(Pelicula pelicula,CancellationToken cancellationToken)
+        {
+            _context.Peliculas.Update(pelicula);
+
+            await _context.SaveChangesAsync(cancellationToken);
+        }
     }
 }
