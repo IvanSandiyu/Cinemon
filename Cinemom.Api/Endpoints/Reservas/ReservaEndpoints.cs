@@ -14,18 +14,18 @@ namespace Cinemon.Api.Endpoints.Reservas
                 .WithTags("Reservas");
 
             group.MapPost("/", CrearReserva)
-                .RequireAuthorization(policy => policy.RequireRole("Cliente"));
+                .RequireAuthorization(policy => policy.RequireRole("Cliente", "Admin"));
 
             group.MapGet("/", ObtenerReservas)
-                .RequireAuthorization(policy => policy.RequireRole("Cliente"));
+                .RequireAuthorization(policy => policy.RequireRole("Cliente", "Admin"));
 
             group.MapGet("/{id}", ObtenerReservaPorId)
-                .RequireAuthorization(policy => policy.RequireRole("Cliente"));
+                .RequireAuthorization(policy => policy.RequireRole("Cliente", "Admin"));
 
             group.MapPost("/{id}/cancelar", CancelarReserva)
-                .RequireAuthorization(policy => policy.RequireRole("Cliente"));
+                .RequireAuthorization(policy => policy.RequireRole("Cliente", "Admin"));
 
-            group.MapGet("/mis-reservas", HistorialReservas).RequireAuthorization(policy => policy.RequireRole("Cliente"));
+            group.MapGet("/mis-reservas", HistorialReservas).RequireAuthorization(policy => policy.RequireRole("Cliente", "Admin"));
 
             return app;
         }

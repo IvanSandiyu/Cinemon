@@ -29,5 +29,15 @@ namespace Cinemon.Web.Services
 
             response.EnsureSuccessStatusCode();
         }
+
+        public async Task<TmdbMovieDto?> ObtenerDetalleAsync(int tmdbId)
+        {
+            var response = await _httpClient.GetAsync(
+                $"api/tmdb/{tmdbId}");
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<TmdbMovieDto>();
+        }
     }
 }

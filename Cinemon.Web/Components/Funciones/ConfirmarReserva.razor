@@ -1,5 +1,5 @@
 @page "/funciones/{FuncionId:int}/confirmar"
-
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @using Cinemon.Web.Models.DTOs
 @using Cinemon.Web.Models.DTOs.Requests
 @using Cinemon.Web.Services
@@ -7,7 +7,9 @@
 
 @inject FuncionApiService FuncionService
 @inject PeliculaApiService PeliculaService
+@inject ButacaApiService ButacaService
 @inject ReservaApiService ReservaService
+@inject AuthService Auth
 @inject NavigationManager Navigation
 
 <PageTitle>Confirmar reserva | Cinemon</PageTitle>
@@ -37,8 +39,8 @@
             <RadzenCard class="cinemon-panel">
                 <h6 class="cinemon-subtitle2 mb-3">Butacas seleccionadas</h6>
                 <div class="d-flex flex-wrap gap-1">
-                    @foreach (var butaca in _butacasSeleccionadas) {
-                        <span class="cinemon-butaca-chip">@butaca</span>
+                    @foreach (var butaca in _butacasInfo) {
+                        <span class="cinemon-butaca-chip">@butaca.Fila - @butaca.Numero</span>
                     }
                 </div>
             </RadzenCard>
@@ -107,6 +109,7 @@
     private PeliculaDto? _pelicula;
 
     private List<int> _butacasSeleccionadas = [];
+    private List<ButacaFuncionDto> _butacasInfo = [];
 
     private bool _cargando = true;
     private bool _procesando;
@@ -118,6 +121,18 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await Auth.CargarAsync();
+
+        if (!Auth.EstaAutenticado) {
+            var returnUrl = Uri.EscapeDataString(Navigation.Uri);
+
+            Navigation.NavigateTo(
+                $"/login?returnUrl={returnUrl}");
+
+            _cargando = false;
+            return;
+        }
+
         try {
             var uri = Navigation.ToAbsoluteUri(
                 Navigation.Uri);
@@ -140,6 +155,13 @@
             if (_funcion is not null) {
                 _pelicula = await PeliculaService
                     .ObtenerPorIdAsync(_funcion.PeliculaId);
+
+                var butacasFuncion =
+                    await ButacaService.ObtenerPorFuncionAsync(FuncionId);
+
+                _butacasInfo = butacasFuncion
+                    .Where(x => _butacasSeleccionadas.Contains(x.Id))
+                    .ToList();
             }
         } finally {
             _cargando = false;
@@ -152,13 +174,10 @@
         _error = null;
 
         try {
-            // Temporalmente utilizamos el usuario 1.
-            // Despu�s lo reemplazamos por el usuario
-            // autenticado mediante JWT.
-
+            // El usuario autenticado se obtiene desde el AuthService.
             var request = new CrearReservaRequest(
-                UsuarioId: 1,
-                RealizadaPorId: 1,
+                UsuarioId: Auth.UsuarioId!.Value,
+                RealizadaPorId: Auth.UsuarioId!.Value,
                 FuncionId: FuncionId,
                 ButacasIds: _butacasSeleccionadas);
 
@@ -194,7 +213,11 @@
 
     private void Volver()
     {
+        var butacas = string.Join(
+            ",",
+            _butacasSeleccionadas);
+
         Navigation.NavigateTo(
-            $"/funciones/{FuncionId}/butacas");
+            $"/funciones/{FuncionId}/butacas?butacas={butacas}");
     }
 }

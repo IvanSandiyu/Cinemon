@@ -1,8 +1,10 @@
 @page "/peliculas/{Id:int}"
+@rendermode InteractiveServer
 @using Cinemon.Web.Models.DTOs
 @using Cinemon.Web.Services
 @inject PeliculaApiService PeliculaService
 @inject FuncionApiService FuncionService
+@inject NavigationManager Navigation
 
 <PageTitle>
     @(_pelicula?.Titulo ?? "Película") | Cinemon
@@ -65,8 +67,10 @@
 
     <hr class="my-4 cinemon-hr" />
 
-    <h4 class="cinemon-title mb-1">Funciones</h4>
-    <p class="cinemon-muted mb-4">Seleccioná el día y elegí el horario que prefieras.</p>
+    <div class="text-center">
+        <h4 class="cinemon-title mb-1">Funciones</h4>
+        <p class="cinemon-muted mb-4">Seleccioná el día y elegí el horario que prefieras.</p>
+    </div>
 
     @if (_diasFunciones.Count == 0) {
         <RadzenAlert AlertStyle="AlertStyle.Info">
@@ -85,10 +89,10 @@
         </div>
 
         <div class="row g-3">
-            @foreach (var funcion in _funcionesDelDia) {
-                <div class="col-12 col-sm-6 col-md-4">
+            @foreach (var (funcion, index) in _funcionesDelDia.Select((funcion, index) => (funcion, index))) {
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 cinemon-funcion-col" style="animation-delay:@(index * 90)ms">
                     <RadzenCard class="cinemon-funcion-card">
-                        <div class="p-3">
+                        <div class="p-2">
                             <h5 class="cinemon-hours mb-1">@funcion.FechaHoraInicio.ToString("HH:mm")</h5>
                             <div class="cinemon-meta small">Sala @funcion.SalaId</div>
                             <div class="cinemon-meta small mb-2">@ObtenerIdioma(funcion.Idioma)</div>
@@ -144,6 +148,8 @@
 
             _funciones = funciones
                 .Where(x => x.PeliculaId == Id)
+                .Where(x => x.EstadoFuncion == 1)
+                .Where(x => x.FechaHoraInicio >= DateTime.Today)
                 .ToList();
 
             _diasFunciones = _funciones
@@ -163,8 +169,8 @@
 
     private void ContinuarReserva(FuncionDto funcion)
     {
-        // TODO: redireccionar a reserva de butacas (o login si no está autenticado).
-        // Por ahora no hay navegación.
+        Navigation.NavigateTo(
+            $"/funciones/{funcion.Id}/butacas");
     }
 
     private static string ObtenerIdioma(int idioma)

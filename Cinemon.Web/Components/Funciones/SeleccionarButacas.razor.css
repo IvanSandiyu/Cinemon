@@ -1,3 +1,100 @@
+/* ===== Pantalla / sala de butacas ===== */
+.screen {
+    width: 80%;
+    height: 12px;
+    margin: 0 auto 40px;
+    border-radius: 50%;
+    background: #1E6F7D;
+    box-shadow: 0 5px 15px rgba(30, 111, 125, 0.4);
+}
+
+.seat-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-x: auto;
+}
+
+.seat-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+}
+
+.row-label {
+    width: 22px;
+    flex-shrink: 0;
+    font-weight: bold;
+    color: #8AB8BB;
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+.seat {
+    flex: 1 1 32px;
+    max-width: 36px;
+    height: 28px;
+    border: none;
+    border-radius: 6px 6px 3px 3px;
+    cursor: pointer;
+    background: #5A6670;
+    color: #E7F3F2;
+    font-size: 0.75rem;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.seat:hover {
+    transform: translateY(-2px);
+    background: #7BC6C9;
+}
+
+.seat.selected {
+    background: #4CD964;
+    color: #08121A;
+    font-weight: 700;
+    box-shadow: 0 0 10px rgba(76, 217, 100, 0.5);
+}
+
+.seat.selected:hover {
+    background: #4CD964;
+}
+
+.seat.occupied {
+    background: #E5484D;
+    color: #FFD6D6;
+    cursor: not-allowed;
+    opacity: 0.85;
+}
+
+.seat.occupied:hover {
+    background: #E5484D;
+    transform: none;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-seat {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    background: #5A6670;
+}
+
+.legend-seat.selected {
+    background: #4CD964;
+}
+
+.legend-seat.occupied {
+    background: #E5484D;
+    opacity: 0.85;
+}
+
 .cinemon-title {
     color: #E7F3F2;
     font-weight: 700;
@@ -15,6 +112,14 @@
     border-radius: 10px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+}
+
+::deep .cinemon-map-panel {
+    height: 100%;
+}
+
+::deep .cinemon-side-panel {
+    height: 100%;
 }
 
 .cinemon-screen-label {
@@ -37,4 +142,30 @@
     color: #7BC6C9;
     font-weight: 600;
     margin-top: 0.25rem;
+}
+
+.cinemon-timer {
+    color: #7BC6C9;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 1px;
+    background: #08121A;
+    border: 1px solid #1E6F7D;
+    border-radius: 6px;
+    padding: 0.1rem 0.6rem;
+}
+
+.cinemon-timer.danger {
+    color: #E5484D;
+    border-color: #E5484D;
+}
+
+@media (max-width: 991px) {
+    ::deep .cinemon-map-panel {
+        height: auto;
+    }
+
+    ::deep .cinemon-side-panel {
+        height: auto;
+    }
 }

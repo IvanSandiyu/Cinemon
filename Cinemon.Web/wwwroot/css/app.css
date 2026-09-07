@@ -1,90 +1,16 @@
 /* =========================================================
-   Cinemon - Estilos globales
+   Cinemon - Estilos globales (SOLO lo esencial de la app)
    Paleta "Teal Oscuro":
      #08121A fondo base
      #0F2D3A superficie
      #1E6F7D bordes / acento
      #7BC6C9 primario vivo
      #E7F3F2 texto claro
+   Cada página/componente tiene su propio .razor.css.
    ========================================================= */
 
-/* ===== Pantalla / sala de butacas ===== */
-.screen {
-    width: 80%;
-    height: 12px;
-    margin: 0 auto 40px;
-    border-radius: 50%;
-    background: #1E6F7D;
-    box-shadow: 0 5px 15px rgba(30, 111, 125, 0.4);
-}
-
-.seat-container {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    overflow-x: auto;
-}
-
-.seat-row {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    min-width: max-content;
-}
-
-.row-label {
-    width: 25px;
-    font-weight: bold;
-    color: #8AB8BB;
-}
-
-.seat {
-    width: 42px;
-    height: 38px;
-    border: none;
-    border-radius: 8px 8px 4px 4px;
-    cursor: pointer;
-    background: #1E6F7D;
+html, body {
+    background-color: #08121A;
     color: #E7F3F2;
-    transition: transform 0.15s ease, background-color 0.15s ease;
-}
-
-.seat:hover {
-    transform: translateY(-2px);
-}
-
-.seat.selected {
-    background: #7BC6C9;
-    color: #08121A;
-    font-weight: 700;
-}
-
-.seat.occupied {
-    background: #1E6F7D;
-    color: #6B8E8F;
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.legend-seat {
-    width: 20px;
-    height: 20px;
-    border-radius: 5px;
-    background: #1E6F7D;
-}
-
-.legend-seat.selected {
-    background: #7BC6C9;
-}
-
-.legend-seat.occupied {
-    background: #1E6F7D;
-    opacity: 0.5;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }

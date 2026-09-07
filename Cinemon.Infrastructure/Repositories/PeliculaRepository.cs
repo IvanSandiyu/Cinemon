@@ -74,6 +74,8 @@ namespace Cinemon.Infrastructure.Repositories
                     cancellationToken);
 
             try {
+                pelicula.Generos.Clear();
+
                 _context.Peliculas.Update(pelicula);
 
                 await _context.SaveChangesAsync(
@@ -84,17 +86,28 @@ namespace Cinemon.Infrastructure.Repositories
                     .Where(x => x.PeliculaId == pelicula.Id)
                     .ToListAsync(cancellationToken);
 
-                _context.Set<PeliculaGenero>()
-                    .RemoveRange(relacionesExistentes);
+                var idsExistentes = relacionesExistentes
+                    .Select(x => x.GeneroId)
+                    .ToHashSet();
 
-                var relacionesNuevas = generoIds.Select(
-                    generoId => new PeliculaGenero(
+                var idsDeseados = generoIds.ToHashSet();
+
+                var aEliminar = relacionesExistentes
+                    .Where(x => !idsDeseados.Contains(x.GeneroId))
+                    .ToList();
+
+                var aAgregar = generoIds
+                    .Where(generoId => !idsExistentes.Contains(generoId))
+                    .Select(generoId => new PeliculaGenero(
                         pelicula.Id,
                         generoId));
 
+                _context.Set<PeliculaGenero>()
+                    .RemoveRange(aEliminar);
+
                 await _context.Set<PeliculaGenero>()
                     .AddRangeAsync(
-                        relacionesNuevas,
+                        aAgregar,
                         cancellationToken);
 
                 await _context.SaveChangesAsync(

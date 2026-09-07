@@ -1,16 +1,108 @@
 ﻿@page "/login"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using Cinemon.Web.Services
+@using Microsoft.AspNetCore.WebUtilities
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <RadzenCard>
-                <div class="p-4">
-                    <h3 class="text-white fw-bold mb-3">Ingresar</h3>
-                    <RadzenAlert AlertStyle="AlertStyle.Info" class="mb-3">
-                        El formulario de inicio de sesión estará disponible pronto.
-                    </RadzenAlert>
-                </div>
-            </RadzenCard>
+@inject AuthService Auth
+@inject NavigationManager Navigation
+
+<PageTitle>Ingresar | Cinemon</PageTitle>
+
+<div class="login-container">
+    <RadzenCard class="cinemon-login-panel">
+
+        <div class="text-center mb-4">
+            <h3 class="cinemon-title mb-1">Bienvenido a Cinemon</h3>
+            <p class="cinemon-muted mb-0">Ingresá con tu cuenta para continuar.</p>
         </div>
-    </div>
+
+        <RadzenStack Gap="16px">
+
+            <div class="login-field">
+                <label class="cinemon-label">Email</label>
+                <RadzenTextBox @bind-Value="_email"
+                               Class="cinemon-input"
+                               Placeholder="tucorreo@ejemplo.com" />
+            </div>
+
+            <div class="login-field">
+                <label class="cinemon-label">Contraseña</label>
+                <RadzenPassword @bind-Value="_password"
+                                Class="cinemon-input"
+                                Placeholder="••••••••" />
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(_error)) {
+                <RadzenAlert AlertStyle="AlertStyle.Danger" class="mt-1">
+                    @_error
+                </RadzenAlert>
+            }
+
+            <RadzenButton Text="@(_procesando ? "Ingresando..." : "Iniciar sesión")"
+                          ButtonStyle="ButtonStyle.Primary"
+                          Variant="Variant.Filled"
+                          FullWidth="true"
+                          Disabled="_procesando"
+                          Click="IniciarSesion" />
+
+            <div class="text-center mt-2">
+                <RadzenLink Text="Volver al inicio" Path="/" class="cinemon-muted" />
+            </div>
+
+        </RadzenStack>
+
+    </RadzenCard>
 </div>
+
+@code {
+
+    private string _email = "admin@cinemon.com";
+    private string _password = "";
+    private bool _procesando;
+    private string? _error;
+    private string? _returnUrl;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+
+        _returnUrl = QueryHelpers.ParseQuery(uri.Query)
+            .GetValueOrDefault("returnUrl")
+            .ToString();
+
+        if (string.IsNullOrWhiteSpace(_returnUrl)) {
+            _returnUrl = "/";
+        }
+
+        await Auth.CargarAsync();
+
+        // Si ya hay sesión iniciada, no mostramos el formulario:
+        // volvemos directo al destino original.
+        if (Auth.EstaAutenticado) {
+            Navigation.NavigateTo(_returnUrl, forceLoad: false);
+        }
+    }
+
+    private async Task IniciarSesion()
+    {
+        _error = null;
+        _procesando = true;
+
+        try {
+            var ok = await Auth.LoginAsync(
+                _email,
+                _password);
+
+            if (ok) {
+                Navigation.NavigateTo(_returnUrl, forceLoad: false);
+                return;
+            }
+
+            _error = "Email o contraseña incorrectos.";
+        } catch {
+            _error = "No se pudo conectar con el servidor.";
+        } finally {
+            _procesando = false;
+        }
+    }
+}

@@ -15,6 +15,7 @@ namespace Cinemon.Api.Endpoints
                 .RequireAuthorization(policy =>policy.RequireRole("Admin"));
 
             group.MapGet("/search", BuscarPeliculas);
+            group.MapGet("/{id:int}", ObtenerPelicula);
         }
 
         private static async Task<IResult> BuscarPeliculas([FromQuery] string query,ISender sender,CancellationToken cancellationToken)
@@ -27,6 +28,17 @@ namespace Cinemon.Api.Endpoints
                 new BuscarPeliculasTmdbQuery(query),cancellationToken);
 
             return Results.Ok(result);
+        }
+
+        private static async Task<IResult> ObtenerPelicula(int id,ISender sender, CancellationToken cancellationToken)
+        {
+            var pelicula = await sender.Send(
+                new ObtenerPeliculaTmdbQuery(id),
+                cancellationToken);
+
+            return pelicula is not null
+                ? Results.Ok(pelicula)
+                : Results.NotFound();
         }
     }
 }

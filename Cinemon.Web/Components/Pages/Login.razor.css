@@ -1,0 +1,71 @@
+.login-container {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+/* La clase vive en el elemento raíz del RadzenCard (subcomponente) */
+::deep .cinemon-login-panel {
+    background: #0F2D3A;
+    border: 1px solid #1E6F7D;
+    border-radius: 12px;
+    max-width: 420px;
+    width: 100%;
+    padding: 2rem;
+}
+
+.cinemon-title {
+    color: #E7F3F2;
+    font-weight: 700;
+}
+
+.cinemon-muted {
+    color: #8AB8BB;
+    font-size: 0.9rem;
+}
+
+.cinemon-label {
+    display: block;
+    color: #E7F3F2;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.35rem;
+}
+
+/* Los inputs son subcomponentes Radzen (requieren ::deep) */
+::deep .cinemon-input {
+    width: 100%;
+    /*background: #08121A;*/
+    color: #E7F3F2;
+    border: 1px solid #1E6F7D;
+    border-radius: 8px;
+}
+
+::deep .cinemon-input::placeholder {
+    color: #5A7A7F;
+}
+
+::deep .cinemon-input .rz-textbox {
+    background: transparent;
+}
+
+ Sin resplandor al enfocar o seleccionar texto dentro de los inputs.
+   El glow viene del box-shadow que Radzen aplica en :focus y del
+   ::selection por defecto del navegador. 
+::deep .cinemon-input:focus,
+::deep .cinemon-input:focus-visible,
+::deep .cinemon-input .rz-textbox:focus,
+::deep .cinemon-input .rz-textbox.rz-state-focused {
+    outline: none;
+    box-shadow: none;
+    border-color: #1E6F7D;
+}
+
+::deep .cinemon-input::selection,
+::deep .cinemon-input .rz-textbox::selection,
+::deep .cinemon-input input::selection {
+    background: transparent;
+    color: inherit;
+}

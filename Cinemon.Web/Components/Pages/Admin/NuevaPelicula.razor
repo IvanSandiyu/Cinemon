@@ -355,20 +355,30 @@
         }
     }
 
-    private void SeleccionarTmdb(TmdbMovieDto pelicula)
+    private async Task SeleccionarTmdb(TmdbMovieDto pelicula)
     {
         _tmdbSeleccionado = pelicula;
-
         _titulo = pelicula.Title;
         _sinopsis = pelicula.Overview;
-
-        if (pelicula.ReleaseDate.HasValue) {
-            _fechaEstreno = pelicula.ReleaseDate.Value;
-        }
-
-        _posterUrl = GetTmdbPosterUrl(pelicula.PosterPath);
+        _fechaEstreno = pelicula.ReleaseDate ?? DateTime.Today;
 
         _resultadosTmdb = [];
+
+        try {
+            var detalle = await TmdbService.ObtenerDetalleAsync(pelicula.Id);
+
+            if (detalle is null)
+                return;
+
+            if (detalle.Runtime.HasValue)
+                _duracion = detalle.Runtime.Value;
+
+            if (!string.IsNullOrWhiteSpace(detalle.Certificacion))
+                _clasificacion = NormalizarClasificacion(detalle.Certificacion);
+        } catch {
+            // La película ya fue seleccionada.
+            // Si TMDB falla, dejamos que el administrador complete estos campos manualmente.
+        }
     }
 
     private static string GetTmdbPosterUrl(string? posterPath)
@@ -451,5 +461,20 @@
         if (!_generosSeleccionados.Add(generoId)) {
             _generosSeleccionados.Remove(generoId);
         }
+    }
+
+    private static string NormalizarClasificacion(string certification)
+    {
+        return certification.Trim().ToUpperInvariant() switch
+        {
+            "ATP" => "ATP",
+            "13" => "+13",
+            "16" => "+16",
+            "18" => "+18",
+            "+13" => "+13",
+            "+16" => "+16",
+            "+18" => "+18",
+            _ => certification
+        };
     }
 }

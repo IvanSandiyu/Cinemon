@@ -1,0 +1,118 @@
+.cinemon-account-icon {
+    color: #E7F3F2;
+    font-size: 1.6rem;
+}
+
+/* ===== Menú de cuenta (usuario logueado) ===== */
+.account-menu {
+    position: relative;
+}
+
+.account-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    background: none;
+    color: #E7F3F2;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.account-trigger:hover {
+    color: #7BC6C9;
+    border-color: rgba(123, 198, 201, 0.4);
+    background-color: rgba(123, 198, 201, 0.08);
+}
+
+.account-trigger:focus-visible {
+    outline: 2px solid #7BC6C9;
+    outline-offset: 2px;
+}
+
+.account-name {
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.account-trigger .cinemon-account-icon {
+    font-size: 1.35rem;
+}
+
+.cinemon-account-caret {
+    color: #8AB8BB;
+    font-size: 1.1rem;
+}
+
+.account-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 50;
+    min-width: 220px;
+    background: #0F2D3A;
+    border: 1px solid #1E6F7D;
+    border-radius: 10px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    animation: accountDropdownIn 0.15s ease;
+}
+
+@keyframes accountDropdownIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.account-dropdown-header {
+    padding: 12px 14px;
+    border-bottom: 1px solid #1E6F7D;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.account-dropdown-header strong {
+    color: #E7F3F2;
+    font-size: 0.9rem;
+}
+
+.account-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 12px 14px;
+    background: none;
+    border: none;
+    color: #E7F3F2;
+    font-size: 0.9rem;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.account-dropdown-item:hover {
+    background-color: rgba(123, 198, 201, 0.12);
+    color: #7BC6C9;
+}
+
+.account-dropdown-item .rzi {
+    color: #8AB8BB;
+    font-size: 1.15rem;
+}
+
+.account-dropdown-item:hover .rzi {
+    color: #7BC6C9;
+}

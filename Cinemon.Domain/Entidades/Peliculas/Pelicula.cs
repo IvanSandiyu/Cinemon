@@ -73,12 +73,19 @@ namespace Cinemon.Domain.Entidades.Peliculas
             PosterUrl = posterUrl;
             TrailerUrl = trailerUrl;
         }
-
+        //Vincula posters
         public void AsignarTmdb(int tmdbId,string? posterPath,string? backdropPath)
         {
             TmdbId = tmdbId;
             TmdbPosterPath = posterPath;
             TmdbBackdropPath = backdropPath;
+        }
+        //Vincula sipnosis,duracion
+        public void ActualizarDatosDesdeTmdb(string sinopsis,int? duracion)
+        {
+            Sinopsis = sinopsis;
+            if (duracion.HasValue)
+                Duracion = duracion.Value;
         }
     }
 }

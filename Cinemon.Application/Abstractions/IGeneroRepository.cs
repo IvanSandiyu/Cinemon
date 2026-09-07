@@ -12,5 +12,9 @@ namespace Cinemon.Application.Abstractions
         Task<bool> ExistAllAsync(IReadOnlyCollection<int> generoIds,CancellationToken cancellationToken);
 
         Task<IReadOnlyCollection<Genero>> ObtenerTodosAsync(CancellationToken cancellationToken);
+
+        Task<IReadOnlyCollection<Genero>> ObtenerPorNombresAsync(IReadOnlyCollection<string> nombres, CancellationToken cancellationToken);
+
+        Task<IReadOnlyCollection<Genero>> ObtenerOCrearPorNombresAsync(IReadOnlyCollection<string> nombres, CancellationToken cancellationToken);
     }
 }

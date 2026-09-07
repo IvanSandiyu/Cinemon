@@ -19,7 +19,7 @@ namespace Cinemon.Infrastructure.ExternalServices.Tmdb
             _httpClient = httpClient;
         }
 
-        public async Task<IReadOnlyCollection<TmdbMovieDto>> BuscarPeliculasAsync(string query,CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<TmdbMovieDto>> BuscarPeliculasAsync(string query, CancellationToken cancellationToken)
         {
             var response = await _httpClient.GetFromJsonAsync<TmdbMovieSearchResponse>(
                 $"search/movie?query={Uri.EscapeDataString(query)}&language=es-AR",
@@ -28,16 +28,17 @@ namespace Cinemon.Infrastructure.ExternalServices.Tmdb
             if (response is null)
                 return [];
 
-            return response.Results
-                .Select(movie => new TmdbMovieDto(
+            return response.Results.Select(movie => new TmdbMovieDto(
                     movie.Id,
                     movie.Title,
                     movie.Overview,
                     movie.PosterPath,
                     movie.BackdropPath,
                     ParseReleaseDate(movie.ReleaseDate),
-                    movie.Runtime,
-                    movie.Certificacion)).ToList();
+                    null,
+                    null,
+                    []))
+                .ToList();
         }
 
         private static DateTime? ParseReleaseDate(string? releaseDate)
@@ -50,14 +51,17 @@ namespace Cinemon.Infrastructure.ExternalServices.Tmdb
 
             return null;
         }
-        public async Task<TmdbMovieDto?> ObtenerPeliculaAsync(int tmdbId,CancellationToken cancellationToken)
+        public async Task<TmdbMovieDto?> ObtenerPeliculaAsync(int tmdbId, CancellationToken cancellationToken)
         {
             var movie = await _httpClient.GetFromJsonAsync<TmdbMovieResponse>(
-                $"movie/{tmdbId}?language=es-AR",
-                cancellationToken);
+                $"movie/{tmdbId}?language=es-AR&append_to_response=release_dates",cancellationToken);
 
             if (movie is null)
                 return null;
+
+            var generos = movie.Generos
+                ?.Select(x => x.Nombre)
+                .ToList() ?? [];
 
             return new TmdbMovieDto(
                 movie.Id,
@@ -67,7 +71,8 @@ namespace Cinemon.Infrastructure.ExternalServices.Tmdb
                 movie.BackdropPath,
                 ParseReleaseDate(movie.ReleaseDate),
                 movie.Runtime,
-                movie.Certificacion);
+                null,
+                generos);
         }
 
         public string? ObtenerPosterUrl(string? posterPath)

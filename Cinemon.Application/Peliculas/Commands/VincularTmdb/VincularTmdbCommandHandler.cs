@@ -13,14 +13,16 @@ namespace Cinemon.Application.Peliculas.Commands.VincularTmdb
     {
         private readonly IPeliculaRepository _peliculaRepository;
         private readonly ITmdbService _tmdbService;
+        private readonly IGeneroRepository _generoRepository;
 
-        public VincularTmdbCommandHandler(IPeliculaRepository peliculaRepository,ITmdbService tmdbService)
+        public VincularTmdbCommandHandler(IPeliculaRepository peliculaRepository,ITmdbService tmdbService, IGeneroRepository generoRepository)
         {
             _peliculaRepository = peliculaRepository;
             _tmdbService = tmdbService;
+            _generoRepository = generoRepository;
         }
 
-        public async Task Handle(VincularTmdbCommand request,CancellationToken cancellationToken)
+        public async Task Handle(VincularTmdbCommand request, CancellationToken cancellationToken)
         {
             var pelicula = await _peliculaRepository.ObtenerPorIdAsync(
                 request.PeliculaId,
@@ -38,10 +40,26 @@ namespace Cinemon.Application.Peliculas.Commands.VincularTmdb
                 throw new KeyNotFoundException(
                     "La película no existe en TMDB.");
 
-            pelicula.AsignarTmdb(tmdbMovie.Id,tmdbMovie.PosterPath,tmdbMovie.BackdropPath);
+            var generos = await _generoRepository.ObtenerOCrearPorNombresAsync(
+                tmdbMovie.Generos,
+                cancellationToken);
+
+            var generoIds = generos
+                .Select(x => x.Id)
+                .ToList();
+
+            pelicula.AsignarTmdb(
+                tmdbMovie.Id,
+                tmdbMovie.PosterPath,
+                tmdbMovie.BackdropPath);
+
+            pelicula.ActualizarDatosDesdeTmdb(
+                tmdbMovie.Overview,
+                tmdbMovie.Runtime);
 
             await _peliculaRepository.UpdateAsync(
                 pelicula,
+                generoIds,
                 cancellationToken);
         }
     }

@@ -6,5 +6,8 @@
      string Overview,
      string? PosterPath,
      string? BackdropPath,
-     DateTime? ReleaseDate);
+     DateTime? ReleaseDate,
+     int? Runtime,
+     string? Certificacion,
+     IReadOnlyCollection<string> Generos);
 }

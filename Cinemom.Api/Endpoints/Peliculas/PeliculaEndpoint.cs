@@ -90,7 +90,7 @@ namespace Cinemon.Api.Endpoints.Peliculas
 
             return Results.NoContent();
         }
-
+       
         private static async Task<IResult> ActivarPeliculas(int id, ISender sender, CancellationToken cancellationToken)
         {
             var cambiada = await sender.Send(
@@ -111,8 +111,7 @@ namespace Cinemon.Api.Endpoints.Peliculas
 
         private static async Task<IResult> VincularTmdb(int id, VincularTmdbRequest request, ISender sender, CancellationToken cancellationToken)
         {
-            await sender.Send(
-                new VincularTmdbCommand(id,request.TmdbId),cancellationToken);
+            await sender.Send(new VincularTmdbCommand(id,request.TmdbId),cancellationToken);
 
             return Results.NoContent();
         }

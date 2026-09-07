@@ -9,4 +9,5 @@ using System.Threading.Tasks;
 namespace Cinemon.Application.Tmdb.Queries.BuscarPeliculasTmdb
 {
     public sealed record BuscarPeliculasTmdbQuery(string Query) : IRequest<IReadOnlyCollection<TmdbMovieDto>>;
+    public sealed record ObtenerPeliculaTmdbQuery(int TmdbId) : IRequest<TmdbMovieDto?>;
 }

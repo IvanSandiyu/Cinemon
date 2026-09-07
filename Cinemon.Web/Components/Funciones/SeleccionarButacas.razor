@@ -1,9 +1,13 @@
 @page "/funciones/{FuncionId:int}/butacas"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@implements IDisposable
 @using Cinemon.Web.Models.DTOs
 @using Cinemon.Web.Services
+@using Microsoft.AspNetCore.WebUtilities
 
 @inject FuncionApiService FuncionService
 @inject ButacaApiService ButacaService
+@inject AuthService Auth
 @inject NavigationManager Navigation
 
 <PageTitle>Seleccionar butacas | Cinemon</PageTitle>
@@ -14,80 +18,121 @@
     </div>
 } else if (_funcion is null) {
     <RadzenAlert AlertStyle="AlertStyle.Danger">
-        No se encontr� la funci�n.
+        No se encontró la función.
     </RadzenAlert>
 } else {
-    <h4 class="cinemon-title mb-2">Seleccion� tus butacas</h4>
+
+    <h4 class="cinemon-title mb-2">Seleccioná tus butacas</h4>
 
     <p class="cinemon-muted mb-4">
         Sala @_funcion.SalaId - @_funcion.FechaHoraInicio.ToString("dd/MM/yyyy HH:mm")
     </p>
 
-    <RadzenCard class="cinemon-panel">
+    <div class="row g-3">
 
-        <h6 class="text-center cinemon-screen-label mb-4">PANTALLA</h6>
-        <div class="screen"></div>
+        <div class="col-12 col-lg-8">
 
-        <div class="seat-container">
+            <RadzenCard class="cinemon-panel cinemon-map-panel">
 
-            @foreach (var grupo in _butacas.GroupBy(x => x.Fila)) {
-                <div class="seat-row">
+                <h6 class="text-center cinemon-screen-label mb-4">PANTALLA</h6>
+                <div class="screen"></div>
 
-                    <span class="row-label">@grupo.Key</span>
+                <div class="seat-container">
 
-                    @foreach (var butaca in grupo) {
-                        var seleccionada =
-                        _butacasSeleccionadas.Contains(butaca.Id);
+                    @foreach (var grupo in _butacas.GroupBy(x => x.Fila)) {
+                        <div class="seat-row">
 
-                        <button type="button"
-                                class="seat @(butaca.Ocupada ? "occupied" : seleccionada ? "selected" : "")"
-                                disabled="@butaca.Ocupada"
-                                @onclick="() => AlternarButaca(butaca.Id)">
+                            <span class="row-label">@grupo.Key</span>
 
-                            @butaca.Numero
+                            @foreach (var butaca in grupo) {
+                                var seleccionada =
+                                    _butacasSeleccionadas.Contains(butaca.Id);
 
-                        </button>
+                                <button type="button"
+                                        class="seat @(butaca.Ocupada ? "occupied" : seleccionada ? "selected" : "")"
+                                        disabled="@butaca.Ocupada"
+                                        @onclick="() => AlternarButaca(butaca.Id)">
+
+                                    @butaca.Numero
+
+                                </button>
+                            }
+
+                        </div>
                     }
 
                 </div>
-            }
+
+            </RadzenCard>
 
         </div>
 
-        <hr class="my-4 cinemon-hr" />
+        <div class="col-12 col-lg-4">
 
-        <div class="d-flex justify-content-center gap-4 mb-3">
-            <div class="legend-item">
-                <span class="legend-seat"></span>
-                <span class="cinemon-muted">Disponible</span>
-            </div>
-            <div class="legend-item">
-                <span class="legend-seat selected"></span>
-                <span class="cinemon-muted">Seleccionada</span>
-            </div>
-            <div class="legend-item">
-                <span class="legend-seat occupied"></span>
-                <span class="cinemon-muted">Ocupada</span>
-            </div>
+            <RadzenCard class="cinemon-panel cinemon-side-panel">
+
+                <h6 class="cinemon-subtitle2 mb-3">Tu selección</h6>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="cinemon-muted">Tiempo restante</span>
+                    <span class="cinemon-timer @(_tiempoRestante <= TimeSpan.FromMinutes(1) ? "danger" : "")">@TiempoRestante</span>
+                </div>
+
+                <hr class="cinemon-hr my-3" />
+
+                @if (_tiempoAgotado)
+                {
+                    <RadzenAlert AlertStyle="AlertStyle.Danger">
+                        El tiempo para elegir butacas expiró. Volvé a seleccionarlas.
+                    </RadzenAlert>
+                }
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="cinemon-muted">Butacas</span>
+                    <span class="cinemon-subtitle2">@_butacasSeleccionadas.Count</span>
+                </div>
+
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="cinemon-muted">Total</span>
+                    <span class="cinemon-price">$@(_funcion.Precio * _butacasSeleccionadas.Count)</span>
+                </div>
+
+                <hr class="cinemon-hr my-3" />
+
+                <div class="d-flex flex-column gap-2 mb-3">
+                    <div class="legend-item">
+                        <span class="legend-seat"></span>
+                        <span class="cinemon-muted">Disponible</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-seat selected"></span>
+                        <span class="cinemon-muted">Seleccionada</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-seat occupied"></span>
+                        <span class="cinemon-muted">Ocupada</span>
+                    </div>
+                </div>
+
+                <RadzenButton Text="Continuar"
+                              ButtonStyle="ButtonStyle.Primary"
+                              Variant="Variant.Filled"
+                              FullWidth="true"
+                              Disabled="@(!_butacasSeleccionadas.Any())"
+                              Click="Continuar" />
+
+                <RadzenButton Text="Volver"
+                              ButtonStyle="ButtonStyle.Secondary"
+                              Variant="Variant.Outlined"
+                              FullWidth="true"
+                              class="mt-2"
+                              Click="Volver" />
+
+            </RadzenCard>
+
         </div>
 
-    </RadzenCard>
-
-    <RadzenCard class="cinemon-panel">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-            <div>
-                <div class="cinemon-subtitle2">Butacas seleccionadas: @_butacasSeleccionadas.Count</div>
-                <div class="cinemon-price">Total: $@(_funcion.Precio * _butacasSeleccionadas.Count)</div>
-            </div>
-
-            <RadzenButton Text="Continuar"
-                          ButtonStyle="ButtonStyle.Primary"
-                          Variant="Variant.Filled"
-                          Size="ButtonSize.Medium"
-                          Disabled="@(!_butacasSeleccionadas.Any())"
-                          Click="Continuar" />
-        </div>
-    </RadzenCard>
+    </div>
 
 }
 
@@ -101,8 +146,29 @@
     private readonly HashSet<int> _butacasSeleccionadas = [];
     private bool _cargando = true;
 
+    private readonly CancellationTokenSource _cts = new();
+    private DateTime _limiteSeleccion;
+    private TimeSpan _tiempoRestante = TimeSpan.FromMinutes(10);
+    private bool _tiempoAgotado;
+
+    private string TiempoRestante =>
+        $"{(int)_tiempoRestante.TotalMinutes:D2}:{_tiempoRestante.Seconds:D2}";
+
     protected override async Task OnInitializedAsync()
     {
+        await Auth.CargarAsync();
+
+        if (!Auth.EstaAutenticado) {
+            var returnUrl = Uri.EscapeDataString(
+                $"/funciones/{FuncionId}/butacas");
+
+            Navigation.NavigateTo(
+                $"/login?returnUrl={returnUrl}");
+
+            _cargando = false;
+            return;
+        }
+
         try {
             var funciones =
                 await FuncionService.ObtenerTodasAsync();
@@ -114,13 +180,74 @@
                 return;
 
             _butacas = await ButacaService.ObtenerPorFuncionAsync(FuncionId);
+
+            PreacargarButacas();
+
+            _limiteSeleccion = DateTime.Now.AddMinutes(10);
+            _ = TemporizadorAsync();
         } finally {
             _cargando = false;
         }
     }
 
+    private void PreacargarButacas()
+    {
+        var uri = Navigation.ToAbsoluteUri(
+            Navigation.Uri);
+
+        if (!QueryHelpers.ParseQuery(uri.Query)
+            .TryGetValue("butacas", out var value))
+            return;
+
+        var ids = value
+            .ToString()
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(int.Parse);
+
+        var ocupadas = _butacas
+            .Where(x => x.Ocupada)
+            .Select(x => x.Id)
+            .ToHashSet();
+
+        foreach (var id in ids) {
+            if (!ocupadas.Contains(id))
+                _butacasSeleccionadas.Add(id);
+        }
+    }
+
+    private async Task TemporizadorAsync()
+    {
+        try {
+            while (!_cts.IsCancellationRequested) {
+                await Task.Delay(1000, _cts.Token);
+
+                _tiempoRestante =
+                    _limiteSeleccion - DateTime.Now;
+
+                if (_tiempoRestante <= TimeSpan.Zero) {
+                    _tiempoRestante = TimeSpan.Zero;
+                    _tiempoAgotado = true;
+                    _butacasSeleccionadas.Clear();
+                }
+
+                await InvokeAsync(StateHasChanged);
+            }
+        } catch (OperationCanceledException) {
+            // Componente desmontado.
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+    }
+
     private void AlternarButaca(int butacaId)
     {
+        if (_tiempoAgotado)
+            return;
+
         var butaca = _butacas.FirstOrDefault(x => x.Id == butacaId);
 
         if (butaca is null || butaca.Ocupada)
@@ -139,5 +266,11 @@
 
         Navigation.NavigateTo(
             $"/funciones/{FuncionId}/confirmar?butacas={butacas}");
+    }
+
+    private void Volver()
+    {
+        Navigation.NavigateTo(
+            $"/peliculas/{_funcion?.PeliculaId}");
     }
 }

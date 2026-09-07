@@ -1,0 +1,93 @@
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@implements IDisposable
+@using Cinemon.Web.Services
+@inject AuthService Auth
+@inject NavigationManager Navigation
+
+@if (!Auth.EstaAutenticado)
+{
+    <RadzenLink Path="/login" Icon="login" class="app-nav-link login-cta">Ingresar</RadzenLink>
+}
+else
+{
+    <div class="account-menu"
+         @onclick:stopPropagation="true"
+         @onmouseleave="CerrarMenu"
+         @onblur="CerrarMenu">
+        <button type="button"
+                class="account-trigger"
+                @onclick="AlternarMenu"
+                aria-haspopup="true"
+                aria-expanded="_menuAbierto">
+            <span class="account-name">@Auth.NombreApellido</span>
+            <RadzenIcon Icon="account_circle" class="cinemon-account-icon" />
+            <RadzenIcon Icon="@(_menuAbierto ? "arrow_drop_up" : "arrow_drop_down")" class="cinemon-account-caret" />
+        </button>
+
+        @if (_menuAbierto) {
+            <div class="account-dropdown">
+                <div class="account-dropdown-header">
+                    <strong>@Auth.NombreApellido</strong>
+                    <span class="cinemon-muted">@(Auth.Rol == 2 ? "Administrador" : "Cliente")</span>
+                </div>
+                @if(Auth.Rol == 2)
+                {
+                    <button type="button" @onclick="PanelAdmin">Panel administrador</button>
+                }
+                <button type="button" class="account-dropdown-item"
+                        @onclick="CerrarSesion">
+                    <RadzenIcon Icon="logout" />
+                    <span>Cerrar sesión</span>
+                </button>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private bool _menuAbierto;
+
+    protected override void OnInitialized()
+    {
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Auth.CargarAsync();
+    }
+
+    private async void OnLocationChanged(
+        object? sender,
+        Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        await Auth.CargarAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void AlternarMenu()
+    {
+        _menuAbierto = !_menuAbierto;
+    }
+
+    private void CerrarMenu()
+    {
+        _menuAbierto = false;
+    }
+    private void PanelAdmin()
+    {
+         Navigation.NavigateTo("/admin");
+    }
+
+    private async Task CerrarSesion()
+    {
+        await Auth.LogoutAsync();
+        _menuAbierto = false;
+        Navigation.NavigateTo("/", forceLoad: false);
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+}

@@ -14,5 +14,6 @@ namespace Cinemon.Application.DTOs.Tmdb
     string? BackdropPath,
     DateTime? ReleaseDate,
     int? Runtime,
-    string? Certificacion);
+    string? Certificacion,
+    IReadOnlyCollection<string> Generos);
 }
