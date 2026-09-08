@@ -24,12 +24,5 @@ namespace Cinemon.Application.Tmdb.Queries.BuscarPeliculasTmdb
                 request.Query,
                 cancellationToken);
         }
-
-        public async Task<TmdbMovieDto?> Handle(ObtenerPeliculaTmdbQuery request, CancellationToken cancellationToken)
-        {
-            return await _tmdbService.ObtenerPeliculaAsync(
-                request.TmdbId,
-                cancellationToken);
-        }
     }
 }

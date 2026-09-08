@@ -5,7 +5,7 @@
     string Sinopsis,
     int Duracion,
     DateTime FechaEstreno,
-    string ClasificacionEdad,
+    int ClasificacionEdad,
     string PosterUrl,
     string TrailerUrl,
     IReadOnlyCollection<int> GeneroIds);

@@ -1,4 +1,9 @@
-﻿<h3>Reservas</h3>
+﻿@page "/admin/reservas"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<AdminGuard>
+<h3>Reservas</h3>
+</AdminGuard>
 
 @code {
 

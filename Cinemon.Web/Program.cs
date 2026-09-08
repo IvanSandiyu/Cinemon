@@ -15,6 +15,7 @@ builder.Services.AddHttpClient("CinemonApi", client =>
 
 builder.Services.AddScoped<PeliculaApiService>();
 builder.Services.AddScoped<FuncionApiService>();
+builder.Services.AddScoped<SalaApiService>();
 builder.Services.AddScoped<ButacaApiService>();
 builder.Services.AddScoped<ReservaApiService>();
 builder.Services.AddScoped<AuthService>();

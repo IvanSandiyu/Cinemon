@@ -9,58 +9,198 @@
 <PageTitle>Ingresar | Cinemon</PageTitle>
 
 <div class="login-container">
-    <RadzenCard class="cinemon-login-panel">
+    <div class="login-card">
 
-        <div class="text-center mb-4">
-            <h3 class="cinemon-title mb-1">Bienvenido a Cinemon</h3>
-            <p class="cinemon-muted mb-0">Ingresá con tu cuenta para continuar.</p>
-        </div>
+        <!-- Pills navs -->
+        <ul class="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button type="button"
+                        class="nav-link @(_tab == "login" ? "active" : "")"
+                        id="tab-login"
+                        role="tab"
+                        aria-selected="@(_tab == "login")"
+                        @onclick="IrAlLogin">Ingresar</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button type="button"
+                        class="nav-link @(_tab == "register" ? "active" : "")"
+                        id="tab-register"
+                        role="tab"
+                        aria-selected="@(_tab == "register")"
+                        @onclick="IrAlRegistro">Registrarse</button>
+            </li>
+        </ul>
 
-        <RadzenStack Gap="16px">
+        <!-- Pills content -->
+        <div class="tab-content">
 
-            <div class="login-field">
-                <label class="cinemon-label">Email</label>
-                <RadzenTextBox @bind-Value="_email"
-                               Class="cinemon-input"
-                               Placeholder="tucorreo@ejemplo.com" />
-            </div>
+            @if (_tab == "login")
+            {
+                <div class="tab-pane fade show active" id="pills-login" role="tabpanel" aria-labelledby="tab-login">
+                    <form @onsubmit="IniciarSesion" novalidate>
 
-            <div class="login-field">
-                <label class="cinemon-label">Contraseña</label>
-                <RadzenPassword @bind-Value="_password"
-                                Class="cinemon-input"
-                                Placeholder="••••••••" />
-            </div>
+                        <div class="text-center mb-3">
+                            <p class="login-muted">Ingresar con:</p>
+                            <button type="button" class="btn pw-social">@(new MarkupString("<i class=\"fab fa-facebook-f\"></i>"))</button>
+                            <button type="button" class="btn pw-social">@(new MarkupString("<i class=\"fab fa-google\"></i>"))</button>
+                            <button type="button" class="btn pw-social">@(new MarkupString("<i class=\"fab fa-twitter\"></i>"))</button>
+                            <button type="button" class="btn pw-social">@(new MarkupString("<i class=\"fab fa-github\"></i>"))</button>
+                        </div>
 
-            @if (!string.IsNullOrWhiteSpace(_error)) {
-                <RadzenAlert AlertStyle="AlertStyle.Danger" class="mt-1">
+                        <p class="text-center login-or">o:</p>
+
+                        <div class="mb-3">
+                            <label class="login-label" for="loginName">Email</label>
+                            <input type="email"
+                                   id="loginName"
+                                   class="login-input"
+                                   placeholder="tucorreo@ejemplo.com"
+                                   @bind="Email"
+                                   @bind:event="oninput" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="login-label" for="loginPassword">Contraseña</label>
+                            <input type="password"
+                                   id="loginPassword"
+                                   class="login-input"
+                                   placeholder="••••••••"
+                                   @bind="RegPassword"
+                                   @bind:event="oninput" />
+                        </div>
+
+                        <div class="row pos-login-meta">
+                            <div class="col-md-6 d-flex align-items-center">
+                                <input type="checkbox"
+                                       id="loginCheck"
+                                       class="form-check-input"
+                                       @bind="Recordarme" />
+                                <label class="form-check-label login-muted ms-2 mb-0" for="loginCheck">Recordarme</label>
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-md-end align-items-center">
+                                <a href="#" @onclick:preventDefault @onclick="MostrarInfoOlvido" class="login-link">Olvido su contraseña?</a>
+                            </div>
+                        </div>
+
+                        <button type="submit"
+                                class="btn login-submit"
+                                disabled="@_procesando">
+                            @(_procesando ? "Ingresando..." : "Ingresar")
+                        </button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <div class="tab-pane fade show active" id="pills-register" role="tabpanel" aria-labelledby="tab-register">
+                    <form @onsubmit="Registrar" novalidate>
+
+                        <div class="text-center mb-3">
+                            <p class="login-muted">Ingresar con:</p>
+                            <button type="button" class="btn pw-social">@(new MarkupString("<i class=\"fab fa-facebook-f\"></i>"))</button>
+                            <button type="button" class="btn pw-social">@(new MarkupString("<i class=\"fab fa-google\"></i>"))</button>
+                            <button type="button" class="btn pw-social">@(new MarkupString("<i class=\"fab fa-twitter\"></i>"))</button>
+                            <button type="button" class="btn pw-social">@(new MarkupString("<i class=\"fab fa-github\"></i>"))</button>
+                        </div>
+
+                        <p class="text-center login-or">o:</p>
+
+                        <div class="mb-3">
+                            <label class="login-label" for="registerName">Nombre</label>
+                            <input type="text"
+                                   id="registerName"
+                                   class="login-input"
+                                   placeholder="Nombre y apellido"
+                                   @bind="RegNombre"
+                                   @bind:event="oninput" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="login-label" for="registerEmail">Email</label>
+                            <input type="email"
+                                   id="registerEmail"
+                                   class="login-input"
+                                   placeholder="tucorreo@ejemplo.com"
+                                   @bind="RegEmail"
+                                   @bind:event="oninput" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="login-label" for="registerPassword">Contraseña</label>
+                            <input type="password"
+                                   id="registerPassword"
+                                   class="login-input"
+                                   placeholder="Mínimo 6 caracteres"
+                                   @bind="RegPassword"
+                                   @bind:event="oninput" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="login-label" for="registerRepeatPassword">Repita su contraseña</label>
+                            <input type="password"
+                                   id="registerRepeatPassword"
+                                   class="login-input"
+                                   placeholder="Repetí la contraseña"
+                                   @bind="RegPasswordRep"
+                                   @bind:event="oninput" />
+                        </div>
+
+<button type="submit"
+                                class="btn login-submit"
+                                disabled="@_procesando">
+                            @(_procesando ? "Registrando..." : "Registrarse")
+                        </button>
+
+                    </form>
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(_error))
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Danger" class="mt-3">
                     @_error
                 </RadzenAlert>
             }
 
-            <RadzenButton Text="@(_procesando ? "Ingresando..." : "Iniciar sesión")"
-                          ButtonStyle="ButtonStyle.Primary"
-                          Variant="Variant.Filled"
-                          FullWidth="true"
-                          Disabled="_procesando"
-                          Click="IniciarSesion" />
+            @if (!string.IsNullOrWhiteSpace(_info))
+            {
+                <RadzenAlert AlertStyle="AlertStyle.Info" class="mt-3">
+                    @_info
+                </RadzenAlert>
+            }
 
-            <div class="text-center mt-2">
-                <RadzenLink Text="Volver al inicio" Path="/" class="cinemon-muted" />
-            </div>
+        </div>
 
-        </RadzenStack>
-
-    </RadzenCard>
+    </div>
 </div>
 
 @code {
 
-    private string _email = "admin@cinemon.com";
-    private string _password = "";
+
+
+
+
+
+
+    private string _tab = "login";
     private bool _procesando;
     private string? _error;
+    private string? _info;
     private string? _returnUrl;
+
+
+
+
+
+
+
+    private string Email { get; set; } = "";
+    private bool Recordarme { get; set; } = true;
+
+    private string RegNombre { get; set; } = "";
+    private string RegEmail { get; set; } = "";
+    private string RegPassword { get; set; } = "";
+    private string RegPasswordRep { get; set; } = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -83,6 +223,20 @@
         }
     }
 
+    private void CambiarTab(string tab)
+    {
+        _tab = tab;
+        _error = null;
+        _info = null;
+    }
+
+    private void IrAlLogin() => CambiarTab("login");
+
+    private void IrAlRegistro() => CambiarTab("register");
+
+    private void MostrarInfoOlvido()
+        => _info = "La recuperación de contraseña no está disponible todavía.";
+
     private async Task IniciarSesion()
     {
         _error = null;
@@ -90,8 +244,9 @@
 
         try {
             var ok = await Auth.LoginAsync(
-                _email,
-                _password);
+                Email,
+                RegPassword,
+                Recordarme);
 
             if (ok) {
                 Navigation.NavigateTo(_returnUrl, forceLoad: false);
@@ -99,6 +254,57 @@
             }
 
             _error = "Email o contraseña incorrectos.";
+        } catch {
+            _error = "No se pudo conectar con el servidor.";
+        } finally {
+            _procesando = false;
+        }
+    }
+
+    private async Task Registrar()
+    {
+        _error = null;
+
+        if (string.IsNullOrWhiteSpace(RegNombre)) {
+            _error = "Ingresá tu nombre.";
+            return;
+        }
+
+        if (RegPassword.Length < 6) {
+            _error = "La contraseña debe tener al menos 6 caracteres.";
+            return;
+        }
+
+        if (RegPassword != RegPasswordRep) {
+            _error = "Las contraseñas no coinciden.";
+            return;
+        }
+
+        _procesando = true;
+
+        try {
+            var error = await Auth.RegistrarAsync(
+                RegNombre,
+                RegEmail,
+                RegPassword);
+
+            if (error is not null) {
+                _error = error;
+                return;
+            }
+
+            // Alta OK: iniciamos sesión automáticamente.
+            var ok = await Auth.LoginAsync(
+                RegEmail,
+                RegPassword,
+                Recordarme);
+
+            if (ok) {
+                Navigation.NavigateTo(_returnUrl, forceLoad: false);
+                return;
+            }
+
+            _error = "Cuenta creada. Iniciá sesión con tu email y contraseña.";
         } catch {
             _error = "No se pudo conectar con el servidor.";
         } finally {

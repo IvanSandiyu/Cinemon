@@ -31,7 +31,7 @@ namespace Cinemon.Application.Peliculas.Queries.ObtenerPeliculas
                     pelicula.Sinopsis,
                     pelicula.Duracion,
                     pelicula.FechaEstreno,
-                    pelicula.ClasificacionEdad.ToString(),
+                    ClasificacionEdadHelper.ParaMostrar(pelicula.ClasificacionEdad),
                     pelicula.PosterUrl,
                     pelicula.TrailerUrl,
                     pelicula.Activa,

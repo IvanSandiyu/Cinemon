@@ -1,0 +1,211 @@
+/* ===== Header ===== */
+.admin-page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.admin-header {
+    margin-bottom: 2rem;
+}
+
+.cinemon-kicker {
+    display: inline-block;
+    color: #7BC6C9;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+}
+
+.admin-title {
+    color: #E7F3F2;
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 0.3rem;
+}
+
+.admin-subtitle {
+    color: #8AB8BB;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* ===== Layout ===== */
+.admin-create-layout {
+    max-width: 780px;
+}
+
+.admin-form-section {
+    padding: 1.5rem;
+    border: 1px solid rgba(30, 111, 125, 0.45);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.admin-form-section-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.admin-form-section-header h2 {
+    margin: 0 0 0.35rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #E7F3F2;
+}
+
+.admin-form-section-header p {
+    margin: 0;
+    color: #8AB8BB;
+    font-size: 0.8rem;
+}
+
+/* ===== Formulario ===== */
+.admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.admin-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.admin-form-field label {
+    color: #9A9FBF;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.admin-form-field input,
+.admin-form-field select {
+    width: 100%;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid rgba(154, 159, 191, 0.14);
+    border-radius: 9px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.025);
+    color: #f5f6ff;
+    font-size: 0.85rem;
+}
+
+.admin-form-field select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237bc6c9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    padding-right: 2.2rem;
+}
+
+.admin-form-field select option {
+    background: #0F2D3A;
+    color: #E7F3F2;
+}
+
+.admin-form-field input:focus,
+.admin-form-field select:focus {
+    border-color: rgba(123, 198, 201, 0.5);
+}
+
+.admin-field-hint {
+    color: #8AB8BB;
+    font-size: 0.72rem;
+}
+
+.admin-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.8rem;
+}
+
+/* ===== Segmented (idioma / formato) ===== */
+.admin-segmented {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.25rem;
+    border: 1px solid rgba(154, 159, 191, 0.14);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.admin-segmented button {
+    flex: 1;
+    padding: 0.6rem 0.75rem;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: #858AA8;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.admin-segmented button:hover {
+    color: #E7F3F2;
+}
+
+.admin-segmented button.selected {
+    background: rgba(123, 198, 201, 0.14);
+    color: #7BC6C9;
+    font-weight: 600;
+}
+
+/* ===== Acciones ===== */
+.admin-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+}
+
+.admin-cancel-button {
+    border-radius: 9px !important;
+    background-color: rgba(255, 255, 255, 0.03) !important;
+    color: #8AB8BB !important;
+    border: 1px solid rgba(123, 198, 201, 0.35) !important;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.admin-cancel-button:hover {
+    background-color: rgba(123, 198, 201, 0.1) !important;
+    border-color: rgba(123, 198, 201, 0.6) !important;
+    color: #E7F3F2 !important;
+}
+
+.admin-form-error {
+    margin-top: 1rem;
+    padding: 0.7rem 0.8rem;
+    border-radius: 8px;
+    background: rgba(200, 70, 90, 0.08);
+    color: #D98591;
+    font-size: 0.8rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 720px) {
+    .admin-form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .admin-page {
+        padding: 1.25rem 1rem;
+    }
+
+    .admin-title {
+        font-size: 1.5rem;
+    }
+
+    .admin-form-section {
+        padding: 1rem;
+    }
+}

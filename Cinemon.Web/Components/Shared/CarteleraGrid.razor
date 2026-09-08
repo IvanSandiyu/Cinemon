@@ -20,7 +20,7 @@ else
 
         @foreach (var (pelicula, index) in _peliculas.Select((p, i) => (p, i)))
         {
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <div class="col-6 col-sm-4 col-md-3 col-lg-3">
                 <div class="cinemon-movie-card reveal"
                      style="@($"--reveal-delay: {Math.Min((index % 6) * 50, 200)}ms;")">
 

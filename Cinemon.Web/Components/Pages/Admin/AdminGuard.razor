@@ -1,0 +1,52 @@
+@using Cinemon.Web.Services
+@inject AuthService Auth
+@inject NavigationManager Navigation
+
+@if (_verificando)
+{
+    <p>Cargando...</p>
+}
+else if (_esAdmin)
+{
+    @ChildContent
+}
+else if (_autenticado)
+{
+    <div class="admin-denied">
+        <RadzenIcon Icon="lock_outline" />
+        <h2>Acceso restringido</h2>
+        <p>Necesitas permisos de administrador para ver esta sección.</p>
+        <RadzenButton Text="Volver al inicio"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Click="@IrAlInicio" />
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private bool _verificando = true;
+    private bool _autenticado;
+    private bool _esAdmin;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _autenticado = await Auth.CargarAsync();
+        _esAdmin = Auth.EstaAutenticado && Auth.Rol == 2;
+        _verificando = false;
+
+        if (!_autenticado) {
+            var destino = $"login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}";
+            Navigation.NavigateTo(destino, forceLoad: true);
+        } else if (!_esAdmin) {
+            // Mostramos el "Acceso restringido" en vez de redirigir.
+        }
+    }
+
+    private void IrAlInicio()
+    {
+        Navigation.NavigateTo("/", forceLoad: false);
+    }
+}

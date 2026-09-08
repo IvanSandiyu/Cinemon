@@ -1,4 +1,9 @@
-﻿<h3>Usuarios</h3>
+﻿@page "/admin/usuarios"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<AdminGuard>
+<h3>Usuarios</h3>
+</AdminGuard>
 
 @code {
 

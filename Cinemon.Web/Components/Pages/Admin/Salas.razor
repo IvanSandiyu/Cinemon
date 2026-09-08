@@ -1,4 +1,9 @@
-﻿<h3>Salas</h3>
+﻿@page "/admin/salas"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<AdminGuard>
+<h3>Salas</h3>
+</AdminGuard>
 
 @code {
 

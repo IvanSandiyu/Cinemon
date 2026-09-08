@@ -72,8 +72,53 @@ namespace Cinemon.Infrastructure.ExternalServices.Tmdb
                 movie.BackdropPath,
                 ParseReleaseDate(movie.ReleaseDate),
                 movie.Runtime,
-                null,
+                ExtractCertificacion(movie.ReleaseDates),
                 generos);
+        }
+
+        private static string? ExtractCertificacion(TmdbReleaseDatesResponse? releaseDates)
+        {
+            var paises = releaseDates?.Results ?? [];
+
+            var argentina = BuscarCertificacion(paises, "AR");
+            if (argentina is not null)
+                return argentina;
+
+            var estadosUnidos = BuscarCertificacion(paises, "US");
+            if (estadosUnidos is not null)
+                return MapearClasificacionUs(estadosUnidos);
+
+            return paises
+                .SelectMany(x => x.ReleaseDates ?? [])
+                .Select(x => x.Certification)
+                .FirstOrDefault(c => !string.IsNullOrWhiteSpace(c));
+        }
+
+        private static string? BuscarCertificacion(
+            IReadOnlyCollection<TmdbCountryRelease> paises,
+            string codigo)
+        {
+            return paises
+                .Where(x => string.Equals(
+                    x.Iso31661,
+                    codigo,
+                    StringComparison.OrdinalIgnoreCase))
+                .SelectMany(x => x.ReleaseDates ?? [])
+                .Select(x => x.Certification)
+                .FirstOrDefault(c => !string.IsNullOrWhiteSpace(c));
+        }
+
+        private static string? MapearClasificacionUs(string certificacion)
+        {
+            return certificacion.Trim().ToUpperInvariant() switch
+            {
+                "G" => "ATP",
+                "PG" => "+13",
+                "PG-13" or "PG13" => "+13",
+                "R" => "+18",
+                "NC-17" or "NC17" => "+18",
+                _ => certificacion
+            };
         }
 
         public string? ObtenerPosterUrl(string? posterPath)

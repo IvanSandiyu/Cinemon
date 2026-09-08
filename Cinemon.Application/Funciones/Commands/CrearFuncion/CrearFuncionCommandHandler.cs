@@ -34,13 +34,6 @@ namespace Cinemon.Application.Funciones.Commands.CrearFuncion
             if (pelicula is null) {
                 throw new NotFoundException(
                     "La película no existe.");
-            }else {
-                pelicula.Activar();
-            }
-
-            if (!pelicula.Activa) {
-                throw new BusinessRuleException(
-                    "La película no está activa.");
             }
 
             var sala = await _salaRepository.ObtenerPorIdAsync(
@@ -72,6 +65,11 @@ namespace Cinemon.Application.Funciones.Commands.CrearFuncion
                 throw new ConflictException(
                     "La sala ya tiene una función programada en ese horario.");
             }
+
+            await _peliculaRepository.CambiarEstadoActivaAsync(
+                request.PeliculaId,
+                true,
+                cancellationToken);
 
             var funcion = new Funcion(
                 request.PeliculaId,

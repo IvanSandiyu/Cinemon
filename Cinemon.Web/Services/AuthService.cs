@@ -64,6 +64,7 @@ namespace Cinemon.Web.Services
         public async Task<bool> LoginAsync(
             string email,
             string password,
+            bool recordar = true,
             CancellationToken cancellationToken = default)
         {
             var request = new
@@ -92,9 +93,80 @@ namespace Cinemon.Web.Services
             NombreApellido = result.NombreApellido;
             Rol = result.Rol;
 
-            await GuardarSesionAsync(cancellationToken);
+            if (recordar) {
+                await GuardarSesionAsync(cancellationToken);
+            }
 
             return true;
+        }
+
+        public async Task<string?> RegistrarAsync(
+            string nombreApellido,
+            string email,
+            string password,
+            CancellationToken cancellationToken = default)
+        {
+            try {
+                var request = new
+                {
+                    NombreApellido = nombreApellido,
+                    Email = email,
+                    Password = password
+                };
+
+                var response = await _httpClient.PostAsJsonAsync(
+                    "api/usuarios",
+                    request,
+                    cancellationToken);
+
+                if (response.IsSuccessStatusCode)
+                    return null;
+
+                return await LeerMensajeErrorAsync(
+                    response,
+                    cancellationToken,
+                    "No se pudo crear la cuenta. Verificá los datos ingresados.");
+            } catch {
+                return "No se pudo conectar con el servidor.";
+            }
+        }
+
+        private static async Task<string> LeerMensajeErrorAsync(
+            HttpResponseMessage response,
+            CancellationToken cancellationToken,
+            string fallback)
+        {
+            try {
+                var contenido = await response.Content
+                    .ReadAsStringAsync(cancellationToken);
+
+                if (string.IsNullOrWhiteSpace(contenido))
+                    return fallback;
+
+                var problema = JsonSerializer.Deserialize<ProblemDetails>(
+                    contenido,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                if (problema is not null &&
+                    !string.IsNullOrWhiteSpace(problema.Title)) {
+                    return problema.Title;
+                }
+
+                if (problema?.Errors is not null) {
+                    var mensaje = string.Join(
+                        " ",
+                        problema.Errors.SelectMany(x => x.Value));
+
+                    if (!string.IsNullOrWhiteSpace(mensaje))
+                        return mensaje;
+                }
+            } catch {
+            }
+
+            return fallback;
         }
 
         public async Task LogoutAsync(
@@ -145,5 +217,9 @@ namespace Cinemon.Web.Services
             int? UsuarioId,
             string? NombreApellido,
             int? Rol);
+
+        private sealed record ProblemDetails(
+            string? Title,
+            IReadOnlyDictionary<string, string[]>? Errors);
     }
 }

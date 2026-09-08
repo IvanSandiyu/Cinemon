@@ -1,7 +1,9 @@
 ﻿@page "/admin"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <PageTitle>Admin | Cinemon</PageTitle>
 
+<AdminGuard>
 <div class="admin-page">
 
     <div class="admin-header reveal">
@@ -72,3 +74,4 @@
     </div>
 
 </div>
+</AdminGuard>

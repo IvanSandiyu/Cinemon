@@ -1,4 +1,5 @@
 ﻿@page "/admin/peliculas"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 @using Cinemon.Web.Models.DTOs
 @using Cinemon.Web.Services
@@ -8,6 +9,7 @@
 
 <PageTitle>Películas | Admin | Cinemon</PageTitle>
 
+<AdminGuard>
 <div class="admin-page">
 
     <div class="admin-header admin-section-header">
@@ -164,6 +166,7 @@
     }
 
 </div>
+</AdminGuard>
 
 @code {
 

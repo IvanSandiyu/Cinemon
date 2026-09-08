@@ -1,5 +1,279 @@
-﻿<h3>Funciones</h3>
+﻿@page "/admin/funciones"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@using Cinemon.Web.Models.DTOs
+@using Cinemon.Web.Services
+
+@inject FuncionApiService FuncionService
+@inject PeliculaApiService PeliculaService
+@inject SalaApiService SalaService
+@inject NavigationManager Navigation
+
+<PageTitle>Funciones | Admin | Cinemon</PageTitle>
+
+<AdminGuard>
+<div class="admin-page">
+
+    <div class="admin-header admin-section-header">
+
+        <div>
+            <span class="cinemon-kicker">Administración</span>
+
+            <h1 class="admin-title">
+                Funciones
+            </h1>
+
+            <p class="admin-subtitle">
+                Programá y administrá los horarios de Cinemon.
+            </p>
+        </div>
+
+        <RadzenButton Text="Nueva función"
+                      Icon="add"
+                      Click="@NuevaFuncion"
+                      ButtonStyle="ButtonStyle.Primary"
+                      class="admin-primary-button" />
+
+    </div>
+
+    @if (_cargando) {
+        <div class="d-flex justify-content-center py-5">
+            <RadzenProgressBarCircular Indeterminate="true" />
+        </div>
+    } else {
+        <div class="admin-toolbar">
+
+            <div class="admin-search">
+                <span class="material-icons">search</span>
+
+                <input type="text"
+                       placeholder="Buscar por película..."
+                       @bind="_busqueda"
+                       @bind:event="oninput" />
+            </div>
+
+            <div class="admin-filters">
+
+                <button class="admin-filter @( _filtro == FiltroFunciones.Todas ? "active" : "")"
+                        @onclick="() => CambiarFiltro(FiltroFunciones.Todas)">
+                    Todas
+                </button>
+
+                <button class="admin-filter @( _filtro == FiltroFunciones.Programadas ? "active" : "")"
+                        @onclick="() => CambiarFiltro(FiltroFunciones.Programadas)">
+                    Programadas
+                </button>
+
+                <button class="admin-filter @( _filtro == FiltroFunciones.Finalizadas ? "active" : "")"
+                        @onclick="() => CambiarFiltro(FiltroFunciones.Finalizadas)">
+                    Finalizadas
+                </button>
+
+                <button class="admin-filter @( _filtro == FiltroFunciones.Canceladas ? "active" : "")"
+                        @onclick="() => CambiarFiltro(FiltroFunciones.Canceladas)">
+                    Canceladas
+                </button>
+
+            </div>
+
+        </div>
+
+        @if (FuncionesFiltradas.Count() == 0) {
+            <div class="admin-empty">
+                <span class="material-icons">event</span>
+
+                <h3>No se encontraron funciones</h3>
+
+                <p>
+                    Probá con otro término de búsqueda o creá una nueva función.
+                </p>
+            </div>
+        } else {
+            <div class="admin-table-wrap">
+
+                <table class="admin-table">
+
+                    <thead>
+                        <tr>
+                            <th>Película</th>
+                            <th>Sala</th>
+                            <th>Fecha y hora</th>
+                            <th>Idioma</th>
+                            <th>Formato</th>
+                            <th class="col-price">Precio</th>
+                            <th class="col-state">Estado</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var funcion in FuncionesFiltradas) {
+                            <tr>
+                                <td class="col-movie">
+                                    <span class="movie-title">
+                                        @ObtenerTituloPelicula(funcion.PeliculaId)
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @ObtenerNombreSala(funcion.SalaId)
+                                </td>
+
+                                <td>
+                                    @funcion.FechaHoraInicio.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td>
+                                    @(funcion.Idioma == 1 ? "Español" : "Subtitulada")
+                                </td>
+
+                                <td>
+                                    @(funcion.Formato == 1 ? "2D" : "3D")
+                                </td>
+
+                                <td class="col-price">
+                                    @(funcion.Precio.ToString("#,##0.##"))
+                                </td>
+
+                                <td class="col-state">
+                                    <span class="admin-state @ObtenerClaseEstado(funcion.EstadoFuncion)">
+                                        @ObtenerNombreEstado(funcion.EstadoFuncion)
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+
+    }
+
+</div>
+</AdminGuard>
 
 @code {
 
+    private IReadOnlyCollection<FuncionDto> _funciones = [];
+    private IReadOnlyCollection<PeliculaDto> _peliculas = [];
+    private IReadOnlyCollection<SalaDto> _salas = [];
+
+    private bool _cargando = true;
+
+    private string _busqueda = string.Empty;
+    private FiltroFunciones _filtro = FiltroFunciones.Todas;
+
+    private IEnumerable<FuncionDto> FuncionesFiltradas =>
+        _funciones
+            .Where(PerteneceAlFiltro)
+            .Where(PerteneceALaBusqueda)
+            .OrderBy(f => f.FechaHoraInicio);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarFunciones();
+    }
+
+    private async Task CargarFunciones()
+    {
+        _cargando = true;
+
+        try {
+            _funciones = await FuncionService.ObtenerTodasAsync();
+
+            try {
+                _peliculas = await PeliculaService.ObtenerTodasAsync();
+                _salas = await SalaService.ObtenerTodasAsync();
+            } catch {
+            }
+        } finally {
+            _cargando = false;
+        }
+    }
+
+    private bool PerteneceAlFiltro(FuncionDto funcion)
+    {
+        return _filtro switch
+        {
+            FiltroFunciones.Programadas => funcion.EstadoFuncion == 1,
+            FiltroFunciones.Finalizadas => funcion.EstadoFuncion == 2,
+            FiltroFunciones.Canceladas => funcion.EstadoFuncion == 3,
+            _ => true
+        };
+    }
+
+    private bool PerteneceALaBusqueda(FuncionDto funcion)
+    {
+        if (string.IsNullOrWhiteSpace(_busqueda))
+            return true;
+
+        return ObtenerTituloPelicula(funcion.PeliculaId)
+            .Contains(
+                _busqueda,
+                StringComparison.OrdinalIgnoreCase);
+    }
+
+    private string ObtenerTituloPelicula(int peliculaId)
+    {
+        var pelicula = _peliculas
+            .FirstOrDefault(p => p.Id == peliculaId);
+
+        return pelicula?.Titulo ?? $"Película #{peliculaId}";
+    }
+
+    private string ObtenerNombreSala(int salaId)
+    {
+        var sala = _salas
+            .FirstOrDefault(s => s.Id == salaId);
+
+        if (sala is null)
+            return $"Sala #{salaId}";
+
+        var tipo = sala.TipoSala == "Imax" ? "IMAX" : "Estándar";
+
+        return $"Sala {sala.Numero} · {tipo}";
+    }
+
+    private static string ObtenerNombreEstado(int estado)
+    {
+        return estado switch
+        {
+            1 => "Programada",
+            2 => "Finalizada",
+            3 => "Cancelada",
+            _ => "Desconocido"
+        };
+    }
+
+    private static string ObtenerClaseEstado(int estado)
+    {
+        return estado switch
+        {
+            1 => "programada",
+            2 => "finalizada",
+            3 => "cancelada",
+            _ => ""
+        };
+    }
+
+    private void CambiarFiltro(FiltroFunciones filtro)
+    {
+        _filtro = filtro;
+    }
+
+    private void NuevaFuncion()
+    {
+        Navigation.NavigateTo("/admin/funciones/nueva");
+    }
+
+    private enum FiltroFunciones
+    {
+        Todas,
+        Programadas,
+        Finalizadas,
+        Canceladas
+    }
 }

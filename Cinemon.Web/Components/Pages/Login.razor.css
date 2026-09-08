@@ -6,8 +6,7 @@
     padding: 2rem 1rem;
 }
 
-/* La clase vive en el elemento raíz del RadzenCard (subcomponente) */
-::deep .cinemon-login-panel {
+.login-card {
     background: #0F2D3A;
     border: 1px solid #1E6F7D;
     border-radius: 12px;
@@ -16,17 +15,44 @@
     padding: 2rem;
 }
 
-.cinemon-title {
+/* ===== Pills Login / Register ===== */
+::deep .nav-pills .nav-link {
+    color: #8AB8BB;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    font-weight: 600;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+::deep .nav-pills .nav-link:hover {
+    color: #7BC6C9;
+}
+
+::deep .nav-pills .nav-link.active {
+    color: #08121A;
+    background: #7BC6C9;
+}
+
+/* ===== Tipografía ===== */
+.login-title {
     color: #E7F3F2;
     font-weight: 700;
 }
 
-.cinemon-muted {
+.login-muted {
     color: #8AB8BB;
     font-size: 0.9rem;
 }
 
-.cinemon-label {
+.login-or {
+    color: #5A7A7F;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.login-label {
     display: block;
     color: #E7F3F2;
     font-size: 0.9rem;
@@ -34,38 +60,97 @@
     margin-bottom: 0.35rem;
 }
 
-/* Los inputs son subcomponentes Radzen (requieren ::deep) */
-::deep .cinemon-input {
+.login-link {
+    color: #7BC6C9;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.login-link:hover {
+    color: #A5E0E3;
+    text-decoration: underline;
+}
+
+.pos-login-meta {
+    margin-bottom: 1.25rem;
+}
+
+/* ===== Inputs ===== */
+.login-input {
     width: 100%;
-    /*background: #08121A;*/
+    background: #08121A;
     color: #E7F3F2;
     border: 1px solid #1E6F7D;
     border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.95rem;
 }
 
-::deep .cinemon-input::placeholder {
+.login-input::placeholder {
     color: #5A7A7F;
 }
 
-::deep .cinemon-input .rz-textbox {
-    background: transparent;
-}
-
- Sin resplandor al enfocar o seleccionar texto dentro de los inputs.
-   El glow viene del box-shadow que Radzen aplica en :focus y del
-   ::selection por defecto del navegador. 
-::deep .cinemon-input:focus,
-::deep .cinemon-input:focus-visible,
-::deep .cinemon-input .rz-textbox:focus,
-::deep .cinemon-input .rz-textbox.rz-state-focused {
+.login-input:focus,
+.login-input:focus-visible {
     outline: none;
     box-shadow: none;
     border-color: #1E6F7D;
 }
 
-::deep .cinemon-input::selection,
-::deep .cinemon-input .rz-textbox::selection,
-::deep .cinemon-input input::selection {
+/* Sin resaltado de selección de texto dentro de los inputs */
+.login-input::selection {
     background: transparent;
     color: inherit;
+}
+
+/* ===== Botones ===== */
+.login-submit {
+    width: 100%;
+    padding: 0.65rem;
+    border: none;
+    border-radius: 8px;
+    background: #7BC6C9;
+    color: #08121A;
+    font-weight: 700;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.login-submit:hover:not(:disabled) {
+    background: #A5E0E3;
+    box-shadow: 0 4px 18px rgba(123, 198, 201, 0.35);
+}
+
+.login-submit:disabled {
+    opacity: 0.6;
+}
+
+.pw-social {
+    border-radius: 50%;
+    color: #8AB8BB;
+    background: transparent;
+    border: 1px solid #1E6F7D;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 2px;
+    transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.pw-social:hover {
+    color: #7BC6C9;
+    border-color: #7BC6C9;
+    background-color: rgba(123, 198, 201, 0.08);
+}
+
+/* ===== Checkboxes (bootstrap) ===== */
+::deep .form-check-input:checked {
+    background-color: #7BC6C9;
+    border-color: #7BC6C9;
+}
+
+.form-check-label {
+    font-size: 0.85rem;
 }

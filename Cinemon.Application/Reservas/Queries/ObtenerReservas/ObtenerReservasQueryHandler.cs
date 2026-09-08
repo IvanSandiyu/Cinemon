@@ -1,4 +1,5 @@
 using Cinemon.Application.Abstractions;
+using Cinemon.Application.Common;
 using Cinemon.Domain.Enums;
 using MediatR;
 
@@ -71,7 +72,7 @@ namespace Cinemon.Application.Reservas.Queries.ObtenerReservas
                     : new PeliculaDto(
                         pelicula.Titulo,
                         pelicula.Duracion,
-                        pelicula.ClasificacionEdad.ToString(),
+                        ClasificacionEdadHelper.ParaMostrar(pelicula.ClasificacionEdad),
                         pelicula.PosterUrl),
                 sala is null
                     ? new SalaDto(0, "")
