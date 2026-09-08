@@ -1,5 +1,4 @@
-﻿using Cinemon.Domain.Enums;
-using MediatR;
+﻿using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +10,5 @@ namespace Cinemon.Application.Usuarios.CrearUsuarios.Commands
     public sealed record CrearUsuarioCommand(
      string NombreApellido,
      string Email,
-     string Password,
-     Rol Rol) : IRequest<int>;
+     string Password): IRequest<int>;
 }

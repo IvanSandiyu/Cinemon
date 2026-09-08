@@ -3,6 +3,7 @@ using Cinemon.Application.Usuarios.CrearUsuarios.Commands;
 using Cinemon.Application.Usuarios.Login;
 using Cinemon.Application.Usuarios.ObtenerUsuarios.Queries;
 using MediatR;
+using Microsoft.Extensions.Hosting;
 using System.Reflection;
 using System.Threading;
 
@@ -23,9 +24,13 @@ namespace Cinemon.Api.Endpoints.Usuarios
             group.MapPatch("/{id:int}/desactivar", DesactivarUsuario).RequireAuthorization(policy => policy.RequireRole("Admin"));
 
             group.MapPost("/", CrearUsuario);
+            group.MapPost("/admin", CrearUsuarioAdmin).RequireAuthorization(policy =>policy.RequireRole("Admin"));
             //group.MapGet("/{id}",VerUsuario).RequireAuthorization(policy =>policy.RequireRole("Admin"));
-           
+
             group.MapPost("/login", Login);
+
+            //group.MapPost("/admin").RequireAuthorization(policy =>policy.RequireRole("Admin"));
+            
 
             return app;
         }
@@ -69,6 +74,20 @@ namespace Cinemon.Api.Endpoints.Usuarios
             var response = await sender.Send(command,cancellationToken);
 
             return Results.Ok(response);
+        }
+
+        private static async Task<IResult> CrearUsuarioAdmin(CrearUsuarioAdminCommand command,ISender sender,CancellationToken cancellationToken)
+        {
+            var usuarioId = await sender.Send(
+                command,
+                cancellationToken);
+
+            return Results.Created(
+                $"/api/usuarios/{usuarioId}",
+                new
+                {
+                    Id = usuarioId
+                });
         }
     }
 }

@@ -4,55 +4,18 @@ using MediatR;
 
 namespace Cinemon.Application.Reservas.Queries.ObtenerReservas
 {
-    public sealed class ObtenerReservasQueryHandler
-        : IRequestHandler<ObtenerReservasQuery, IReadOnlyCollection<ReservaDto>>
+    public sealed class ObtenerReservasQueryHandler: IRequestHandler<ObtenerReservasQuery, IReadOnlyCollection<ReservaDto>>
     {
         private readonly IReservaRepository _reservaRepository;
-        private readonly IUsuarioRepository _usuarioRepository;
-        private readonly IFuncionRepository _funcionRepository;
-        private readonly IPeliculaRepository _peliculaRepository;
-        private readonly ISalaRepository _salaRepository;
-        private readonly IButacaRepository _butacaRepository;
 
-        public ObtenerReservasQueryHandler(
-            IReservaRepository reservaRepository,
-            IUsuarioRepository usuarioRepository,
-            IFuncionRepository funcionRepository,
-            IPeliculaRepository peliculaRepository,
-            ISalaRepository salaRepository,
-            IButacaRepository butacaRepository)
+        public ObtenerReservasQueryHandler(IReservaRepository reservaRepository)
         {
             _reservaRepository = reservaRepository;
-            _usuarioRepository = usuarioRepository;
-            _funcionRepository = funcionRepository;
-            _peliculaRepository = peliculaRepository;
-            _salaRepository = salaRepository;
-            _butacaRepository = butacaRepository;
         }
 
-        public async Task<IReadOnlyCollection<ReservaDto>> Handle(
-            ObtenerReservasQuery request,
-            CancellationToken cancellationToken)
+        public Task<IReadOnlyCollection<ReservaDto>> Handle(ObtenerReservasQuery request,CancellationToken cancellationToken)
         {
-            var reservas = await _reservaRepository
-                .ObtenerTodasAsync(cancellationToken);
-
-            var dto = new List<ReservaDto>();
-
-            foreach (var reserva in reservas)
-            {
-                dto.Add(await ReservaMapper.ToDtoAsync(
-                    reserva,
-                    _usuarioRepository,
-                    _funcionRepository,
-                    _peliculaRepository,
-                    _salaRepository,
-                    _butacaRepository,
-                    _reservaRepository,
-                    cancellationToken));
-            }
-
-            return dto;
+            return _reservaRepository.ObtenerReservasAsync(usuarioId: null, cancellationToken);
         }
     }
 

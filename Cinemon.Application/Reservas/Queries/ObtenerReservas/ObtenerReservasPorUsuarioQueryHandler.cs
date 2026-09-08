@@ -29,29 +29,9 @@ namespace Cinemon.Application.Reservas.Queries.ObtenerReservas
             _butacaRepository = butacaRepository;
         }
 
-        public async Task<IReadOnlyCollection<ReservaDto>> Handle(
-            ObtenerReservasPorUsuarioQuery request,
-            CancellationToken cancellationToken)
+        public Task<IReadOnlyCollection<ReservaDto>> Handle(ObtenerReservasPorUsuarioQuery request,CancellationToken cancellationToken)
         {
-            var reservas = await _reservaRepository
-                .ObtenerPorUsuarioAsync(request.UsuarioId, cancellationToken);
-
-            var dto = new List<ReservaDto>();
-
-            foreach (var reserva in reservas)
-            {
-                dto.Add(await ReservaMapper.ToDtoAsync(
-                    reserva,
-                    _usuarioRepository,
-                    _funcionRepository,
-                    _peliculaRepository,
-                    _salaRepository,
-                    _butacaRepository,
-                    _reservaRepository,
-                    cancellationToken));
-            }
-
-            return dto;
+            return _reservaRepository.ObtenerReservasAsync(request.UsuarioId, cancellationToken);
         }
     }
 }

@@ -12,12 +12,12 @@ namespace Cinemon.Api.Endpoints.Reservas
         {
             var group = app.MapGroup("/api/reservas")
                 .WithTags("Reservas");
-
+            
             group.MapPost("/", CrearReserva)
                 .RequireAuthorization(policy => policy.RequireRole("Cliente", "Admin"));
 
             group.MapGet("/", ObtenerReservas)
-                .RequireAuthorization(policy => policy.RequireRole("Cliente", "Admin"));
+                .RequireAuthorization(policy => policy.RequireRole("Admin"));
 
             group.MapGet("/{id}", ObtenerReservaPorId)
                 .RequireAuthorization(policy => policy.RequireRole("Cliente", "Admin"));
@@ -32,9 +32,7 @@ namespace Cinemon.Api.Endpoints.Reservas
 
         private static async Task<IResult> HistorialReservas(ICurrentUserService currentUserService,ISender sender,CancellationToken cancellationToken)
         {
-            var reservas = await sender.Send(
-                new ObtenerReservasPorUsuarioQuery(currentUserService.UserId),
-                cancellationToken);
+            var reservas = await sender.Send(new ObtenerReservasPorUsuarioQuery(currentUserService.UserId),cancellationToken);
 
             return Results.Ok(reservas);
         }

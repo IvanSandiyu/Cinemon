@@ -10,13 +10,13 @@ namespace Cinemon.Domain.Entidades.Reservas
 {
     public class Reserva
     {
-        public int Id { get; set; }
-        public int UsuarioId { get; set; }
-        public int RealizadaPorId { get; set; }
-        public int FuncionId { get; set; }
-        public DateTime FechaReserva { get; set; }
-        public EstadoReserva EstadoReserva { get; set; }
-        public decimal Total { get; set; }
+        public int Id { get; private set; }
+        public int UsuarioId { get; private set; }
+        public int RealizadaPorId { get; private set; }
+        public int FuncionId { get; private set; }
+        public DateTime FechaReserva { get; private set; }
+        public EstadoReserva EstadoReserva { get; private set; }
+        public decimal Total { get; private set; }
 
         public Reserva(
        int usuarioId,

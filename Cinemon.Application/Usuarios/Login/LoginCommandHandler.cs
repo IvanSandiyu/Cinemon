@@ -10,16 +10,13 @@ using System.Threading.Tasks;
 
 namespace Cinemon.Application.Usuarios.Login
 {
-    public sealed class LoginCommandHandler
-     : IRequestHandler<LoginCommand, LoginDto>
+    public sealed class LoginCommandHandler : IRequestHandler<LoginCommand, LoginDto>
     {
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IPasswordService _passwordService;
         private readonly ITokenService _tokenService;
 
-        public LoginCommandHandler(
-            IUsuarioRepository usuarioRepository,
-            IPasswordService passwordService,
+        public LoginCommandHandler(IUsuarioRepository usuarioRepository, IPasswordService passwordService,
             ITokenService tokenService)
         {
             _usuarioRepository = usuarioRepository;
@@ -27,9 +24,7 @@ namespace Cinemon.Application.Usuarios.Login
             _tokenService = tokenService;
         }
 
-        public async Task<LoginDto> Handle(
-            LoginCommand request,
-            CancellationToken cancellationToken)
+        public async Task<LoginDto> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             var usuario = await _usuarioRepository.ObtenerPorEmailAsync(
                 request.Email,

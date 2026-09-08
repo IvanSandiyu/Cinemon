@@ -23,9 +23,6 @@ namespace Cinemon.Application.Usuarios.CrearUsuarios.Commands
             RuleFor(x => x.Password)
                 .NotEmpty()
                 .MinimumLength(6);
-
-            RuleFor(x => x.Rol)
-                .IsInEnum();
         }
     }
 }

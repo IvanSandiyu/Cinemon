@@ -1,6 +1,0 @@
-@Cinemom.Api_HostAddress = http://localhost:5137
-
-GET {{Cinemom.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

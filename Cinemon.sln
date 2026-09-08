@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinemon.Infrastructure", "C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinemon.Web", "Cinemon.Web\Cinemon.Web.csproj", "{6280DC88-F0A1-4A75-A227-6D4D47D71188}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinemon.Api", "Cinemom.Api\Cinemon.Api.csproj", "{20B4FDE6-6843-4D2E-9158-02732A8AB975}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinemon.Api", "Cinemon.Api\Cinemon.Api.csproj", "{20B4FDE6-6843-4D2E-9158-02732A8AB975}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -52,20 +52,6 @@ namespace Cinemon.Application.Reservas.Commands.CrearReserva
                     "El usuario no está activo.");
             }
 
-            var realizadaPor = await _usuarioRepository.ObtenerPorIdAsync(
-               _currentUserService.UserId,
-                cancellationToken);
-
-            if (realizadaPor is null) {
-                throw new InvalidOperationException(
-                    "El usuario que realiza la reserva no existe.");
-            }
-
-            if (!realizadaPor.Activo) {
-                throw new InvalidOperationException(
-                    "El usuario que realiza la reserva no está activo.");
-            }
-
             var funcion = await _funcionRepository.ObtenerPorIdAsync(
                 request.FuncionId,
                 cancellationToken);

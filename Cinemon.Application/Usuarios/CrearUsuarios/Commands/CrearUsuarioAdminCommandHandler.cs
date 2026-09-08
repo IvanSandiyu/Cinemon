@@ -1,6 +1,5 @@
 ﻿using Cinemon.Application.Abstractions;
 using Cinemon.Domain.Entidades.Usuarios;
-using Cinemon.Domain.Enums;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -10,18 +9,18 @@ using System.Threading.Tasks;
 
 namespace Cinemon.Application.Usuarios.CrearUsuarios.Commands
 {
-    public sealed class CrearUsuarioCommandHandler: IRequestHandler<CrearUsuarioCommand, int>
+    public sealed class CrearUsuarioAdminCommandHandler: IRequestHandler<CrearUsuarioAdminCommand, int>
     {
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IPasswordService _passwordService;
 
-        public CrearUsuarioCommandHandler(IUsuarioRepository usuarioRepository,IPasswordService passwordService)
+        public CrearUsuarioAdminCommandHandler(IUsuarioRepository usuarioRepository,IPasswordService passwordService)
         {
             _usuarioRepository = usuarioRepository;
             _passwordService = passwordService;
         }
 
-        public async Task<int> Handle(CrearUsuarioCommand request,CancellationToken cancellationToken)
+        public async Task<int> Handle(CrearUsuarioAdminCommand request,CancellationToken cancellationToken)
         {
             var emailExiste = await _usuarioRepository.ExistePorEmailAsync(
                 request.Email,
@@ -38,10 +37,12 @@ namespace Cinemon.Application.Usuarios.CrearUsuarios.Commands
             var usuario = new Usuario(
                 request.NombreApellido,
                 request.Email,
-                Rol.Cliente,
+                request.Rol,
                 passwordHash);
 
-            await _usuarioRepository.AddAsync(usuario,cancellationToken);
+            await _usuarioRepository.AddAsync(
+                usuario,
+                cancellationToken);
 
             return usuario.Id;
         }

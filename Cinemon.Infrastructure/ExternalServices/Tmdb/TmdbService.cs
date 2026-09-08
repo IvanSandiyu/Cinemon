@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using Cinemon.Application.Common;
 
 namespace Cinemon.Infrastructure.ExternalServices.Tmdb
 {
@@ -77,12 +78,12 @@ namespace Cinemon.Infrastructure.ExternalServices.Tmdb
 
         public string? ObtenerPosterUrl(string? posterPath)
         {
-            return TmdbImageUrlBuilder.BuildPosterUrl(posterPath);
+            return TmdbImageUrlHelper.BuildPosterUrl(posterPath);
         }
 
         public string? ObtenerBackdropUrl(string? backdropPath)
         {
-            return TmdbImageUrlBuilder.BuildBackdropUrl(backdropPath);
+            return TmdbImageUrlHelper.BuildBackdropUrl(backdropPath);
         }
 
 
