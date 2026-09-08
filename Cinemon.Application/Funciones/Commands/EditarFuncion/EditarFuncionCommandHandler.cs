@@ -13,15 +13,12 @@ namespace Cinemon.Application.Funciones.Commands.EditarFuncion
     {
         private readonly IFuncionRepository _funcionRepository;
 
-        public EditarFuncionCommandHandler(
-            IFuncionRepository funcionRepository)
+        public EditarFuncionCommandHandler(IFuncionRepository funcionRepository)
         {
             _funcionRepository = funcionRepository;
         }
 
-        public async Task Handle(
-            EditarFuncionCommand request,
-            CancellationToken cancellationToken)
+        public async Task Handle(EditarFuncionCommand request,CancellationToken cancellationToken)
         {
             var funcion = await _funcionRepository.ObtenerPorIdAsync(
                 request.Id,

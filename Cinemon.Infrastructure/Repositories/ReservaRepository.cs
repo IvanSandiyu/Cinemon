@@ -2,6 +2,7 @@
 using Cinemon.Application.Reservas.Queries.ObtenerReservas;
 using Cinemon.Domain.Entidades.Butacas;
 using Cinemon.Domain.Entidades.Reservas;
+using Cinemon.Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -71,8 +72,8 @@ namespace Cinemon.Infrastructure.Repositories
                 throw new InvalidOperationException(
                     "Una o más butacas ya están reservadas para esta función.");
             } catch {
-                await transaction.RollbackAsync(
-                    cancellationToken);
+                await transaction.RollbackAsync(cancellationToken);
+                throw new ConflictException("Una o más butacas ya están reservadas para esta función.");
 
                 throw;
             }

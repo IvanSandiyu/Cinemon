@@ -1,6 +1,7 @@
 ﻿using Cinemon.Application.Abstractions;
 using Cinemon.Application.Usuarios.DTOs;
 using Cinemon.Application.Usuarios.Interfaces;
+using Cinemon.Domain.Exceptions;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -26,36 +27,19 @@ namespace Cinemon.Application.Usuarios.Login
 
         public async Task<LoginDto> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            var usuario = await _usuarioRepository.ObtenerPorEmailAsync(
-                request.Email,
-                cancellationToken);
+            var usuario = await _usuarioRepository.ObtenerPorEmailAsync(request.Email, cancellationToken);
 
-            if (usuario is null) {
-                throw new InvalidOperationException(
-                    "Email o contraseña incorrectos.");
-            }
+            if (usuario is null || !usuario.Activo)
+                throw new InvalidCredentialsException();
 
-            if (!usuario.Activo) {
-                throw new InvalidOperationException(
-                    "El usuario está desactivado.");
-            }
+            var passwordValida = _passwordService.VerifyPassword(request.Password, usuario.PasswordHash);
 
-            var passwordValida = _passwordService.VerifyPassword(
-                request.Password,
-                usuario.PasswordHash);
-
-            if (!passwordValida) {
-                throw new InvalidOperationException(
-                    "Email o contraseña incorrectos.");
-            }
+            if (!passwordValida)
+                throw new InvalidCredentialsException();
 
             var token = _tokenService.GenerateToken(usuario);
 
-            return new LoginDto(
-                token,
-                usuario.Id,
-                usuario.NombreApellido,
-                usuario.Rol);
+            return new LoginDto(token, usuario.Id, usuario.NombreApellido, usuario.Rol);
         }
     }
 }

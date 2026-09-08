@@ -3,6 +3,7 @@ using Cinemon.Application.Interfaces;
 using Cinemon.Domain.Entidades.Butacas;
 using Cinemon.Domain.Entidades.Reservas;
 using Cinemon.Domain.Enums;
+using Cinemon.Domain.Exceptions;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -34,78 +35,52 @@ namespace Cinemon.Application.Reservas.Commands.CrearReserva
             _currentUserService = currentUserService;
         }
 
-        public async Task<int> Handle(
-            CrearReservaCommand request,
-            CancellationToken cancellationToken)
+        public async Task<int> Handle(CrearReservaCommand request, CancellationToken cancellationToken)
         {
             var usuario = await _usuarioRepository.ObtenerPorIdAsync(
                 _currentUserService.UserId,
                 cancellationToken);
 
-            if (usuario is null) {
-                throw new InvalidOperationException(
-                    "El usuario no existe.");
-            }
+            if (usuario is null)
+                throw new NotFoundException("Usuario", _currentUserService.UserId);
 
-            if (!usuario.Activo) {
-                throw new InvalidOperationException(
-                    "El usuario no está activo.");
-            }
+            if (!usuario.Activo)
+                throw new BusinessRuleException("El usuario no está activo.");
 
             var funcion = await _funcionRepository.ObtenerPorIdAsync(
                 request.FuncionId,
                 cancellationToken);
 
-            if (funcion is null) {
-                throw new InvalidOperationException(
-                    "La función no existe.");
-            }
+            if (funcion is null)
+                throw new NotFoundException("Función", request.FuncionId);
 
-            if (funcion.EstadoFuncion != EstadoFuncion.Programada) {
-                throw new InvalidOperationException(
-                    "La función no está disponible para realizar reservas.");
-            }
+            if (funcion.EstadoFuncion != EstadoFuncion.Programada)
+                throw new BusinessRuleException("La función no está disponible para realizar reservas.");
 
             var butacas = await _butacaRepository.ObtenerPorIdsAsync(
                 request.ButacasIds,
                 cancellationToken);
 
-            if (butacas.Count != request.ButacasIds.Count) {
-                throw new InvalidOperationException(
-                    "Una o más butacas no existen.");
-            }
+            if (butacas.Count != request.ButacasIds.Count)
+                throw new NotFoundException("Una o más butacas no existen.");
 
-            if (butacas.Any(x => x.SalaId != funcion.SalaId)) {
-                throw new InvalidOperationException(
-                    "Una o más butacas no pertenecen a la sala de la función.");
-            }
+            if (butacas.Any(x => x.SalaId != funcion.SalaId))
+                throw new BusinessRuleException("Una o más butacas no pertenecen a la sala de la función.");
 
-            var butacasDisponibles =
-                await _reservaRepository.ButacasDisponiblesAsync(
-                    request.FuncionId,
-                    request.ButacasIds,
-                    cancellationToken);
-
-            if (!butacasDisponibles) {
-                throw new InvalidOperationException(
-                    "Una o más butacas ya están reservadas para esta función.");
-            }
-
-            var total =
-                funcion.Precio * request.ButacasIds.Count;
-
-            var usuarioId = _currentUserService.UserId;
-
-            var reserva = new Reserva(
-                usuarioId,
-                usuarioId,
+            var butacasDisponibles = await _reservaRepository.ButacasDisponiblesAsync(
                 request.FuncionId,
-                total);
-
-            await _reservaRepository.AddAsync(
-                reserva,
                 request.ButacasIds,
                 cancellationToken);
+
+            if (!butacasDisponibles)
+                throw new ConflictException("Una o más butacas ya están reservadas para esta función.");
+
+            var total = funcion.Precio * request.ButacasIds.Count;
+            var usuarioId = _currentUserService.UserId;
+
+            var reserva = new Reserva(usuarioId, usuarioId, request.FuncionId, total);
+
+            await _reservaRepository.AddAsync(reserva, request.ButacasIds, cancellationToken);
 
             return reserva.Id;
         }

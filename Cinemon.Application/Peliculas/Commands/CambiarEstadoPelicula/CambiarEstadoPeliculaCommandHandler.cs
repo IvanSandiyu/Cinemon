@@ -8,15 +8,12 @@ namespace Cinemon.Application.Peliculas.Commands.CambiarEstadoPelicula
     {
         private readonly IPeliculaRepository _peliculaRepository;
 
-        public CambiarEstadoPeliculaCommandHandler(
-            IPeliculaRepository peliculaRepository)
+        public CambiarEstadoPeliculaCommandHandler(IPeliculaRepository peliculaRepository)
         {
             _peliculaRepository = peliculaRepository;
         }
 
-        public async Task<bool> Handle(
-            CambiarEstadoPeliculaCommand request,
-            CancellationToken cancellationToken)
+        public async Task<bool> Handle(CambiarEstadoPeliculaCommand request,CancellationToken cancellationToken)
         {
             return await _peliculaRepository.CambiarEstadoActivaAsync(
                 request.Id,

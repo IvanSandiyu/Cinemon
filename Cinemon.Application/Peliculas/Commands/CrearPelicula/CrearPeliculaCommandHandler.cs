@@ -1,5 +1,6 @@
 ﻿using Cinemon.Application.Abstractions;
 using Cinemon.Domain.Entidades.Peliculas;
+using Cinemon.Domain.Exceptions;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace Cinemon.Application.Peliculas.Commands.CrearPelicula
                     cancellationToken);
 
             if (!generosExistentes) {
-                throw new InvalidOperationException(
+                throw new NotFoundException(
                     "Uno o más géneros no existen.");
             }
 

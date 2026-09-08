@@ -12,8 +12,7 @@ namespace Cinemon.Application.Butacas.Queries.ObtenerButacasPorSala
     {
         private readonly IButacaRepository _butacaRepository;
 
-        public ObtenerButacasPorSalaQueryHandler(
-            IButacaRepository butacaRepository)
+        public ObtenerButacasPorSalaQueryHandler(IButacaRepository butacaRepository)
         {
             _butacaRepository = butacaRepository;
         }

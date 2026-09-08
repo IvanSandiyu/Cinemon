@@ -1,4 +1,5 @@
 ﻿using Cinemon.Application.Abstractions;
+using Cinemon.Domain.Exceptions;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -12,22 +13,19 @@ namespace Cinemon.Application.Funciones.Commands.CancelarFuncion
     {
         private readonly IFuncionRepository _funcionRepository;
 
-        public CancelarFuncionCommandHandler(
-            IFuncionRepository funcionRepository)
+        public CancelarFuncionCommandHandler(IFuncionRepository funcionRepository)
         {
             _funcionRepository = funcionRepository;
         }
 
-        public async Task Handle(
-            CancelarFuncionCommand request,
-            CancellationToken cancellationToken)
+        public async Task Handle(CancelarFuncionCommand request,CancellationToken cancellationToken)
         {
             var funcion = await _funcionRepository.ObtenerPorIdAsync(
                 request.Id,
                 cancellationToken);
 
             if (funcion is null)
-                throw new KeyNotFoundException(
+                throw new NotFoundException(
                     "La función no existe.");
 
             funcion.Cancelar();

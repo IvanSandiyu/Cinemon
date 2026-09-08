@@ -12,15 +12,12 @@ namespace Cinemon.Application.Funciones.Commands.FinalizarFuncion
     {
         private readonly IFuncionRepository _funcionRepository;
 
-        public FinalizarFuncionCommandHandler(
-            IFuncionRepository funcionRepository)
+        public FinalizarFuncionCommandHandler(IFuncionRepository funcionRepository)
         {
             _funcionRepository = funcionRepository;
         }
 
-        public async Task Handle(
-            FinalizarFuncionCommand request,
-            CancellationToken cancellationToken)
+        public async Task Handle(FinalizarFuncionCommand request,CancellationToken cancellationToken)
         {
             var funcion = await _funcionRepository.ObtenerPorIdAsync(
                 request.Id,

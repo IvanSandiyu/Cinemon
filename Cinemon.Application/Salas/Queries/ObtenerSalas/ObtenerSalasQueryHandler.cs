@@ -12,15 +12,12 @@ namespace Cinemon.Application.Salas.Queries.ObtenerSalas
     {
         private readonly ISalaRepository _salaRepository;
 
-        public ObtenerSalasQueryHandler(
-            ISalaRepository salaRepository)
+        public ObtenerSalasQueryHandler(ISalaRepository salaRepository)
         {
             _salaRepository = salaRepository;
         }
 
-        public async Task<IReadOnlyCollection<SalaDto>> Handle(
-            ObtenerSalasQuery request,
-            CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<SalaDto>> Handle(ObtenerSalasQuery request,CancellationToken cancellationToken)
         {
             var salas = await _salaRepository
                 .ObtenerTodasAsync(cancellationToken);

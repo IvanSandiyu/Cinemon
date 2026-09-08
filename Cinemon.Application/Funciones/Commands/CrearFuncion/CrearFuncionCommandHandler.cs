@@ -1,6 +1,7 @@
 ﻿using Cinemon.Application.Abstractions;
 using Cinemon.Domain.Entidades.Funcion;
 using Cinemon.Domain.Enums;
+using Cinemon.Domain.Exceptions;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,7 @@ namespace Cinemon.Application.Funciones.Commands.CrearFuncion
         private readonly ISalaRepository _salaRepository;
         private readonly IFuncionRepository _funcionRepository;
 
-        public CrearFuncionCommandHandler(
-            IPeliculaRepository peliculaRepository,
-            ISalaRepository salaRepository,
+        public CrearFuncionCommandHandler(IPeliculaRepository peliculaRepository,ISalaRepository salaRepository,
             IFuncionRepository funcionRepository)
         {
             _peliculaRepository = peliculaRepository;
@@ -26,23 +25,21 @@ namespace Cinemon.Application.Funciones.Commands.CrearFuncion
             _funcionRepository = funcionRepository;
         }
 
-        public async Task<int> Handle(
-            CrearFuncionCommand request,
-            CancellationToken cancellationToken)
+        public async Task<int> Handle(CrearFuncionCommand request,CancellationToken cancellationToken)
         {
             var pelicula = await _peliculaRepository.ObtenerPorIdAsync(
                 request.PeliculaId,
                 cancellationToken);
 
             if (pelicula is null) {
-                throw new InvalidOperationException(
+                throw new NotFoundException(
                     "La película no existe.");
             }else {
                 pelicula.Activar();
             }
 
             if (!pelicula.Activa) {
-                throw new InvalidOperationException(
+                throw new BusinessRuleException(
                     "La película no está activa.");
             }
 
@@ -51,13 +48,13 @@ namespace Cinemon.Application.Funciones.Commands.CrearFuncion
                 cancellationToken);
 
             if (sala is null) {
-                throw new InvalidOperationException(
+                throw new NotFoundException(
                     "La sala no existe.");
             }
 
             if (sala.TipoSala == TipoSala.Imax &&
                 request.Formato == Formato.TresD) {
-                throw new InvalidOperationException(
+                throw new BusinessRuleException(
                     "Una sala IMAX no puede tener funciones 3D.");
             }
 
@@ -72,7 +69,7 @@ namespace Cinemon.Application.Funciones.Commands.CrearFuncion
                     cancellationToken);
 
             if (existeSuperposicion) {
-                throw new InvalidOperationException(
+                throw new ConflictException(
                     "La sala ya tiene una función programada en ese horario.");
             }
 

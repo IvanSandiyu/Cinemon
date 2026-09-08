@@ -1,5 +1,6 @@
 ﻿using Cinemon.Application.Abstractions;
 using Cinemon.Domain.Entidades.Peliculas;
+using Cinemon.Domain.Exceptions;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace Cinemon.Application.Peliculas.Commands.EditarPelicula
             var generosExistentes =await _generoRepository.ExistAllAsync(request.GeneroIds,cancellationToken);
 
             if (!generosExistentes) {
-                throw new InvalidOperationException(
+                throw new NotFoundException(
                     "Uno o más géneros no existen.");
             }
 
@@ -33,7 +34,7 @@ namespace Cinemon.Application.Peliculas.Commands.EditarPelicula
                 cancellationToken);
 
             if (pelicula is null) {
-                throw new InvalidOperationException(
+                throw new NotFoundException(
                     "La película no existe.");
             }
 

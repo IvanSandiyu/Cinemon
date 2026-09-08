@@ -1,4 +1,5 @@
 ﻿using Cinemon.Domain.Enums;
+using Cinemon.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,8 +39,7 @@ namespace Cinemon.Domain.Entidades.Funcion
         public void Cancelar()
         {
             if (EstadoFuncion != EstadoFuncion.Programada)
-                throw new InvalidOperationException(
-                    "Solo se pueden cancelar funciones programadas.");
+                throw new BusinessRuleException("Solo se pueden cancelar funciones programadas.");
 
             EstadoFuncion = EstadoFuncion.Cancelada;
         }
@@ -47,8 +47,7 @@ namespace Cinemon.Domain.Entidades.Funcion
         public void Finalizar()
         {
             if (EstadoFuncion != EstadoFuncion.Programada)
-                throw new InvalidOperationException(
-                    "Solo se pueden finalizar funciones programadas.");
+                throw new BusinessRuleException("Solo se pueden finalizar funciones programadas.");
 
             EstadoFuncion = EstadoFuncion.Finalizada;
         }

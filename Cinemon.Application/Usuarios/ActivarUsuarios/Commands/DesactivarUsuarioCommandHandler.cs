@@ -12,15 +12,12 @@ namespace Cinemon.Application.Usuarios.ActivarUsuarios.Commands
     {
         private readonly IUsuarioRepository _usuarioRepository;
 
-        public DesactivarUsuarioCommandHandler(
-            IUsuarioRepository usuarioRepository)
+        public DesactivarUsuarioCommandHandler(IUsuarioRepository usuarioRepository)
         {
             _usuarioRepository = usuarioRepository;
         }
 
-        public async Task Handle(
-            DesactivarUsuarioCommand request,
-            CancellationToken cancellationToken)
+        public async Task Handle(DesactivarUsuarioCommand request,CancellationToken cancellationToken)
         {
             var usuario = await _usuarioRepository.ObtenerPorIdAsync(
                 request.Id,

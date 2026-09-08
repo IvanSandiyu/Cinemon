@@ -1,6 +1,7 @@
 ﻿using Cinemon.Application.Abstractions;
 using Cinemon.Domain.Entidades.Usuarios;
 using Cinemon.Domain.Enums;
+using Cinemon.Domain.Exceptions;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ namespace Cinemon.Application.Usuarios.CrearUsuarios.Commands
                 cancellationToken);
 
             if (emailExiste) {
-                throw new InvalidOperationException(
+                throw new ConflictException(
                     "Ya existe un usuario registrado con ese email.");
             }
 
