@@ -26,6 +26,12 @@ namespace Cinemon.Application.Funciones.Commands.EditarFuncion
 
             RuleFor(x => x.Precio)
                 .GreaterThan(0);
+
+            RuleFor(x => x.Idioma)
+                .IsInEnum();
+
+            RuleFor(x => x.Formato)
+                .IsInEnum();
         }
     }
 }

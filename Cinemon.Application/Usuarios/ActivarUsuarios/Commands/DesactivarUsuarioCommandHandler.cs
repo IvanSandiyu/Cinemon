@@ -1,4 +1,5 @@
 ﻿using Cinemon.Application.Abstractions;
+using Cinemon.Domain.Exceptions;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace Cinemon.Application.Usuarios.ActivarUsuarios.Commands
                 cancellationToken);
 
             if (usuario is null)
-                throw new KeyNotFoundException(
+                throw new NotFoundException(
                     "El usuario no existe.");
 
             usuario.Desactivar();

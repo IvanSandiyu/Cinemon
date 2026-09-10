@@ -1,0 +1,191 @@
+.cuenta-page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+}
+
+.cuenta-loading {
+    padding: 4rem 0;
+}
+
+.cuenta-header {
+    margin-bottom: 2rem;
+}
+
+.cinemon-kicker {
+    display: inline-block;
+    color: #7BC6C9;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+}
+
+.cuenta-title {
+    color: #E7F3F2;
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 0.3rem;
+}
+
+.cuenta-subtitle {
+    color: #8AB8BB;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.cuenta-card {
+    padding: 1.5rem;
+    border: 1px solid rgba(30, 111, 125, 0.45);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.cuenta-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid rgba(30, 111, 125, 0.35);
+}
+
+.cuenta-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #1E6F7D, #7BC6C9);
+    color: #08121A;
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.cuenta-identity {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    min-width: 0;
+}
+
+.cuenta-identity strong {
+    overflow: hidden;
+    color: #E7F3F2;
+    font-size: 1.15rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cuenta-role-badge {
+    width: fit-content;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.cuenta-role-badge.admin {
+    background: rgba(123, 198, 201, 0.16);
+    color: #7BC6C9;
+}
+
+.cuenta-role-badge.cliente {
+    background: rgba(154, 159, 191, 0.12);
+    color: #9A9FBF;
+}
+
+.cuenta-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: 1.25rem 0;
+}
+
+.cuenta-row {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+.cuenta-row-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 10px;
+    background: rgba(123, 198, 201, 0.1);
+    color: #7BC6C9;
+    font-size: 1.2rem;
+}
+
+.cuenta-row-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.cuenta-row-text small {
+    color: #8AB8BB;
+    font-size: 0.7rem;
+}
+
+.cuenta-row-text strong {
+    overflow: hidden;
+    color: #E7F3F2;
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cuenta-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid rgba(30, 111, 125, 0.35);
+}
+
+.cuenta-logout-button {
+    border-radius: 9px !important;
+    background-color: rgba(255, 255, 255, 0.03) !important;
+    background-image: none !important;
+    color: #8AB8BB !important;
+    border: 1px solid rgba(123, 198, 201, 0.35) !important;
+}
+
+.cuenta-logout-button:hover {
+    background-color: rgba(200, 70, 90, 0.1) !important;
+    background-image: none !important;
+    border-color: rgba(200, 70, 90, 0.5) !important;
+    color: #D98591 !important;
+}
+
+@media (max-width: 640px) {
+    .cuenta-page {
+        padding: 2rem 1rem 3rem;
+    }
+
+    .cuenta-title {
+        font-size: 1.5rem;
+    }
+
+    .cuenta-card {
+        padding: 1rem;
+    }
+
+    .cuenta-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

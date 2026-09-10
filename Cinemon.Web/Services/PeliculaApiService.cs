@@ -89,5 +89,44 @@ namespace Cinemon.Web.Services
         }
 
 
+    public async Task<(bool Ok, string? Error)> EditarAsync(
+            int id,
+            EditarPeliculaRequest request)
+        {
+            AdjuntarToken();
+
+            var response = await _httpClient.PutAsJsonAsync(
+                $"api/peliculas/{id}",
+                request);
+
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            var contenido = await response.Content
+                .ReadAsStringAsync();
+
+            return (false, contenido);
+        }
+
+        public async Task<(bool Ok, string? Error)> VincularTmdbAsync(
+            int id,
+            int tmdbId)
+        {
+            AdjuntarToken();
+
+            var response = await _httpClient.PostAsJsonAsync(
+                $"api/peliculas/{id}/tmdb",
+                new { tmdbId });
+
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            var contenido = await response.Content
+                .ReadAsStringAsync();
+
+            return (false, contenido);
+        }
+
+
     }
 }

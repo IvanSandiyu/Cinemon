@@ -1,4 +1,5 @@
 ﻿using Cinemon.Application.Abstractions;
+using Cinemon.Domain.Exceptions;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -18,16 +19,14 @@ namespace Cinemon.Application.Usuarios.ActivarUsuarios.Commands
             _usuarioRepository = usuarioRepository;
         }
 
-        public async Task Handle(
-            ActivarUsuarioCommand request,
-            CancellationToken cancellationToken)
+        public async Task Handle(ActivarUsuarioCommand request,CancellationToken cancellationToken)
         {
             var usuario = await _usuarioRepository.ObtenerPorIdAsync(
                 request.Id,
                 cancellationToken);
 
             if (usuario is null)
-                throw new KeyNotFoundException(
+                throw new NotFoundException(
                     "El usuario no existe.");
 
             usuario.Activar();

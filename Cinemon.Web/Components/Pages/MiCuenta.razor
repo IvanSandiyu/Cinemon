@@ -1,0 +1,161 @@
+@page "/mi-cuenta"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@using Cinemon.Web.Models.DTOs
+@using Cinemon.Web.Services
+
+@inject AuthService Auth
+@inject UsuarioApiService UsuarioService
+@inject NavigationManager Navigation
+
+<PageTitle>Mi cuenta | Cinemon</PageTitle>
+
+@if (_verificando) {
+    <div class="cuenta-loading d-flex justify-content-center py-5">
+        <RadzenProgressBarCircular Indeterminate="true" />
+    </div>
+} else if (_autenticado) {
+    <div class="cuenta-page">
+
+        <div class="cuenta-header">
+            <span class="cinemon-kicker">Mi cuenta</span>
+            <h1 class="cuenta-title">¡Hola, @_nombre!</h1>
+            <p class="cuenta-subtitle">
+                Tus datos y tus compras en Cinemon.
+            </p>
+        </div>
+
+        <div class="cuenta-card">
+
+            <div class="cuenta-card-header">
+                <span class="cuenta-avatar">@_iniciales</span>
+                <div class="cuenta-identity">
+                    <strong>@_nombre</strong>
+                    <span class="cuenta-role-badge @(_esAdmin ? "admin" : "cliente")">
+                        @(_esAdmin ? "Administrador" : "Cliente")
+                    </span>
+                </div>
+            </div>
+
+            <div class="cuenta-rows">
+
+                <div class="cuenta-row">
+                    <span class="cuenta-row-icon">
+                        <RadzenIcon Icon="mail" />
+                    </span>
+                    <div class="cuenta-row-text">
+                        <small>Email</small>
+                        <strong>@_email</strong>
+                    </div>
+                </div>
+
+                <div class="cuenta-row">
+                    <span class="cuenta-row-icon">
+                        <RadzenIcon Icon="badge" />
+                    </span>
+                    <div class="cuenta-row-text">
+                        <small>ID de usuario</small>
+                        <strong>#@_usuarioId</strong>
+                    </div>
+                </div>
+
+                <div class="cuenta-row">
+                    <span class="cuenta-row-icon">
+                        <RadzenIcon Icon="verified_user" />
+                    </span>
+                    <div class="cuenta-row-text">
+                        <small>Sesión</small>
+                        <strong>Activa</strong>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="cuenta-actions">
+
+                @if (!_esAdmin) {
+                    <RadzenButton Text="Mis compras"
+                                  Icon="receipt_long"
+                                  ButtonStyle="ButtonStyle.Primary"
+                                  Click="IrAMisCompras" />
+                }
+
+                <RadzenButton Text="Cerrar sesión"
+                              Icon="logout"
+                              Click="CerrarSesion"
+                              class="cuenta-logout-button" />
+
+            </div>
+
+        </div>
+
+    </div>
+}
+
+@code {
+
+    private bool _verificando = true;
+    private bool _autenticado;
+
+    private string _nombre = string.Empty;
+    private string _email = "—";
+    private string _iniciales = string.Empty;
+    private int _usuarioId;
+    private bool _esAdmin;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _autenticado = await Auth.CargarAsync();
+
+        if (!_autenticado) {
+            var destino = $"login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}";
+            Navigation.NavigateTo(destino, forceLoad: true);
+            _verificando = false;
+            return;
+        }
+
+        _nombre = Auth.NombreApellido ?? "Cinemon";
+        _iniciales = ObtenerIniciales(_nombre);
+        _esAdmin = Auth.Rol == 2;
+        _usuarioId = Auth.UsuarioId ?? 0;
+
+        try {
+            if (_usuarioId > 0) {
+                var usuario = await UsuarioService.ObtenerPorIdAsync(_usuarioId);
+
+                if (usuario is not null) {
+                    _nombre = usuario.NombreApellido;
+                    _iniciales = ObtenerIniciales(_nombre);
+                    _email = usuario.Email;
+                }
+            }
+        } catch {
+        }
+
+        _verificando = false;
+    }
+
+    private void IrAMisCompras()
+    {
+        Navigation.NavigateTo("/mis-compras");
+    }
+
+    private async Task CerrarSesion()
+    {
+        await Auth.LogoutAsync();
+        Navigation.NavigateTo("/", forceLoad: false);
+    }
+
+    private static string ObtenerIniciales(string nombre)
+    {
+        if (string.IsNullOrWhiteSpace(nombre))
+            return "U";
+
+        var partes = nombre
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        return string.Concat(partes
+            .Take(2)
+            .Select(p => char.ToUpperInvariant(p[0])));
+    }
+}

@@ -18,7 +18,7 @@ namespace Cinemon.Application.Funciones.Commands.CrearFuncion
                 .GreaterThan(0);
 
             RuleFor(x => x.FechaHoraInicio)
-                .GreaterThan(DateTime.Now);
+                .GreaterThan(DateTime.UtcNow);
 
             RuleFor(x => x.Precio)
                 .GreaterThan(0);

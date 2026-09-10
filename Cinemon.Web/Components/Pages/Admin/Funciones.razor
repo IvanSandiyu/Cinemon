@@ -136,9 +136,20 @@
                                 </td>
 
                                 <td class="col-state">
-                                    <span class="admin-state @ObtenerClaseEstado(funcion.EstadoFuncion)">
-                                        @ObtenerNombreEstado(funcion.EstadoFuncion)
-                                    </span>
+                                    <div class="admin-state-cell">
+
+                                        <span class="admin-state @ObtenerClaseEstado(funcion.EstadoFuncion)">
+                                            @ObtenerNombreEstado(funcion.EstadoFuncion)
+                                        </span>
+
+                                        <button type="button"
+                                                class="admin-row-action"
+                                                title="Editar función"
+                                                @onclick="() => EditarFuncion(funcion.Id)">
+                                            <span class="material-icons">edit</span>
+                                        </button>
+
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -267,6 +278,11 @@
     private void NuevaFuncion()
     {
         Navigation.NavigateTo("/admin/funciones/nueva");
+    }
+
+    private void EditarFuncion(int id)
+    {
+        Navigation.NavigateTo($"/admin/funciones/editar/{id}");
     }
 
     private enum FiltroFunciones

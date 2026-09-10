@@ -1,6 +1,6 @@
 /* ===== Página ===== */
 .admin-page {
-    max-width: 960px;
+    max-width: 1150px;
     margin: 0 auto;
     padding: 2rem 1.5rem;
 }
@@ -39,17 +39,14 @@
     margin: 0;
 }
 
-.admin-primary-button {
-    border-radius: 10px !important;
-}
-
 /* ===== Toolbar ===== */
 .admin-toolbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
 }
 
 .admin-search {
@@ -81,10 +78,42 @@
     color: #6F7492;
 }
 
+/* ===== Selects de sala / función ===== */
+.admin-selects {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.admin-selects select {
+    max-width: 320px;
+    padding: 0.65rem 2rem 0.65rem 0.85rem;
+    border: 1px solid rgba(154, 159, 191, 0.14);
+    border-radius: 10px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.025);
+    color: #f5F6FF;
+    font-size: 0.82rem;
+    cursor: pointer;
+}
+
+.admin-selects select:focus {
+    border-color: rgba(123, 198, 201, 0.5);
+}
+
+.admin-selects select option {
+    background: #0F2D3A;
+    color: #E7F3F2;
+}
+
+/* ===== Filtros de estado ===== */
 .admin-filters {
     display: flex;
     gap: 0.35rem;
     padding: 0.25rem;
+    margin-bottom: 1.25rem;
+    width: fit-content;
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.025);
 }
@@ -107,6 +136,17 @@
 .admin-filter.active {
     background: rgba(123, 198, 201, 0.12);
     color: #7BC6C9;
+}
+
+/* ===== Contador ===== */
+.admin-count {
+    margin-bottom: 0.75rem;
+    color: #777C9B;
+    font-size: 0.78rem;
+}
+
+.admin-count-filtered {
+    color: #8AB8BB;
 }
 
 /* ===== Tabla ===== */
@@ -141,6 +181,7 @@
     border-bottom: 1px solid rgba(154, 159, 191, 0.08);
     color: #E7F3F2;
     white-space: nowrap;
+    vertical-align: middle;
 }
 
 .admin-table tbody tr:last-child td {
@@ -151,17 +192,16 @@
     background: rgba(123, 198, 201, 0.04);
 }
 
-.admin-table .col-movie {
-    min-width: 220px;
+.admin-table .col-client {
+    min-width: 200px;
 }
 
-.admin-table .movie-title {
-    display: block;
-    max-width: 260px;
-    overflow: hidden;
-    font-weight: 600;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.admin-table .col-movie {
+    min-width: 200px;
+}
+
+.admin-table .col-seats {
+    color: #9A9FBF;
 }
 
 .admin-table .col-price {
@@ -170,6 +210,39 @@
 
 .admin-table .col-state {
     text-align: right;
+}
+
+.client-name {
+    display: block;
+    font-weight: 600;
+}
+
+.client-email {
+    display: block;
+    max-width: 220px;
+    overflow: hidden;
+    color: #777C9B;
+    font-size: 0.72rem;
+    text-overflow: ellipsis;
+}
+
+.movie-title {
+    display: block;
+    max-width: 220px;
+    overflow: hidden;
+    font-weight: 600;
+    text-overflow: ellipsis;
+}
+
+.movie-clasif {
+    display: inline-block;
+    margin-top: 0.2rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+    background: rgba(123, 198, 201, 0.12);
+    color: #7BC6C9;
+    font-size: 0.62rem;
+    font-weight: 600;
 }
 
 /* ===== Estado ===== */
@@ -187,51 +260,9 @@
     color: #62D99C;
 }
 
-.admin-state.finalizada {
-    background: rgba(123, 198, 201, 0.12);
-    color: #7BC6C9;
-}
-
 .admin-state.cancelada {
     background: rgba(200, 70, 90, 0.12);
     color: #D98591;
-}
-
-/* ===== Acción por fila ===== */
-.admin-state-cell {
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.5rem;
-}
-
-.admin-row-action {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
-    border: 1px solid rgba(154, 159, 191, 0.14);
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.03);
-    color: #858AA8;
-    cursor: pointer;
-    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
-}
-
-.admin-row-action:hover {
-    border-color: rgba(123, 198, 201, 0.55);
-    background-color: rgba(123, 198, 201, 0.1);
-    color: #7BC6C9;
-}
-
-.admin-row-action:active {
-    transform: scale(0.95);
-}
-
-.admin-row-action .material-icons {
-    font-size: 18px;
-    line-height: 1;
 }
 
 /* ===== Vacío ===== */
@@ -274,8 +305,8 @@
         width: 100%;
     }
 
-    .admin-filters {
-        width: fit-content;
+    .admin-selects select {
+        max-width: 100%;
     }
 }
 

@@ -185,15 +185,33 @@
     min-width: 0;
     border-radius: 8px !important;
     font-size: 0.72rem !important;
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(154, 159, 191, 0.18) !important;
+    color: #E7F3F2 !important;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-    .admin-action-button.danger {
-        color: #d98591;
+    .admin-action-button:hover {
+        background-color: rgba(177, 74, 237, 0.1) !important;
+        border-color: rgba(177, 74, 237, 0.5) !important;
+        color: #F5F6FF !important;
     }
 
-    .admin-action-button.success {
-        color: #62d99c;
+    .admin-action-button.danger {
+        color: #D98591 !important;
     }
+
+        .admin-action-button.danger:hover {
+            color: #E6A0A8 !important;
+        }
+
+    .admin-action-button.success {
+        color: #62D99C !important;
+    }
+
+        .admin-action-button.success:hover {
+            color: #82E7B3 !important;
+        }
 
 .admin-empty {
     display: flex;

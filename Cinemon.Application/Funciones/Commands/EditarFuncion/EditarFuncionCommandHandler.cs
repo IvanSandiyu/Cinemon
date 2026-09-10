@@ -1,5 +1,6 @@
 ﻿using Cinemon.Application.Abstractions;
 using Cinemon.Domain.Enums;
+using Cinemon.Domain.Exceptions;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,12 @@ namespace Cinemon.Application.Funciones.Commands.EditarFuncion
     public sealed class EditarFuncionCommandHandler: IRequestHandler<EditarFuncionCommand>
     {
         private readonly IFuncionRepository _funcionRepository;
+        private readonly ISalaRepository _salaRepository;
 
-        public EditarFuncionCommandHandler(IFuncionRepository funcionRepository)
+        public EditarFuncionCommandHandler(IFuncionRepository funcionRepository, ISalaRepository salaRepository)
         {
             _funcionRepository = funcionRepository;
+            _salaRepository = salaRepository;
         }
 
         public async Task Handle(EditarFuncionCommand request,CancellationToken cancellationToken)
@@ -25,11 +28,11 @@ namespace Cinemon.Application.Funciones.Commands.EditarFuncion
                 cancellationToken);
 
             if (funcion is null)
-                throw new KeyNotFoundException(
+                throw new NotFoundException(
                     "La función no existe.");
 
             if (funcion.EstadoFuncion != EstadoFuncion.Programada)
-                throw new InvalidOperationException(
+                throw new BusinessRuleException(
                     "Solo se pueden editar funciones programadas.");
 
             var pelicula = await _funcionRepository.ObtenerPeliculaAsync(
@@ -37,8 +40,19 @@ namespace Cinemon.Application.Funciones.Commands.EditarFuncion
                 cancellationToken);
 
             if (pelicula is null)
-                throw new KeyNotFoundException(
-                    "La película no existe.");
+                throw new NotFoundException("La película no existe.");
+
+            var sala = await _salaRepository.ObtenerPorIdAsync(request.SalaId,cancellationToken);
+
+            if (sala is null)
+                throw new NotFoundException(
+                    "La sala no existe.");
+
+            if (sala.TipoSala == TipoSala.Imax &&
+                request.Formato == Formato.TresD) {
+                throw new BusinessRuleException(
+                    "Una sala IMAX no puede tener funciones 3D.");
+            }
 
             var fechaHoraFin = request.FechaHoraInicio
                 .AddMinutes(pelicula.Duracion);
@@ -52,7 +66,7 @@ namespace Cinemon.Application.Funciones.Commands.EditarFuncion
                     cancellationToken);
 
             if (existeSuperposicion)
-                throw new InvalidOperationException(
+                throw new ConflictException(
                     "La sala ya tiene una función programada en ese horario.");
 
             funcion.Editar(

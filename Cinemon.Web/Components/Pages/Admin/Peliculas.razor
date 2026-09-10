@@ -29,7 +29,7 @@
         <RadzenButton Text="Nueva película"
                       Icon="add"
                       Click="@NuevaPelicula"
-                      ButtonStyle="ButtonStyle.Primary"
+                     
                       class="admin-primary-button" />
 
     </div>
@@ -137,20 +137,20 @@
 
                             <RadzenButton Icon="edit"
                                           Text="Editar"
-                                          ButtonStyle="ButtonStyle.Light"
+                                         
                                           Click="@(() => EditarPelicula(pelicula.Id))"
                                           class="admin-action-button" />
 
                             @if (pelicula.Activa) {
                                 <RadzenButton Icon="visibility_off"
                                               Text="Desactivar"
-                                              ButtonStyle="ButtonStyle.Light"
+                                              
                                               Click="@(() => DesactivarPelicula(pelicula.Id))"
                                               class="admin-action-button danger" />
                             } else {
                                 <RadzenButton Icon="visibility"
                                               Text="Activar"
-                                              ButtonStyle="ButtonStyle.Light"
+                                              
                                               Click="@(() => ActivarPelicula(pelicula.Id))"
                                               class="admin-action-button success" />
                             }

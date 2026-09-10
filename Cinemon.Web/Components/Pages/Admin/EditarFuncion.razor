@@ -1,8 +1,7 @@
-@page "/admin/funciones/nueva"
+@page "/admin/funciones/editar/{Id:int}"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 @using Cinemon.Web.Models.DTOs
-@using Cinemon.Web.Models.DTOs.Requests
 @using Cinemon.Web.Services
 
 @inject FuncionApiService FuncionService
@@ -10,7 +9,7 @@
 @inject SalaApiService SalaService
 @inject NavigationManager Navigation
 
-<PageTitle>Nueva función | Admin | Cinemon</PageTitle>
+<PageTitle>Editar función | Admin | Cinemon</PageTitle>
 
 <AdminGuard>
 <div class="admin-page">
@@ -22,11 +21,11 @@
         </span>
 
         <h1 class="admin-title">
-            Nueva función
+            Editar función
         </h1>
 
         <p class="admin-subtitle">
-            Programá un horario, sala y precio para una película.
+            Modificá la película, la sala o el horario de la función.
         </p>
 
     </div>
@@ -35,6 +34,23 @@
         <div class="d-flex justify-content-center py-5">
             <RadzenProgressBarCircular Indeterminate="true" />
         </div>
+    } else if (_noEncontrada) {
+        <section class="admin-form-section">
+            <div class="admin-notfound">
+                <span class="material-icons">search_off</span>
+
+                <h2>@(_error is null ? "Función no encontrada" : "No se pudo cargar la función")</h2>
+
+                <p>
+                    @(_error ?? "La función que querés editar no existe o fue eliminada.")
+                </p>
+
+                <RadzenButton Text="Volver a funciones"
+                              Icon="arrow_back"
+                              Click="Cancelar"
+                              class="admin-primary-button" />
+            </div>
+        </section>
     } else {
 
         <div class="admin-create-layout">
@@ -47,11 +63,25 @@
                         <h2>Datos de la función</h2>
 
                         <p>
-                            Elegí la película, la sala y el horario de inicio.
+                            Cambiá los datos y guardá los cambios.
                         </p>
                     </div>
 
+                    <span class="admin-state @ObtenerClaseEstado(_funcion!.EstadoFuncion)">
+                        @ObtenerNombreEstado(_funcion.EstadoFuncion)
+                    </span>
+
                 </div>
+
+                @if (_soloProgramadas) {
+                    <div class="admin-form-warning">
+                        <span class="material-icons">info</span>
+
+                        <span>
+                            Solo se pueden editar funciones programadas.
+                        </span>
+                    </div>
+                }
 
                 <div class="admin-form">
 
@@ -61,7 +91,7 @@
                             Película
                         </label>
 
-                        <select @bind="_peliculaId">
+                        <select @bind="_peliculaId" disabled="@_soloProgramadas">
                             <option value="0">
                                 Seleccionar película...
                             </option>
@@ -76,7 +106,7 @@
 
                         @if (_peliculaSeleccionada is not null) {
                             <span class="admin-field-hint">
-                                Cartelera: el fin de la función se calculará con la duración de
+                                El fin de la función se calculará con la duración de
                                 @_peliculaSeleccionada.Duracion minutos.
                             </span>
                         }
@@ -91,7 +121,7 @@
                                 Sala
                             </label>
 
-                            <select @bind="_salaId">
+                            <select @bind="_salaId" disabled="@_soloProgramadas">
                                 <option value="0">
                                     Seleccionar sala...
                                 </option>
@@ -114,7 +144,8 @@
                             </label>
 
                             <input type="date"
-                                   @bind="_fecha" />
+                                   @bind="_fecha"
+                                   disabled="@_soloProgramadas" />
 
                         </div>
 
@@ -125,7 +156,8 @@
                             </label>
 
                             <input type="time"
-                                   @bind="_hora" />
+                                   @bind="_hora"
+                                   disabled="@_soloProgramadas" />
 
                         </div>
 
@@ -143,6 +175,7 @@
                                    min="1"
                                    step="0.01"
                                    @bind="_precio"
+                                   disabled="@_soloProgramadas"
                                    placeholder="Ej: 6500" />
 
                         </div>
@@ -157,12 +190,14 @@
 
                                 <button type="button"
                                         class="@(_idioma == 1 ? "selected" : "")"
+                                        disabled="@_soloProgramadas"
                                         @onclick="() => _idioma = 1">
                                     Español
                                 </button>
 
                                 <button type="button"
                                         class="@(_idioma == 2 ? "selected" : "")"
+                                        disabled="@_soloProgramadas"
                                         @onclick="() => _idioma = 2">
                                     Subtitulada
                                 </button>
@@ -181,12 +216,14 @@
 
                                 <button type="button"
                                         class="@(_formato == 1 ? "selected" : "")"
+                                        disabled="@_soloProgramadas"
                                         @onclick="() => _formato = 1">
                                     2D
                                 </button>
 
                                 <button type="button"
                                         class="@(_formato == 2 ? "selected" : "")"
+                                        disabled="@_soloProgramadas"
                                         @onclick="() => _formato = 2">
                                     3D
                                 </button>
@@ -211,10 +248,10 @@
                                   Click="Cancelar"
                                   class="admin-cancel-button" />
 
-                    <RadzenButton Text="Guardar función"
+                    <RadzenButton Text="Guardar cambios"
                                   Icon="save"
                                   Click="Guardar"
-                                  Disabled="@_guardando" />
+                                  Disabled="@(_guardando || _soloProgramadas)" />
 
                 </div>
 
@@ -229,11 +266,17 @@
 
 @code {
 
+    [Parameter]
+    public int Id { get; set; }
+
     private IReadOnlyCollection<PeliculaDto> _peliculas = [];
     private IReadOnlyCollection<SalaDto> _salas = [];
 
+    private FuncionDto? _funcion;
+
     private bool _cargando = true;
     private bool _guardando;
+    private bool _noEncontrada;
 
     private string? _error;
 
@@ -244,6 +287,9 @@
     private int _idioma = 1;
     private int _formato = 1;
     private decimal _precio;
+
+    private bool _soloProgramadas =>
+        _funcion?.EstadoFuncion != 1;
 
     private PeliculaDto? _peliculaSeleccionada =>
         _peliculas.FirstOrDefault(p => p.Id == _peliculaId);
@@ -259,14 +305,28 @@
         _error = null;
 
         try {
+            var funciones = await FuncionService.ObtenerTodasAsync();
+
+            _funcion = funciones.FirstOrDefault(f => f.Id == Id);
+
+            if (_funcion is null) {
+                _noEncontrada = true;
+                return;
+            }
+
             _peliculas = await PeliculaService.ObtenerTodasAsync();
             _salas = await SalaService.ObtenerTodasAsync();
 
-            var proxima = ObtenerProximaMediaHora();
-            _fecha = proxima.Date;
-            _hora = TimeOnly.FromDateTime(proxima);
+            _peliculaId = _funcion.PeliculaId;
+            _salaId = _funcion.SalaId;
+            _fecha = _funcion.FechaHoraInicio.Date;
+            _hora = TimeOnly.FromDateTime(_funcion.FechaHoraInicio);
+            _idioma = _funcion.Idioma;
+            _formato = _funcion.Formato;
+            _precio = _funcion.Precio;
         } catch {
-            _error = "No se pudieron cargar las películas y las salas.";
+            _error = "No se pudieron cargar los datos de la función.";
+            _noEncontrada = true;
         } finally {
             _cargando = false;
         }
@@ -288,7 +348,7 @@
 
         var inicio = _fecha.Add(_hora.ToTimeSpan());
 
-        if (inicio <= DateTime.UtcNow) {
+        if (inicio <= DateTime.Now) {
             _error = "La fecha y hora debe ser en el futuro.";
             return;
         }
@@ -308,18 +368,19 @@
         _guardando = true;
 
         try {
-            var request = new CrearFuncionRequest(
+            var request = new FuncionDto(
+                Id,
                 _peliculaId,
                 _salaId,
                 inicio,
                 _idioma,
                 _formato,
-                _precio);
+                _precio,
+                _funcion!.EstadoFuncion);
 
-            var (funcionId, error) =
-                await FuncionService.CrearAsync(request);
+            var (ok, error) = await FuncionService.EditarAsync(Id, request);
 
-            if (error is not null) {
+            if (!ok) {
                 _error = ObtenerMensajeError(error);
                 return;
             }
@@ -332,8 +393,11 @@
         }
     }
 
-    private string ObtenerMensajeError(string respuesta)
+    private string ObtenerMensajeError(string? respuesta)
     {
+        if (string.IsNullOrWhiteSpace(respuesta))
+            return "No se pudo guardar la función.";
+
         try {
             var problema = System.Text.Json.JsonSerializer.Deserialize<
                 ApiProblemDetails>(respuesta);
@@ -355,25 +419,31 @@
         return "No se pudo guardar la función.";
     }
 
+    private static string ObtenerNombreEstado(int estado)
+    {
+        return estado switch
+        {
+            1 => "Programada",
+            2 => "Finalizada",
+            3 => "Cancelada",
+            _ => "Desconocido"
+        };
+    }
+
+    private static string ObtenerClaseEstado(int estado)
+    {
+        return estado switch
+        {
+            1 => "programada",
+            2 => "finalizada",
+            3 => "cancelada",
+            _ => ""
+        };
+    }
+
     private void Cancelar()
     {
         Navigation.NavigateTo("/admin/funciones");
-    }
-
-    private static DateTime ObtenerProximaMediaHora()
-    {
-        var ahora = DateTime.UtcNow;
-
-        var minutos = ahora.Minute >= 30 ? 60 : 30;
-
-        return new DateTime(
-            ahora.Year,
-            ahora.Month,
-            ahora.Day,
-            ahora.Hour,
-            0,
-            0)
-            .AddMinutes(minutos);
     }
 
     private sealed record ApiProblemDetails(

@@ -20,38 +20,43 @@ else
 
         @foreach (var (pelicula, index) in _peliculas.Select((p, i) => (p, i)))
         {
-            <div class="col-6 col-sm-4 col-md-3 col-lg-3">
-                <div class="cinemon-movie-card reveal"
-                     style="@($"--reveal-delay: {Math.Min((index % 6) * 50, 200)}ms;")">
+            @if(pelicula.Activa) {
+                <div class="col-6 col-sm-4 col-md-3 col-lg-3">
+                    <div class="cinemon-movie-card reveal"
+                         style="@($"--reveal-delay: {Math.Min((index % 6) * 50, 200)}ms;")">
 
-                    <div class="movie-poster-container"
-                         @onclick="() => NavegarAPelicula(pelicula.Id)"
-                         title="Ver funciones de @pelicula.Titulo">
-                        <img class="movie-poster-img"
-                             src="@(pelicula.TmdbPosterUrl ?? pelicula.PosterUrl)"
-                             alt="@pelicula.Titulo"
-                             loading="lazy" />
-                    </div>
-
-                    <div class="movie-info">
-                        <h6 class="cinemon-card-title"
-                            @onclick="() => NavegarAPelicula(pelicula.Id)"
-                            style="cursor: pointer;">@pelicula.Titulo</h6>
-
-                        <div class="movie-meta">
-                            <span class="cinemon-genres">@(string.Join(" · ", pelicula.Generos))</span>
-                            <span class="cinemon-divider"></span>
-                            <span class="cinemon-duration">@pelicula.Duracion min</span>
+                        <div class="movie-poster-container"
+                             @onclick="() => NavegarAPelicula(pelicula.Id)"
+                             title="Ver funciones de @pelicula.Titulo">
+                            <img class="movie-poster-img"
+                                 src="@(pelicula.TmdbPosterUrl ?? pelicula.PosterUrl)"
+                                 alt="@pelicula.Titulo"
+                                 loading="lazy" />
                         </div>
-                    </div>
 
-                    <div class="movie-actions">
-                        <RadzenLink Path="@($"/peliculas/{pelicula.Id}")"
-                                    class="cinemon-link" TabIndex="-1">Ver funciones</RadzenLink>
-                    </div>
+                        <div class="movie-info">
+                            <h6 class="cinemon-card-title"
+                                @onclick="() => NavegarAPelicula(pelicula.Id)"
+                                style="cursor: pointer;">
+                                @pelicula.Titulo
+                            </h6>
 
+                            <div class="movie-meta">
+                                <span class="cinemon-genres">@(string.Join(" · ", pelicula.Generos))</span>
+                                <span class="cinemon-divider"></span>
+                                <span class="cinemon-duration">@pelicula.Duracion min</span>
+                            </div>
+                        </div>
+
+                        <div class="movie-actions">
+                            <RadzenLink Path="@($"/peliculas/{pelicula.Id}")"
+                                        class="cinemon-link" TabIndex="-1">Ver funciones</RadzenLink>
+                        </div>
+
+                    </div>
                 </div>
-            </div>
+            }
+            
         }
 
     </div>
@@ -63,12 +68,10 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
+        try{
             _peliculas = await PeliculaService.ObtenerTodasAsync();
         }
-        finally
-        {
+        finally {
             _cargando = false;
         }
     }

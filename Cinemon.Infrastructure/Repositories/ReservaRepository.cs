@@ -56,26 +56,18 @@ namespace Cinemon.Infrastructure.Repositories
                             butacaId))
                     .ToList();
 
-                await _context.ReservasButacas.AddRangeAsync(
-                    reservaButacas,
-                    cancellationToken);
+                await _context.ReservasButacas.AddRangeAsync(reservaButacas,cancellationToken);
 
-                await _context.SaveChangesAsync(
-                    cancellationToken);
+                await _context.SaveChangesAsync(cancellationToken);
 
-                await transaction.CommitAsync(
-                    cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
             } catch (DbUpdateException) {
-                await transaction.RollbackAsync(
-                    cancellationToken);
+                await transaction.RollbackAsync(cancellationToken);
 
-                throw new InvalidOperationException(
+                throw new ConflictException(
                     "Una o más butacas ya están reservadas para esta función.");
             } catch {
                 await transaction.RollbackAsync(cancellationToken);
-                throw new ConflictException("Una o más butacas ya están reservadas para esta función.");
-
-                throw;
             }
         }
         public async Task<IReadOnlyCollection<Reserva>> ObtenerTodasAsync(CancellationToken cancellationToken)

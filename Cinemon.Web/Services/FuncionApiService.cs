@@ -61,6 +61,25 @@ namespace Cinemon.Web.Services
             return (creada?.Id ?? 0, null);
         }
 
+        public async Task<(bool Ok, string? Error)> EditarAsync(
+            int id,
+            FuncionDto funcion)
+        {
+            AdjuntarToken();
+
+            var response = await _httpClient.PutAsJsonAsync(
+                $"api/funciones/{id}",
+                funcion);
+
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            var contenido = await response.Content
+                .ReadAsStringAsync();
+
+            return (false, contenido);
+        }
+
         private sealed record FuncionCreadaResponse(int Id);
     }
 }

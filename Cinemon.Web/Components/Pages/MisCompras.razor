@@ -1,0 +1,204 @@
+@page "/mis-compras"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@using Cinemon.Web.Models.DTOs
+@using Cinemon.Web.Services
+
+@inject AuthService Auth
+@inject ReservaApiService ReservaService
+@inject NavigationManager Navigation
+
+<PageTitle>Mis compras | Cinemon</PageTitle>
+
+@if (_verificando) {
+    <div class="compras-loading d-flex justify-content-center py-5">
+        <RadzenProgressBarCircular Indeterminate="true" />
+    </div>
+} else if (_autenticado) {
+    <div class="compras-page">
+
+        <div class="compras-header">
+            <span class="cinemon-kicker">Mi cuenta</span>
+            <h1 class="compras-title">Mis compras</h1>
+            <p class="compras-subtitle">
+                Todas tus reservas en Cinemon.
+            </p>
+        </div>
+
+        @if (_cargandoReservas) {
+            <div class="d-flex justify-content-center py-5">
+                <RadzenProgressBarCircular Indeterminate="true" />
+            </div>
+        } else if (_reservas.Count == 0) {
+            <div class="compras-empty">
+                <span class="material-icons">receipt_long</span>
+                <h3>Todavía no tenés compras</h3>
+                <p>
+                    Cuando reserves tus entradas, vas a verlas acá.
+                </p>
+                <RadzenButton Text="Ir a la cartelera"
+                              ButtonStyle="ButtonStyle.Primary"
+                              Click="IrACartelera" />
+            </div>
+        } else {
+            <div class="compras-grid">
+
+                @foreach (var reserva in _reservas) {
+                    <article class="compra-card">
+
+                        <div class="compra-poster">
+                            <img src="@reserva.Pelicula.PosterUrl"
+                                 alt="@reserva.Pelicula.Titulo"
+                                 loading="lazy" />
+
+                            <span class="compra-estado @(reserva.Estado == "Cancelada" ? "cancelada" : "confirmada")">
+                                @reserva.Estado
+                            </span>
+                        </div>
+
+                        <div class="compra-body">
+
+                            <div class="compra-meta-row">
+                                <span class="compra-clasificacion">
+                                    @NormalizarClasificacion(reserva.Pelicula.ClasificacionEdad)
+                                </span>
+                                <span>@ObtenerFechaFuncion(reserva)</span>
+                            </div>
+
+                            <h3 class="compra-titulo">
+                                @reserva.Pelicula.Titulo
+                            </h3>
+
+                            <div class="compra-detalles">
+
+                                <div class="compra-detalle">
+                                    <span class="material-icons">schedule</span>
+                                    @reserva.Funcion.FechaHoraInicio.ToString("dd/MM/yyyy HH:mm")
+                                </div>
+
+                                <div class="compra-detalle">
+                                    <span class="material-icons">meeting_room</span>
+                                    Sala @reserva.Sala.Numero · @NormalizarTipoSala(reserva.Sala.TipoSala)
+                                </div>
+
+                                <div class="compra-detalle">
+                                    <span class="material-icons">closed_caption</span>
+                                    @NormalizarIdioma(reserva.Funcion.Idioma) · @NormalizarFormato(reserva.Funcion.Formato)
+                                </div>
+
+                                <div class="compra-detalle">
+                                    <span class="material-icons">confirmation_number</span>
+                                    @ObtenerButacas(reserva)
+                                </div>
+
+                            </div>
+
+                            <div class="compra-footer">
+                                <span class="compra-fecha">
+                                    Comprada el @reserva.FechaReserva.ToString("dd/MM/yyyy")
+                                </span>
+                                <strong class="compra-total">
+                                    $@reserva.Total.ToString("#,##0.##")
+                                </strong>
+                            </div>
+
+                        </div>
+
+                    </article>
+                }
+
+            </div>
+        }
+
+    </div>
+}
+
+@code {
+
+    private bool _verificando = true;
+    private bool _autenticado;
+
+    private bool _cargandoReservas = true;
+    private IReadOnlyCollection<ReservaDto> _reservas = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _autenticado = await Auth.CargarAsync();
+
+        if (!_autenticado) {
+            var destino = $"login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}";
+            Navigation.NavigateTo(destino, forceLoad: true);
+            _verificando = false;
+            return;
+        }
+
+        _verificando = false;
+
+        try {
+            _reservas = await ReservaService.ObtenerMisReservasAsync();
+        } catch {
+        } finally {
+            _cargandoReservas = false;
+        }
+    }
+
+    private void IrACartelera()
+    {
+        Navigation.NavigateTo("/cartelera");
+    }
+
+    private static string ObtenerFechaFuncion(ReservaDto reserva)
+    {
+        return reserva.Funcion.FechaHoraInicio.ToString("dd/MM");
+    }
+
+    private static string ObtenerButacas(ReservaDto reserva)
+    {
+        var butacas = reserva.Butacas
+            .Select(b => b.Codigo);
+
+        return string.Join(", ", butacas);
+    }
+
+    private static string NormalizarIdioma(string idioma)
+    {
+        return idioma switch
+        {
+            "Espanol" => "Español",
+            "Sub" => "Subtitulada",
+            _ => idioma
+        };
+    }
+
+    private static string NormalizarFormato(string formato)
+    {
+        return formato switch
+        {
+            "DosD" => "2D",
+            "TresD" => "3D",
+            _ => formato
+        };
+    }
+
+    private static string NormalizarTipoSala(string tipoSala)
+    {
+        return tipoSala switch
+        {
+            "Estandar" => "Estándar",
+            "Imax" => "IMAX",
+            _ => tipoSala
+        };
+    }
+
+    private static string NormalizarClasificacion(string clasificacion)
+    {
+        return clasificacion switch
+        {
+            "ATP" => "ATP",
+            "MayorDe13" => "+13",
+            "MayorDe16" => "+16",
+            "MayorDe18" => "+18",
+            _ => clasificacion
+        };
+    }
+}

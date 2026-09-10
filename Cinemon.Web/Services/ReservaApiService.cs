@@ -1,4 +1,5 @@
-﻿using Cinemon.Web.Models.DTOs.Requests;
+﻿using Cinemon.Web.Models.DTOs;
+using Cinemon.Web.Models.DTOs.Requests;
 using System.Net.Http.Headers;
 
 namespace Cinemon.Web.Services
@@ -24,6 +25,32 @@ namespace Cinemon.Web.Services
                 "api/reservas",
                 request,
                 cancellationToken);
+        }
+
+        public async Task<IReadOnlyCollection<ReservaDto>> ObtenerMisReservasAsync(
+            CancellationToken cancellationToken = default)
+        {
+            AdjuntarToken();
+
+            var reservas = await _httpClient.GetFromJsonAsync<
+                IReadOnlyCollection<ReservaDto>>(
+                    "api/reservas/mis-reservas",
+                    cancellationToken);
+
+            return reservas ?? [];
+        }
+
+        public async Task<IReadOnlyCollection<ReservaDto>> ObtenerTodasAsync(
+            CancellationToken cancellationToken = default)
+        {
+            AdjuntarToken();
+
+            var reservas = await _httpClient.GetFromJsonAsync<
+                IReadOnlyCollection<ReservaDto>>(
+                    "api/reservas",
+                    cancellationToken);
+
+            return reservas ?? [];
         }
 
         private void AdjuntarToken()

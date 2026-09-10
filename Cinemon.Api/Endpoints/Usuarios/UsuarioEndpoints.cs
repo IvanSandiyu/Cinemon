@@ -19,7 +19,7 @@ namespace Cinemon.Api.Endpoints.Usuarios
 
             group.MapGet("/", ObtenerUsuarios).RequireAuthorization(policy =>policy.RequireRole("Admin"));
             
-            group.MapGet("/{id:int}", ObtenerUsuario);//Lo dejo publico para el futuro de poder editar datos del cliente
+            group.MapGet("/{id:int}", ObtenerUsuario).RequireAuthorization(policy => policy.RequireRole("Admin","Cliente"));
             group.MapPatch("/{id:int}/activar", ActivarUsuario).RequireAuthorization(policy => policy.RequireRole("Admin"));
             group.MapPatch("/{id:int}/desactivar", DesactivarUsuario).RequireAuthorization(policy => policy.RequireRole("Admin"));
 
@@ -52,7 +52,15 @@ namespace Cinemon.Api.Endpoints.Usuarios
         {
             var usuario = await sender.Send(new ObtenerUsuarioPorIdQuery(id),cancellationToken);
 
-            return usuario is null? Results.NotFound(): Results.Ok(usuario);
+            if (usuario is null)
+                return Results.NotFound();
+
+            return Results.Ok(new UsuarioDto(
+                usuario.Id,
+                usuario.NombreApellido,
+                usuario.Email,
+                usuario.Activo,
+                usuario.Rol.ToString()));
         }
         private static async Task<IResult> ObtenerUsuarios(ISender sender,CancellationToken cancellationToken)
         {
@@ -89,5 +97,12 @@ namespace Cinemon.Api.Endpoints.Usuarios
                     Id = usuarioId
                 });
         }
+
+        private sealed record UsuarioDto(
+            int Id,
+            string NombreApellido,
+            string Email,
+            bool Activo,
+            string Rol);
     }
 }

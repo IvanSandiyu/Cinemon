@@ -1,5 +1,6 @@
 ﻿using Cinemon.Application.Abstractions;
 using Cinemon.Application.Interfaces;
+using Cinemon.Domain.Exceptions;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace Cinemon.Application.Peliculas.Commands.VincularTmdb
                 cancellationToken);
 
             if (pelicula is null)
-                throw new KeyNotFoundException(
+                throw new NotFoundException(
                     "La película no existe.");
 
             var tmdbMovie = await _tmdbService.ObtenerPeliculaAsync(
@@ -37,7 +38,7 @@ namespace Cinemon.Application.Peliculas.Commands.VincularTmdb
                 cancellationToken);
 
             if (tmdbMovie is null)
-                throw new KeyNotFoundException(
+                throw new NotFoundException(
                     "La película no existe en TMDB.");
 
             var generos = await _generoRepository.ObtenerOCrearPorNombresAsync(

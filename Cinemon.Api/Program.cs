@@ -20,6 +20,12 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Secretos fuera del control de versiones:
+// ConnectionStrings:DefaultConnection, Jwt:Key y Tmdb:AccessToken viven en user-secrets.
+// AddUserSecrets<Program>() se hace explícito porque la API puede ejecutarse
+// directamente desde el exe (entorno Production), donde .NET no los carga solo.
+builder.Configuration.AddUserSecrets<Program>();
+
 //Convierte los enums a string
 //builder.Services.ConfigureHttpJsonOptions(options =>
 //    options.SerializerOptions.Converters.Add(

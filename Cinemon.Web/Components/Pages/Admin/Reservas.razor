@@ -1,10 +1,326 @@
 ﻿@page "/admin/reservas"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
+@using Cinemon.Web.Models.DTOs
+@using Cinemon.Web.Services
+
+@inject ReservaApiService ReservaService
+
+<PageTitle>Reservas | Admin | Cinemon</PageTitle>
+
 <AdminGuard>
-<h3>Reservas</h3>
+<div class="admin-page">
+
+    <div class="admin-header admin-section-header">
+
+        <div>
+            <span class="cinemon-kicker">Administración</span>
+
+            <h1 class="admin-title">
+                Reservas
+            </h1>
+
+            <p class="admin-subtitle">
+                Todas las ventas y reservas de Cinemon.
+            </p>
+        </div>
+
+    </div>
+
+    @if (_cargando) {
+        <div class="d-flex justify-content-center py-5">
+            <RadzenProgressBarCircular Indeterminate="true" />
+        </div>
+    } else {
+
+        <div class="admin-toolbar">
+
+            <div class="admin-search">
+                <span class="material-icons">search</span>
+
+                <input type="text"
+                       placeholder="Buscar por cliente o película..."
+                       @bind="_busqueda"
+                       @bind:event="oninput" />
+            </div>
+
+            <div class="admin-selects">
+
+                <select @bind="_filtroSala">
+                    <option value="">Todas las salas</option>
+
+                    @foreach (var sala in SalasDisponibles) {
+                        <option value="@sala.Numero">Sala @sala.Numero · @NormalizarTipoSala(sala.TipoSala)</option>
+                    }
+                </select>
+
+                <select @bind="_filtroFuncionId">
+                    <option value="">Todas las funciones</option>
+
+                    @foreach (var funcion in FuncionesDisponibles) {
+                        <option value="@funcion.FuncionId">@ObtenerEtiquetaFuncion(funcion)</option>
+                    }
+                </select>
+
+            </div>
+
+        </div>
+
+        <div class="admin-filters">
+
+            <button class="admin-filter @( _filtroEstado == FiltroEstado.Todas ? "active" : "")"
+                    @onclick="() => CambiarFiltroEstado(FiltroEstado.Todas)">
+                Todas
+            </button>
+
+            <button class="admin-filter @( _filtroEstado == FiltroEstado.Confirmadas ? "active" : "")"
+                    @onclick="() => CambiarFiltroEstado(FiltroEstado.Confirmadas)">
+                Confirmadas
+            </button>
+
+            <button class="admin-filter @( _filtroEstado == FiltroEstado.Canceladas ? "active" : "")"
+                    @onclick="() => CambiarFiltroEstado(FiltroEstado.Canceladas)">
+                Canceladas
+            </button>
+
+        </div>
+
+        <div class="admin-count">
+            @ReservasFiltradas.Count() reservas
+            @if (_filtroSala != "" || _filtroFuncionId != "" || _filtroEstado != FiltroEstado.Todas || !string.IsNullOrWhiteSpace(_busqueda)) {
+                <span class="admin-count-filtered">
+                    · filtradas de @_reservas.Count
+                </span>
+            }
+        </div>
+
+        @if (ReservasFiltradas.Count() == 0) {
+            <div class="admin-empty">
+                <span class="material-icons">receipt_long</span>
+
+                <h3>No se encontraron reservas</h3>
+
+                <p>
+                    Probá con otros filtros o borrá la búsqueda.
+                </p>
+            </div>
+        } else {
+            <div class="admin-table-wrap">
+
+                <table class="admin-table">
+
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Película</th>
+                            <th>Función</th>
+                            <th>Sala</th>
+                            <th class="col-seats">Butacas</th>
+                            <th class="col-price">Total</th>
+                            <th class="col-state">Estado</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var reserva in ReservasFiltradas) {
+                            <tr>
+                                <td class="col-client">
+                                    <span class="client-name">
+                                        @reserva.Cliente.NombreApellido
+                                    </span>
+
+                                    <span class="client-email">
+                                        @reserva.Cliente.Email
+                                    </span>
+                                </td>
+
+                                <td class="col-movie">
+                                    <span class="movie-title">
+                                        @reserva.Pelicula.Titulo
+                                    </span>
+
+                                    <span class="movie-clasif">
+                                        @NormalizarClasificacion(reserva.Pelicula.ClasificacionEdad)
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @reserva.Funcion.FechaHoraInicio.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td>
+                                    Sala @reserva.Sala.Numero · @NormalizarTipoSala(reserva.Sala.TipoSala)
+                                </td>
+
+                                <td class="col-seats">
+                                    @ObtenerButacas(reserva)
+                                </td>
+
+                                <td class="col-price">
+                                    $@reserva.Total.ToString("#,##0.##")
+                                </td>
+
+                                <td class="col-state">
+                                    <span class="admin-state @(reserva.Estado == "Cancelada" ? "cancelada" : "programada")">
+                                        @reserva.Estado
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+
+    }
+
+</div>
 </AdminGuard>
 
 @code {
 
+    private IReadOnlyCollection<ReservaDto> _reservas = [];
+
+    private bool _cargando = true;
+
+    private string _busqueda = string.Empty;
+    private string _filtroSala = string.Empty;
+    private string _filtroFuncionId = string.Empty;
+    private FiltroEstado _filtroEstado = FiltroEstado.Todas;
+
+    private IEnumerable<FuncionReserva> FuncionesDisponibles =>
+        _reservas
+            .Select(r => new FuncionReserva(
+                r.Funcion.Id,
+                r.Pelicula.Titulo,
+                r.Funcion.FechaHoraInicio))
+            .Distinct()
+            .OrderByDescending(f => f.FechaHoraInicio);
+
+    private IEnumerable<ReservaSalaDto> SalasDisponibles =>
+        _reservas
+            .Select(r => r.Sala)
+            .Distinct()
+            .OrderBy(s => s.Numero);
+
+    private IEnumerable<ReservaDto> ReservasFiltradas =>
+        _reservas
+            .Where(PerteneceAlEstado)
+            .Where(PerteneceALaSala)
+            .Where(PerteneceALaFuncion)
+            .Where(PerteneceALaBusqueda)
+            .OrderByDescending(r => r.FechaReserva);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarReservas();
+    }
+
+    private async Task CargarReservas()
+    {
+        _cargando = true;
+
+        try {
+            _reservas = await ReservaService.ObtenerTodasAsync();
+        } catch {
+            _reservas = [];
+        } finally {
+            _cargando = false;
+        }
+    }
+
+    private bool PerteneceAlEstado(ReservaDto reserva)
+    {
+        return _filtroEstado switch
+        {
+            FiltroEstado.Confirmadas => reserva.Estado == "Confirmada",
+            FiltroEstado.Canceladas => reserva.Estado == "Cancelada",
+            _ => true
+        };
+    }
+
+    private bool PerteneceALaSala(ReservaDto reserva)
+    {
+        if (string.IsNullOrWhiteSpace(_filtroSala))
+            return true;
+
+        return reserva.Sala.Numero.ToString() == _filtroSala;
+    }
+
+    private bool PerteneceALaFuncion(ReservaDto reserva)
+    {
+        if (string.IsNullOrWhiteSpace(_filtroFuncionId))
+            return true;
+
+        return reserva.Funcion.Id.ToString() == _filtroFuncionId;
+    }
+
+    private bool PerteneceALaBusqueda(ReservaDto reserva)
+    {
+        if (string.IsNullOrWhiteSpace(_busqueda))
+            return true;
+
+        return reserva.Cliente.NombreApellido.Contains(
+                _busqueda, StringComparison.OrdinalIgnoreCase)
+            || reserva.Cliente.Email.Contains(
+                _busqueda, StringComparison.OrdinalIgnoreCase)
+            || reserva.Pelicula.Titulo.Contains(
+                _busqueda, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void CambiarFiltroEstado(FiltroEstado filtro)
+    {
+        _filtroEstado = filtro;
+    }
+
+    private static string ObtenerEtiquetaFuncion(FuncionReserva funcion)
+    {
+        return $"{funcion.Titulo} · {funcion.FechaHoraInicio.ToString("dd/MM/yyyy HH:mm")}";
+    }
+
+    private static string ObtenerButacas(ReservaDto reserva)
+    {
+        var butacas = reserva.Butacas
+            .Select(b => b.Codigo);
+
+        return string.Join(", ", butacas);
+    }
+
+    private static string NormalizarTipoSala(string tipoSala)
+    {
+        return tipoSala switch
+        {
+            "Estandar" => "Estándar",
+            "Imax" => "IMAX",
+            _ => tipoSala
+        };
+    }
+
+    private static string NormalizarClasificacion(string clasificacion)
+    {
+        return clasificacion switch
+        {
+            "ATP" => "ATP",
+            "MayorDe13" => "+13",
+            "MayorDe16" => "+16",
+            "MayorDe18" => "+18",
+            _ => clasificacion
+        };
+    }
+
+    private sealed record FuncionReserva(
+        int FuncionId,
+        string Titulo,
+        DateTime FechaHoraInicio);
+
+    private enum FiltroEstado
+    {
+        Todas,
+        Confirmadas,
+        Canceladas
+    }
 }

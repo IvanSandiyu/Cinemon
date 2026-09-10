@@ -1,4 +1,43 @@
-﻿.admin-create-layout {
+/* ===== Header ===== */
+.admin-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.admin-header {
+    margin-bottom: 2rem;
+}
+
+.cinemon-kicker {
+    display: inline-block;
+    color: #7BC6C9;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+}
+
+.admin-title {
+    color: #E7F3F2;
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 0.3rem;
+}
+
+.admin-subtitle {
+    color: #8AB8BB;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.admin-primary-button {
+    border-radius: 10px !important;
+}
+
+/* ===== Layout ===== */
+.admin-create-layout {
     display: grid;
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
     gap: 1.25rem;
@@ -23,14 +62,16 @@
     margin: 0 0 0.35rem;
     font-size: 1.05rem;
     font-weight: 600;
+    color: #E7F3F2;
 }
 
 .admin-form-section-header p {
     margin: 0;
-    color: #777c9b;
+    color: #8AB8BB;
     font-size: 0.8rem;
 }
 
+/* ===== TMDB ===== */
 .admin-tmdb-label,
 .admin-tmdb-selected {
     display: inline-flex;
@@ -174,6 +215,93 @@
     text-align: center;
 }
 
+.admin-tmdb-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid rgba(177, 74, 237, 0.25);
+    border-radius: 9px;
+    background: rgba(177, 74, 237, 0.06);
+    color: #C99BEF;
+    font-size: 0.75rem;
+    line-height: 1.4;
+}
+
+.admin-tmdb-hint .material-icons {
+    flex-shrink: 0;
+    font-size: 17px;
+}
+
+/* ===== Estado ===== */
+.admin-status {
+    display: inline-block;
+    flex-shrink: 0;
+    padding: 0.3rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.admin-status.active {
+    background: rgba(40, 180, 110, 0.15);
+    color: #62d99c;
+}
+
+.admin-status.inactive {
+    background: rgba(255, 255, 255, 0.1);
+    color: #9a9fbf;
+}
+
+/* ===== Preview ===== */
+.admin-preview {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 0.85rem;
+    border: 1px solid rgba(154, 159, 191, 0.12);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.admin-preview img {
+    width: 66px;
+    height: 96px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #111322;
+}
+
+.admin-preview > div {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.3rem;
+}
+
+.admin-preview strong {
+    overflow: hidden;
+    color: #f5f6ff;
+    font-size: 0.9rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-preview span {
+    display: -webkit-box;
+    overflow: hidden;
+    color: #777c9b;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+/* ===== Formulario ===== */
 .admin-form {
     display: flex;
     flex-direction: column;
@@ -216,38 +344,7 @@
     gap: 0.8rem;
 }
 
-.admin-form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.6rem;
-    margin-top: 1.5rem;
-}
-
-.admin-cancel-button {
-    border-radius: 9px !important;
-    background-color: rgba(255, 255, 255, 0.03) !important;
-    background-image: none !important;
-    color: #8AB8BB !important;
-    border: 1px solid rgba(123, 198, 201, 0.35) !important;
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-    .admin-cancel-button:hover {
-        background-color: rgba(123, 198, 201, 0.1) !important;
-        background-image: none !important;
-        border-color: rgba(123, 198, 201, 0.6) !important;
-        color: #E7F3F2 !important;
-    }
-
-.admin-form-error {
-    margin-top: 1rem;
-    padding: 0.7rem 0.8rem;
-    border-radius: 8px;
-    background: rgba(200, 70, 90, 0.08);
-    color: #d98591;
-    font-size: 0.8rem;
-}
-
+/* ===== Géneros ===== */
 .genre-selector {
     display: flex;
     flex-wrap: wrap;
@@ -268,33 +365,103 @@
     transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-    .genre-option:hover {
-        border-color: rgba(177, 74, 237, 0.35);
-        color: #f5f6ff;
-    }
+.genre-option:hover {
+    border-color: rgba(177, 74, 237, 0.35);
+    color: #f5f6ff;
+}
 
-    .genre-option.selected {
-        border-color: rgba(177, 74, 237, 0.5);
-        background: rgba(177, 74, 237, 0.1);
-        color: #b14aed;
-    }
+.genre-option.selected {
+    border-color: rgba(177, 74, 237, 0.5);
+    background: rgba(177, 74, 237, 0.1);
+    color: #b14aed;
+}
 
-    .genre-option .material-icons {
-        font-size: 15px;
-    }
+.genre-option .material-icons {
+    font-size: 15px;
+}
 
+/* ===== Acciones ===== */
+.admin-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+}
+
+.admin-cancel-button {
+    border-radius: 9px !important;
+    background-color: rgba(255, 255, 255, 0.03) !important;
+    background-image: none !important;
+    color: #8AB8BB !important;
+    border: 1px solid rgba(123, 198, 201, 0.35) !important;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.admin-cancel-button:hover {
+    background-color: rgba(123, 198, 201, 0.1) !important;
+    background-image: none !important;
+    border-color: rgba(123, 198, 201, 0.6) !important;
+    color: #E7F3F2 !important;
+}
+
+.admin-form-error {
+    margin-top: 1rem;
+    padding: 0.7rem 0.8rem;
+    border-radius: 8px;
+    background: rgba(200, 70, 90, 0.08);
+    color: #d98591;
+    font-size: 0.8rem;
+}
+
+/* ===== No encontrada ===== */
+.admin-notfound {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1rem;
+    text-align: center;
+}
+
+.admin-notfound .material-icons {
+    margin-bottom: 0.8rem;
+    color: #555a78;
+    font-size: 44px;
+}
+
+.admin-notfound h2 {
+    margin: 0 0 0.4rem;
+    color: #E7F3F2;
+    font-size: 1.05rem;
+}
+
+.admin-notfound p {
+    margin: 0 0 1.2rem;
+    color: #8AB8BB;
+    font-size: 0.85rem;
+}
+
+/* ===== Responsive ===== */
 @media (max-width: 900px) {
     .admin-create-layout {
         grid-template-columns: 1fr;
     }
 }
 
-@media (max-width: 600px) {
-    .admin-form-row {
-        grid-template-columns: 1fr;
+@media (max-width: 640px) {
+    .admin-page {
+        padding: 1.25rem 1rem;
+    }
+
+    .admin-title {
+        font-size: 1.5rem;
     }
 
     .admin-form-section {
         padding: 1rem;
+    }
+
+    .admin-form-row {
+        grid-template-columns: 1fr;
     }
 }

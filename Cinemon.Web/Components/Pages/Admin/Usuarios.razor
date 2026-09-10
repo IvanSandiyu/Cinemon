@@ -1,10 +1,435 @@
 ﻿@page "/admin/usuarios"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
+@using Cinemon.Web.Models.DTOs
+@using Cinemon.Web.Services
+
+@inject UsuarioApiService UsuarioService
+@inject ReservaApiService ReservaService
+
+<PageTitle>Usuarios | Admin | Cinemon</PageTitle>
+
 <AdminGuard>
-<h3>Usuarios</h3>
+<div class="admin-page">
+
+    <div class="admin-header admin-section-header">
+
+        <div>
+            <span class="cinemon-kicker">Administración</span>
+
+            <h1 class="admin-title">
+                Usuarios
+            </h1>
+
+            <p class="admin-subtitle">
+                Cuentas registradas en Cinemon.
+            </p>
+        </div>
+
+    </div>
+
+    @if (_cargando) {
+        <div class="d-flex justify-content-center py-5">
+            <RadzenProgressBarCircular Indeterminate="true" />
+        </div>
+    } else {
+        <div class="admin-toolbar">
+
+            <div class="admin-search">
+                <span class="material-icons">search</span>
+
+                <input type="text"
+                       placeholder="Buscar por nombre o email..."
+                       @bind="_busqueda"
+                       @bind:event="oninput" />
+            </div>
+
+            <div class="admin-filters">
+
+                <button class="admin-filter @( _filtroRol == FiltroRol.Todos ? "active" : "")"
+                        @onclick="() => CambiarFiltroRol(FiltroRol.Todos)">
+                    Todos
+                </button>
+
+                <button class="admin-filter @( _filtroRol == FiltroRol.Administradores ? "active" : "")"
+                        @onclick="() => CambiarFiltroRol(FiltroRol.Administradores)">
+                    Administradores
+                </button>
+
+                <button class="admin-filter @( _filtroRol == FiltroRol.Clientes ? "active" : "")"
+                        @onclick="() => CambiarFiltroRol(FiltroRol.Clientes)">
+                    Clientes
+                </button>
+
+                <button class="admin-filter @( _filtroRol == FiltroRol.Inactivos ? "active" : "")"
+                        @onclick="() => CambiarFiltroRol(FiltroRol.Inactivos)">
+                    Inactivos
+                </button>
+
+            </div>
+
+        </div>
+
+        @if (UsuariosFiltrados.Count() == 0) {
+            <div class="admin-empty">
+                <span class="material-icons">person_search</span>
+
+                <h3>No se encontraron usuarios</h3>
+
+                <p>
+                    Probá con otro término de búsqueda o borrá los filtros.
+                </p>
+            </div>
+        } else {
+            <div class="admin-table-wrap">
+
+                <table class="admin-table">
+
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th class="col-state">Estado</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var usuario in UsuariosFiltrados) {
+                            <tr class="@(_usuarioExpandido == usuario.Id ? "expanded" : "")">
+
+                                <td class="col-user">
+                                    <span class="user-avatar">@ObtenerIniciales(usuario)</span>
+
+                                    <span class="user-name">
+                                        @usuario.NombreApellido
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @usuario.Email
+                                </td>
+
+                                <td>
+                                    <span class="admin-state @ObtenerClaseRol(usuario.Rol)">
+                                        @ObtenerNombreRol(usuario.Rol)
+                                    </span>
+                                </td>
+
+                                <td class="col-state">
+                                    <div class="admin-state-cell">
+
+                                        <span class="admin-state @(usuario.Activo ? "programada" : "cancelada")">
+                                            @(usuario.Activo ? "Activo" : "Inactivo")
+                                        </span>
+
+                                        <button type="button"
+                                                class="admin-row-action"
+                                                title="@( _usuarioExpandido == usuario.Id ? "Ocultar reservas" : "Ver reservas")"
+                                                @onclick="() => AlternarReservas(usuario.Id)">
+                                            <span class="material-icons">
+                                                @(_usuarioExpandido == usuario.Id ? "expand_less" : "receipt_long")
+                                            </span>
+                                        </button>
+
+                                    </div>
+                                </td>
+                            </tr>
+
+                            @if (_usuarioExpandido == usuario.Id) {
+                                <tr class="user-reservas-row">
+                                    <td colspan="4">
+                                        <div class="user-reservas">
+
+                                            @if (_cargandoReservas) {
+                                                <div class="d-flex justify-content-center py-4">
+                                                    <RadzenProgressBarCircular Indeterminate="true" />
+                                                </div>
+                                            } else if (ReservasDelUsuario.Count() == 0) {
+                                                <div class="user-reservas-empty">
+                                                    <span class="material-icons">receipt_long</span>
+
+                                                    <p>
+                                                        Este usuario todavía no tiene reservas.
+                                                    </p>
+                                                </div>
+                                            } else {
+                                                <div class="user-reservas-list">
+
+                                                    @foreach (var reserva in ReservasDelUsuario) {
+                                                        <article class="user-reserva-card">
+
+                                                            <div class="user-reserva-poster">
+                                                                <img src="@reserva.Pelicula.PosterUrl"
+                                                                     alt="@reserva.Pelicula.Titulo"
+                                                                     loading="lazy" />
+
+                                                                <span class="user-reserva-estado @(reserva.Estado == "Cancelada" ? "cancelada" : "confirmada")">
+                                                                    @reserva.Estado
+                                                                </span>
+                                                            </div>
+
+                                                            <div class="user-reserva-body">
+
+                                                                <div class="user-reserva-meta">
+                                                                    <span class="user-reserva-clasificacion">
+                                                                        @NormalizarClasificacion(reserva.Pelicula.ClasificacionEdad)
+                                                                    </span>
+
+                                                                    <span>
+                                                                        @reserva.Funcion.FechaHoraInicio.ToString("dd/MM/yyyy HH:mm")
+                                                                    </span>
+                                                                </div>
+
+                                                                <h4 class="user-reserva-titulo">
+                                                                    @reserva.Pelicula.Titulo
+                                                                </h4>
+
+                                                                <div class="user-reserva-detalles">
+
+                                                                    <div class="user-reserva-detalle">
+                                                                        <span class="material-icons">meeting_room</span>
+                                                                        Sala @reserva.Sala.Numero · @NormalizarTipoSala(reserva.Sala.TipoSala)
+                                                                    </div>
+
+                                                                    <div class="user-reserva-detalle">
+                                                                        <span class="material-icons">closed_caption</span>
+                                                                        @NormalizarIdioma(reserva.Funcion.Idioma) · @NormalizarFormato(reserva.Funcion.Formato)
+                                                                    </div>
+
+                                                                    <div class="user-reserva-detalle">
+                                                                        <span class="material-icons">confirmation_number</span>
+                                                                        @ObtenerButacas(reserva)
+                                                                    </div>
+
+                                                                </div>
+
+                                                                <div class="user-reserva-footer">
+                                                                    <span>
+                                                                        Comprada el @reserva.FechaReserva.ToString("dd/MM/yyyy")
+                                                                    </span>
+
+                                                                    <strong>
+                                                                        $@reserva.Total.ToString("#,##0.##")
+                                                                    </strong>
+                                                                </div>
+
+                                                            </div>
+
+                                                        </article>
+                                                    }
+
+                                                </div>
+                                            }
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+
+    }
+
+</div>
 </AdminGuard>
 
 @code {
 
+    private IReadOnlyCollection<UsuarioAdminDto> _usuarios = [];
+    private IReadOnlyCollection<ReservaDto> _reservas = [];
+
+    private bool _cargando = true;
+    private bool _cargandoReservas;
+
+    private string _busqueda = string.Empty;
+    private FiltroRol _filtroRol = FiltroRol.Todos;
+
+    private int? _usuarioExpandido;
+    private UsuarioAdminDto? _usuarioDeReservas;
+
+    private IEnumerable<UsuarioAdminDto> UsuariosFiltrados =>
+        _usuarios
+            .Where(PerteneceAlFiltroRol)
+            .Where(PerteneceALaBusqueda)
+            .OrderBy(u => u.NombreApellido);
+
+    private IEnumerable<ReservaDto> ReservasDelUsuario
+    {
+        get
+        {
+            if (_usuarioDeReservas is null)
+                return [];
+
+            var email = _usuarioDeReservas.Email;
+
+            return _reservas
+                .Where(r => string.Equals(
+                    r.Cliente.Email,
+                    email,
+                    StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(r => r.FechaReserva);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarUsuarios();
+    }
+
+    private async Task CargarUsuarios()
+    {
+        _cargando = true;
+
+        try {
+            _usuarios = await UsuarioService.ObtenerTodasAsync();
+        } catch {
+            _usuarios = [];
+        } finally {
+            _cargando = false;
+        }
+    }
+
+    private async Task AlternarReservas(int usuarioId)
+    {
+        if (_usuarioExpandido == usuarioId) {
+            _usuarioExpandido = null;
+            _usuarioDeReservas = null;
+            return;
+        }
+
+        var usuario = _usuarios.FirstOrDefault(u => u.Id == usuarioId);
+
+        if (usuario is null)
+            return;
+
+        _usuarioExpandido = usuarioId;
+        _usuarioDeReservas = usuario;
+
+        if (_reservas.Count == 0) {
+            _cargandoReservas = true;
+
+            try {
+                _reservas = await ReservaService.ObtenerTodasAsync();
+            } catch {
+                _reservas = [];
+            } finally {
+                _cargandoReservas = false;
+            }
+        }
+    }
+
+    private bool PerteneceAlFiltroRol(UsuarioAdminDto usuario)
+    {
+        return _filtroRol switch
+        {
+            FiltroRol.Administradores => usuario.Rol == 2,
+            FiltroRol.Clientes => usuario.Rol == 1,
+            FiltroRol.Inactivos => !usuario.Activo,
+            _ => true
+        };
+    }
+
+    private bool PerteneceALaBusqueda(UsuarioAdminDto usuario)
+    {
+        if (string.IsNullOrWhiteSpace(_busqueda))
+            return true;
+
+        return usuario.NombreApellido.Contains(
+                _busqueda, StringComparison.OrdinalIgnoreCase)
+            || usuario.Email.Contains(
+                _busqueda, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string ObtenerIniciales(UsuarioAdminDto usuario)
+    {
+        var partes = usuario.NombreApellido
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        var iniciales = partes
+            .Take(2)
+            .Select(p => p[0]);
+
+        return string.Concat(iniciales).ToUpperInvariant();
+    }
+
+    private static string ObtenerNombreRol(int rol)
+    {
+        return rol == 2 ? "Administrador" : "Cliente";
+    }
+
+    private static string ObtenerClaseRol(int rol)
+    {
+        return rol == 2 ? "finalizada" : "programada";
+    }
+
+    private void CambiarFiltroRol(FiltroRol rol)
+    {
+        _filtroRol = rol;
+    }
+
+    private static string ObtenerButacas(ReservaDto reserva)
+    {
+        var butacas = reserva.Butacas
+            .Select(b => b.Codigo);
+
+        return string.Join(", ", butacas);
+    }
+
+    private static string NormalizarIdioma(string idioma)
+    {
+        return idioma switch
+        {
+            "Espanol" => "Español",
+            "Sub" => "Subtitulada",
+            _ => idioma
+        };
+    }
+
+    private static string NormalizarFormato(string formato)
+    {
+        return formato switch
+        {
+            "DosD" => "2D",
+            "TresD" => "3D",
+            _ => formato
+        };
+    }
+
+    private static string NormalizarTipoSala(string tipoSala)
+    {
+        return tipoSala switch
+        {
+            "Estandar" => "Estándar",
+            "Imax" => "IMAX",
+            _ => tipoSala
+        };
+    }
+
+    private static string NormalizarClasificacion(string clasificacion)
+    {
+        return clasificacion switch
+        {
+            "ATP" => "ATP",
+            "MayorDe13" => "+13",
+            "MayorDe16" => "+16",
+            "MayorDe18" => "+18",
+            _ => clasificacion
+        };
+    }
+
+    private enum FiltroRol
+    {
+        Todos,
+        Administradores,
+        Clientes,
+        Inactivos
+    }
 }

@@ -1,6 +1,6 @@
 /* ===== Página ===== */
 .admin-page {
-    max-width: 960px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 2rem 1.5rem;
 }
@@ -37,10 +37,6 @@
     color: #8AB8BB;
     font-size: 1rem;
     margin: 0;
-}
-
-.admin-primary-button {
-    border-radius: 10px !important;
 }
 
 /* ===== Toolbar ===== */
@@ -141,38 +137,49 @@
     border-bottom: 1px solid rgba(154, 159, 191, 0.08);
     color: #E7F3F2;
     white-space: nowrap;
+    vertical-align: middle;
 }
 
 .admin-table tbody tr:last-child td {
     border-bottom: 0;
 }
 
-.admin-table tbody tr:hover td {
+.admin-table tbody tr:not(.user-reservas-row):hover td {
     background: rgba(123, 198, 201, 0.04);
 }
 
-.admin-table .col-movie {
-    min-width: 220px;
-}
-
-.admin-table .movie-title {
-    display: block;
-    max-width: 260px;
-    overflow: hidden;
-    font-weight: 600;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.admin-table .col-price {
-    color: #7BC6C9;
+.admin-table tr.expanded td {
+    background: rgba(123, 198, 201, 0.06);
 }
 
 .admin-table .col-state {
     text-align: right;
 }
 
-/* ===== Estado ===== */
+/* ===== Usuario ===== */
+.admin-table .col-user {
+    min-width: 220px;
+}
+
+.user-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    margin-right: 0.65rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #B14AF0, #7BC6C9);
+    color: #08121A;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.user-name {
+    font-weight: 600;
+}
+
+/* ===== Estado / rol ===== */
 .admin-state {
     display: inline-block;
     padding: 0.3rem 0.6rem;
@@ -188,8 +195,8 @@
 }
 
 .admin-state.finalizada {
-    background: rgba(123, 198, 201, 0.12);
-    color: #7BC6C9;
+    background: rgba(177, 74, 237, 0.15);
+    color: #C98BFF;
 }
 
 .admin-state.cancelada {
@@ -197,7 +204,6 @@
     color: #D98591;
 }
 
-/* ===== Acción por fila ===== */
 .admin-state-cell {
     display: inline-flex;
     align-items: center;
@@ -205,6 +211,7 @@
     gap: 0.5rem;
 }
 
+/* ===== Acción por fila ===== */
 .admin-row-action {
     display: inline-flex;
     align-items: center;
@@ -232,6 +239,145 @@
 .admin-row-action .material-icons {
     font-size: 18px;
     line-height: 1;
+}
+
+/* ===== Reservas del usuario (fila expandida) ===== */
+.user-reservas-row td {
+    padding: 0 !important;
+    background: rgba(8, 18, 26, 0.55);
+}
+
+.user-reservas {
+    padding: 1.25rem;
+}
+
+.user-reservas-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 1.5rem;
+    color: #777C9B;
+    font-size: 0.85rem;
+}
+
+.user-reservas-empty .material-icons {
+    font-size: 22px;
+}
+
+.user-reservas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 480px;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+}
+
+.user-reserva-card {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 0.8rem;
+    padding: 0.7rem;
+    border: 1px solid rgba(154, 159, 191, 0.1);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.user-reserva-poster {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.user-reserva-poster img {
+    width: 56px;
+    height: 76px;
+    object-fit: cover;
+    display: block;
+}
+
+.user-reserva-estado {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    padding: 0.15rem 0.4rem;
+    border-radius: 999px;
+    font-size: 0.58rem;
+    font-weight: 600;
+}
+
+.user-reserva-estado.confirmada {
+    background: rgba(40, 180, 110, 0.85);
+    color: #08121A;
+}
+
+.user-reserva-estado.cancelada {
+    background: rgba(200, 70, 90, 0.85);
+    color: #fff;
+}
+
+.user-reserva-body {
+    min-width: 0;
+}
+
+.user-reserva-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.25rem;
+    color: #858AA8;
+    font-size: 0.7rem;
+}
+
+.user-reserva-clasificacion {
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+    background: rgba(123, 198, 201, 0.12);
+    color: #7BC6C9;
+    font-size: 0.62rem;
+    font-weight: 600;
+}
+
+.user-reserva-titulo {
+    margin: 0 0 0.4rem;
+    color: #E7F3F2;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.user-reserva-detalles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+}
+
+.user-reserva-detalle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #9A9FBF;
+    font-size: 0.72rem;
+}
+
+.user-reserva-detalle .material-icons {
+    color: #777C9B;
+    font-size: 15px;
+}
+
+.user-reserva-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+    color: #777C9B;
+    font-size: 0.68rem;
+}
+
+.user-reserva-footer strong {
+    color: #7BC6C9;
+    font-size: 0.78rem;
 }
 
 /* ===== Vacío ===== */
@@ -276,6 +422,11 @@
 
     .admin-filters {
         width: fit-content;
+        flex-wrap: wrap;
+    }
+
+    .admin-table .col-user {
+        min-width: 160px;
     }
 }
 
@@ -286,5 +437,14 @@
 
     .admin-title {
         font-size: 1.5rem;
+    }
+
+    .user-reserva-card {
+        grid-template-columns: 46px 1fr;
+    }
+
+    .user-reserva-poster img {
+        width: 46px;
+        height: 64px;
     }
 }

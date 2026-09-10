@@ -10,35 +10,81 @@
 }
 else
 {
-    <div class="account-menu"
-         @onclick:stopPropagation="true"
-         @onmouseleave="CerrarMenu"
-         @onblur="CerrarMenu">
+    <div class="account-menu">
         <button type="button"
-                class="account-trigger"
+                class="account-trigger @(_menuAbierto ? "open" : "")"
                 @onclick="AlternarMenu"
                 aria-haspopup="true"
-                aria-expanded="_menuAbierto">
+                aria-expanded="_menuAbierto"
+                aria-label="Menú de cuenta">
+            <span class="account-avatar">@Iniciales</span>
             <span class="account-name">@Auth.NombreApellido</span>
-            <RadzenIcon Icon="account_circle" class="cinemon-account-icon" />
             <RadzenIcon Icon="@(_menuAbierto ? "arrow_drop_up" : "arrow_drop_down")" class="cinemon-account-caret" />
         </button>
 
         @if (_menuAbierto) {
-            <div class="account-dropdown">
+            <div class="account-backdrop"
+                 @onclick="CerrarMenu"
+                 aria-hidden="true"></div>
+
+            <div class="account-dropdown" role="menu">
+
                 <div class="account-dropdown-header">
-                    <strong>@Auth.NombreApellido</strong>
-                    <span class="cinemon-muted">@(Auth.Rol == 2 ? "Administrador" : "Cliente")</span>
+                    <span class="account-dropdown-avatar">@Iniciales</span>
+                    <div class="account-dropdown-identity">
+                        <strong>@Auth.NombreApellido</strong>
+                        <span class="account-role-badge @(_esAdmin ? "admin" : "cliente")">
+                            @(_esAdmin ? "Administrador" : "Cliente")
+                        </span>
+                    </div>
                 </div>
-                @if(Auth.Rol == 2)
-                {
-                    <button type="button" @onclick="PanelAdmin">Panel administrador</button>
-                }
-                <button type="button" class="account-dropdown-item"
+
+                <div class="account-dropdown-body">
+                    @if (_esAdmin) {
+                        <button type="button"
+                                class="account-dropdown-item"
+                                role="menuitem"
+                                @onclick="IrAlPanelAdmin">
+                            <span class="account-item-icon">
+                                <RadzenIcon Icon="admin_panel_settings" />
+                            </span>
+                            <span>Ir al panel de administrador</span>
+                        </button>
+                    } else {
+                        <button type="button"
+                                class="account-dropdown-item"
+                                role="menuitem"
+                                @onclick="IrAMiCuenta">
+                            <span class="account-item-icon">
+                                <RadzenIcon Icon="person" />
+                            </span>
+                            <span>Mi cuenta</span>
+                        </button>
+
+                        <button type="button"
+                                class="account-dropdown-item"
+                                role="menuitem"
+                                @onclick="IrAMisCompras">
+                            <span class="account-item-icon">
+                                <RadzenIcon Icon="receipt_long" />
+                            </span>
+                            <span>Mis compras</span>
+                        </button>
+                    }
+                </div>
+
+                <div class="account-separator"></div>
+
+                <button type="button"
+                        class="account-dropdown-item danger"
+                        role="menuitem"
                         @onclick="CerrarSesion">
-                    <RadzenIcon Icon="logout" />
+                    <span class="account-item-icon">
+                        <RadzenIcon Icon="logout" />
+                    </span>
                     <span>Cerrar sesión</span>
                 </button>
+
             </div>
         }
     </div>
@@ -46,6 +92,10 @@ else
 
 @code {
     private bool _menuAbierto;
+
+    private bool _esAdmin => Auth.Rol == 2;
+
+    private string Iniciales => ObtenerIniciales(Auth.NombreApellido);
 
     protected override void OnInitialized()
     {
@@ -74,9 +124,26 @@ else
     {
         _menuAbierto = false;
     }
-    private void PanelAdmin()
+
+    private void IrA(string ruta)
     {
-         Navigation.NavigateTo("/admin");
+        _menuAbierto = false;
+        Navigation.NavigateTo(ruta);
+    }
+
+    private void IrAlPanelAdmin()
+    {
+        IrA("/admin");
+    }
+
+    private void IrAMiCuenta()
+    {
+        IrA("/mi-cuenta");
+    }
+
+    private void IrAMisCompras()
+    {
+        IrA("/mis-compras");
     }
 
     private async Task CerrarSesion()
@@ -84,6 +151,19 @@ else
         await Auth.LogoutAsync();
         _menuAbierto = false;
         Navigation.NavigateTo("/", forceLoad: false);
+    }
+
+    private static string ObtenerIniciales(string? nombre)
+    {
+        if (string.IsNullOrWhiteSpace(nombre))
+            return "U";
+
+        var partes = nombre
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        return string.Concat(partes
+            .Take(2)
+            .Select(p => char.ToUpperInvariant(p[0])));
     }
 
     public void Dispose()
