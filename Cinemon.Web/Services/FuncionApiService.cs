@@ -9,9 +9,7 @@ namespace Cinemon.Web.Services
         private readonly HttpClient _httpClient;
         private readonly AuthService _authService;
 
-        public FuncionApiService(
-            IHttpClientFactory httpClientFactory,
-            AuthService authService)
+        public FuncionApiService(IHttpClientFactory httpClientFactory, AuthService authService)
         {
             _httpClient = httpClientFactory.CreateClient("CinemonApi");
             _authService = authService;
@@ -39,8 +37,7 @@ namespace Cinemon.Web.Services
             return funciones ?? [];
         }
 
-        public async Task<(int Id, string? Error)> CrearAsync(
-            CrearFuncionRequest request)
+        public async Task<(int Id, string? Error)> CrearAsync(CrearFuncionRequest request)
         {
             AdjuntarToken();
 
@@ -61,9 +58,7 @@ namespace Cinemon.Web.Services
             return (creada?.Id ?? 0, null);
         }
 
-        public async Task<(bool Ok, string? Error)> EditarAsync(
-            int id,
-            FuncionDto funcion)
+        public async Task<(bool Ok, string? Error)> EditarAsync(int id,FuncionDto funcion)
         {
             AdjuntarToken();
 
