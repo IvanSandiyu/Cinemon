@@ -2,6 +2,11 @@
 
 Sistema de reserva de entradas de cine que combina un backend con arquitectura limpia y CQRS, y un frontend en Blazor Server. Nació como proyecto de aprendizaje y portafolio para practicar diseño backend en serio: separación de responsabilidades, comandos y consultas, autenticación basada en roles y una integración real con una API externa (TMDB).
 
+> ?? **En desarrollo.** Proyecto en evoluci��n constante: Este no es el dise?o final, va a haber mejoras
+> y nuevas funcionalidades en el futuro. 
+
+
+
 ![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=.net)
 ![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-8.0-512BD4?style=flat-square&logo=.net)
 ![Blazor Server](https://img.shields.io/badge/Blazor%20Server-8.0-512BD4?style=flat-square&logo=blazor)
@@ -63,10 +68,10 @@ También probé que el frontend muestre las butacas ya ocupadas (vía un DTO con
 **Para el usuario (Rol Cliente)**
 
 - 📝 **Registro y login** con contraseñas hasheadas y sesión persistida (JWT en el navegador).
-- 🎞️ **Cartelera** con películas activas: sinopsis, duración, clasificación (ATP/+13/+16/+18), géneros, tráiler y afiches traídos de TMDB.
+- 🎞�?**Cartelera** con películas activas: sinopsis, duración, clasificación (ATP/+13/+16/+18), géneros, tráiler y afiches traídos de TMDB.
 - 📅 **Próximos estrenos** y detalle de película.
-- 🎟️ **Selección visual de butacas** por función: mapa interactivo de la sala, butacas ocupadas en gris, y precio/idioma/formato únicos por función.
-- ✅ **Reserva de entradas** y pantalla de confirmación con el detalle.
+- 🎟�?**Selección visual de butacas** por función: mapa interactivo de la sala, butacas ocupadas en gris, y precio/idioma/formato únicos por función.
+- �?**Reserva de entradas** y pantalla de confirmación con el detalle.
 - 📖 **Historial de reservas** ("Mis compras") con opción de cancelar y liberar las butacas.
 - 👤 **Mi cuenta** con datos personales y cierre de sesión.
 
@@ -74,140 +79,184 @@ También probé que el frontend muestre las butacas ya ocupadas (vía un DTO con
 
 - 🎬 **Gestión de películas**: alta manual o buscando en **TMDB** (afiche, sinopsis y duración se completan solos), edición, activar/desactivar.
 - 🕒 **Gestión de funciones**: crear, editar, finalizar y cancelar; evita solapadas en la misma sala y 3D en salas IMAX.
-- 🏷️ **Gestión de salas** (con butacas generadas por tamaño: estándar e IMAX).
+- 🏷�?**Gestión de salas** (con butacas generadas por tamaño: estándar e IMAX).
 - 📋 **Panel de reservas**: filtros por sala, función y estado, búsqueda por cliente o película.
 - 👥 **Panel de usuarios**: búsqueda, filtros por rol/estado y detalle de sus reservas.
 - 🔑 **Registro de administradores** (solo un admin existente puede crear otro).
 
-## 🛠️ Tecnologías utilizadas
+## 🛠�?Tecnologías utilizadas
 
-### Backend — `Cinemon.Api` / `Cinemon.Application`
-- **.NET 8** (SDK 8.0.410, fijado en `global.json`) — ASP.NET Core **Minimal API**.
-- **CQRS con MediatR 14.2.0** — comandos y queries por caso de uso.
-- **FluentValidation 12.1.1** — validación transversal vía pipeline behavior.
-- **Autenticación JWT** (`Microsoft.AspNetCore.Authentication.JwtBearer` 8.0.28) — HMAC-SHA256, issuer `Cinemon`, audiencia `CinemonApi`.
+### Backend �?`Cinemon.Api` / `Cinemon.Application`
+- **.NET 8** (SDK 8.0.410, fijado en `global.json`) �?ASP.NET Core **Minimal API**.
+- **CQRS con MediatR 14.2.0** �?comandos y queries por caso de uso.
+- **FluentValidation 12.1.1** �?validación transversal vía pipeline behavior.
+- **Autenticación JWT** (`Microsoft.AspNetCore.Authentication.JwtBearer` 8.0.28) �?HMAC-SHA256, issuer `Cinemon`, audiencia `CinemonApi`.
 - **Hashing de contraseñas** con `PasswordHasher<object>` de ASP.NET Core Identity.
 - **Swagger / OpenAPI** (Swashbuckle 6.6.2) con esquema de autorización Bearer, activo en Desarrollo.
 - Manejador global de excepciones que traduce errores de dominio a códigos HTTP (`400/401/404/409`).
 
-### Frontend — `Cinemon.Web`
+### Frontend �?`Cinemon.Web`
 - **Blazor Server** (interactive, prerrenderizado desactivado en páginas con sesión).
-- **Radzen Blazor 11.3.0** — componentes UI de main layout, tablas, botones, temas (`material`).
+- **Radzen Blazor 11.3.0** �?componentes UI de main layout, tablas, botones, temas (`material`).
 - **Bootstrap 5** para estilos adicionales + **Font Awesome** para iconos.
 - Consumo de la API vía `HttpClient` con token Bearer adjuntado por servicio.
 
-### Base de datos — `Cinemon.Infrastructure`
+### Base de datos �?`Cinemon.Infrastructure`
 - **SQL Server** con **Entity Framework Core 8.0.28** (`Microsoft.EntityFrameworkCore.SqlServer`).
-- Migraciones EF (`InitialMigration` → `AddPeliculaGenero` → `AddUsuarioPasswordHash` → `AddTmdbId` → `AddTmdbPosterAndBackdropPaths`).
+- Migraciones EF (`InitialMigration` �?`AddPeliculaGenero` �?`AddUsuarioPasswordHash` �?`AddTmdbId` �?`AddTmdbPosterAndBackdropPaths`).
 - Seed inicial: 5 géneros, 4 salas (2 estándar + 1 estándar grande + 1 IMAX) y sus butacas (80, 120, 150 y 220).
 
 ### Integraciones externas
-- **TMDB API** (`api.themoviedb.org/3`) — búsqueda, detalle, clasificación por país (AR/US) e imágenes (poster `w500`, backdrop original).
+- **TMDB API** (`api.themoviedb.org/3`) �?búsqueda, detalle, clasificación por país (AR/US) e imágenes (poster `w500`, backdrop original).
 
 ### Testing / Herramientas
 - **xUnit**: aún no hay tests. Muy pendiente en el [roadmap](#-posibles-mejoras-a-futuro) (expliqué el *approach* en la sección de la butaca doble-reservada).
 - **Swagger** como documentación interactiva de la API.
 - **`dotnet user-secrets`** para los secretos locales (no hay claves en el repo).
 
-## 🏛️ Arquitectura y estructura del proyecto
+## 🏛�?Arquitectura y estructura del proyecto
 
 ### Clean Architecture
 
 Mantuve la solución en cinco proyectos separados siguiendo el estilo "onion" / Clean Architecture: la lógica de negocio vive en el centro, y las capas externas (Web, base de datos, integraciones) dependen *hacia adentro* pero no al revés. Así, el **dominio** y los **casos de uso** no saben nada de EF Core, de SQL Server ni de la Web, y los cambios de framework quedan confinados a una sola capa.
 
 ```
-                  ┌─────────────────────────────┐
-                  │           Cinemon.Web       │  Blazor Server + Radzen (solo UI)
-                  └──────────────┬──────────────┘
-                                 │  HTTP + JWT
-                  ┌──────────────▼──────────────┐
-                  │     Cinemon.Api             │  Minimal API, Swagger, auth/roles
-                  └──────────────┬──────────────┘
-                                 │  CQRS (MediatR)
-                  ┌──────────────▼──────────────┐
-                  │   Cinemon.Application       │  Comandos/Queries, validación, DTOs
-                  └───────┬──────────────┬──────┘
-                          │              │
-                 ┌────────▼───────┐  ┌───▼────────────────────────┐
-                 │ Cinemon.Domain │  │ Cinemon.Infrastructure     │  EF Core(SQL), JWT,
-                 │ Entidades,     │  │ repos, seed, TMDB, hashing │  password hashing
-                 │ enums, reglas  │  └────────────────────────────┘
-                 └────────────────┘
-```
+                  ┌─────────────────────────────�?                  �?          Cinemon.Web       �? Blazor Server + Radzen (solo UI)
+                  └──────────────┬──────────────�?                                 �? HTTP + JWT
+                  ┌──────────────▼──────────────�?                  �?    Cinemon.Api             �? Minimal API, Swagger, auth/roles
+                  └──────────────┬──────────────�?                                 �? CQRS (MediatR)
+                  ┌──────────────▼──────────────�?                  �?  Cinemon.Application       �? Comandos/Queries, validación, DTOs
+                  └───────┬──────────────┬──────�?                          �?             �?                 ┌────────▼───────�? ┌───▼────────────────────────�?                 �?Cinemon.Domain �? �?Cinemon.Infrastructure     �? EF Core(SQL), JWT,
+                 �?Entidades,     �? �?repos, seed, TMDB, hashing �? password hashing
+                 �?enums, reglas  �? └────────────────────────────�?                 └────────────────�?```
 
-Regla de dependencias: **Domain** no depende de nada; **Application** → Domain; **Infrastructure** → Application y Domain; **Api** → Application e Infrastructure; **Web** consume la Api por HTTP.
+Regla de dependencias: **Domain** no depende de nada; **Application** �?Domain; **Infrastructure** �?Application y Domain; **Api** �?Application e Infrastructure; **Web** consume la Api por HTTP.
 
 ### Árbol de carpetas real
 
 ```
 Cinemon.sln
 ├── Cinemon.Domain/                  # Núcleo: sin dependencias externas
-│   ├── Entidades/                   # Pelicula, Sala, Butaca, Funcion, Reserva, Usuario, ...
-│   │   ├── Butacas/  Funcion/  Generos/  Peliculas/  Reservas/  Salas/  Usuarios/
-│   ├── Enums/                       # Rol, IdiomaFuncion, Formato, EstadoFuncion, TipoSala...
-│   ├── Exceptions/                  # BusinessRuleException, ConflictException, ...
-│   └── Interfaces/
+�?  ├── Entidades/                   # Pelicula, Sala, Butaca, Funcion, Reserva, Usuario, ...
+�?  �?  ├── Butacas/  Funcion/  Generos/  Peliculas/  Reservas/  Salas/  Usuarios/
+�?  ├── Enums/                       # Rol, IdiomaFuncion, Formato, EstadoFuncion, TipoSala...
+�?  ├── Exceptions/                  # BusinessRuleException, ConflictException, ...
+�?  └── Interfaces/
 ├── Cinemon.Application/             # Casos de uso (CQRS + validación)
-│   ├── Abstractions/                # I*Repository, IUnitOfWork, ICurrentUserService
-│   ├── Behaviors/                   # ValidationBehavior (pipeline / validation)
-│   ├── Commands + Queries por feature:
-│   │   ├── Funciones/  Peliculas/  Reservas/  Usuarios/  Butacas/  Tmdb/
-│   ├── DTOs/                        # Respuestas para la API
-│   └── Interfaces/
+�?  ├── Abstractions/                # I*Repository, IUnitOfWork, ICurrentUserService
+�?  ├── Behaviors/                   # ValidationBehavior (pipeline / validation)
+�?  ├── Commands + Queries por feature:
+�?  �?  ├── Funciones/  Peliculas/  Reservas/  Usuarios/  Butacas/  Tmdb/
+�?  ├── DTOs/                        # Respuestas para la API
+�?  └── Interfaces/
 ├── Cinemon.Infrastructure/          # Adaptadores: EF Core, seguridad, TMDB
-│   ├── CinemonDbContext.cs
-│   ├── Configurations/              # Mapping de entidades (índices únicos, FKs)
-│   ├── Repositories/                # Implementaciones EF Core de las interfaces
-│   ├── Authentication/              # JwtTokenService, PasswordService
-│   ├── ExternalServices/Tmdb/       # HttpClient + mapeo a TMDB
-│   ├── Migrations/                  # Migraciones de la base de datos
-│   └── Seed/                        # Géneros, salas y butacas iniciales
+�?  ├── CinemonDbContext.cs
+�?  ├── Configurations/              # Mapping de entidades (índices únicos, FKs)
+�?  ├── Repositories/                # Implementaciones EF Core de las interfaces
+�?  ├── Authentication/              # JwtTokenService, PasswordService
+�?  ├── ExternalServices/Tmdb/       # HttpClient + mapeo a TMDB
+�?  ├── Migrations/                  # Migraciones de la base de datos
+�?  └── Seed/                        # Géneros, salas y butacas iniciales
 ├── Cinemon.Api/                     # Presentación de la API (Minimal API)
-│   ├── Endpoints/                   # Peliculas, Funciones, Salas, Butacas, Reservas, ...
-│   ├── Middleware/                  # GlobalExceptionHandler → ProblemDetails
-│   ├── Services/                    # CurrentUserService
-│   └── Program.cs                   # DI, JWT, Swagger, seed automático
+�?  ├── Endpoints/                   # Peliculas, Funciones, Salas, Butacas, Reservas, ...
+�?  ├── Middleware/                  # GlobalExceptionHandler �?ProblemDetails
+�?  ├── Services/                    # CurrentUserService
+�?  └── Program.cs                   # DI, JWT, Swagger, seed automático
 ├── Cinemon.Web/                     # Frontend (Blazor Server)
-│   ├── Components/
-│   │   ├── Layout/                  # MainLayout (Radzen), AccountArea, AdminGuard
-│   │   ├── Pages/                   # Cartelera, Proximos Estrenos, Login, Butacas,
-│   │   │   └── Admin/               #   Películas, Funciones, Salas, Reservas, Usuarios
-│   │   └── Shared/                  # Carátulas de película, etc.
-│   ├── Models/DTOs/                 # DTOs del frontend
-│   ├── Services/                    # ApiServices por recurso + AuthService
-│   └── wwwroot/                     # CSS, Bootstrap, JS, favicon
+�?  ├── Components/
+�?  �?  ├── Layout/                  # MainLayout (Radzen), AccountArea, AdminGuard
+�?  �?  ├── Pages/                   # Cartelera, Proximos Estrenos, Login, Butacas,
+�?  �?  �?  └── Admin/               #   Películas, Funciones, Salas, Reservas, Usuarios
+�?  �?  └── Shared/                  # Carátulas de película, etc.
+�?  ├── Models/DTOs/                 # DTOs del frontend
+�?  ├── Services/                    # ApiServices por recurso + AuthService
+�?  └── wwwroot/                     # CSS, Bootstrap, JS, favicon
 └── global.json                      # SDK .NET 8.0.410 fijo
 ```
 
 ## 📸 Capturas
 
-> Agregá acá las capturas que saques. Sugerencias: `docs/screenshots/`.
+### Home
+![home](docs/screenshots/home.png)
+
+### Cartelera
+![Cartelera](docs/screenshots/cartelera_1.png)
+
+### Seleccion pelicula
+![Seleccion_pelicula](docs/screenshots/pelicula_home.png)
+
+### Seleccion funcion
+![Funcion_pelicula](docs/screenshots/funcion_pelicula.png)
 
 ### Login
 ![Login](docs/screenshots/login.png)
 
-### Cartelera
-![Cartelera](docs/screenshots/cartelera.png)
-
 ### Selección de butacas
-![Selección de butacas](docs/screenshots/butacas.png)
+![Selección de butacas](docs/screenshots/reserva_pelicula.png)
 
 ### Confirmación de reserva
-![Reserva confirmada](docs/screenshots/reserva-confirmada.png)
+![Reserva confirmada](docs/screenshots/confirmar_reserva.png)
+
+### Reserva confirmada
+![Reserva confirmada](docs/screenshots/reserva_confirmada.png)
+
+### Mis compras
+![Mis compras](docs/screenshots/mis_compras.png)
+
+### Panel admin
+![Panel admin](docs/screenshots/panel_admin.png)
 
 ### Panel de administración (películas)
-![Panel admin películas](docs/screenshots/admin-peliculas.png)
+![Panel admin películas](docs/screenshots/peliculas_admin.png)
 
-### Panel de administración (reservas)
-![Panel admin reservas](docs/screenshots/admin-reservas.png)
+### Crear pel��cula
+![Crear pel��cula](docs/screenshots/crear_pelicula.png)
 
-### Swagger / documentación de la API
-![Swagger](docs/screenshots/swagger.png)
+### Crear pel��cula con datos
+![Crear pelicula con datos](docs/screenshots/crear_pelicula_2.png)
 
-### 🎥 Un GIF corto del flujo completo de reserva
-Si tenés un gif del flujo (cartelera → función → butacas → confirmar), dejalo en `docs/screenshots/flujo-reserva.gif`:
+### Pel��cula creada
+![Pelicula creada](docs/screenshots/pelicula_creada.png)
 
-![Flujo de reserva](docs/screenshots/flujo-reserva.gif)
+### Editar pel��cula
+![Editar pel��cula](docs/screenshots/editar_pelicula.png)
+
+### Crear funci��n
+![Crear funci��n](docs/screenshots/crear_funcion.png)
+
+### Antes de avanzar, mostramos las funciones que existieron, existen y existiran. Se pueden filtrar
+![Funciones](docs/screenshots/ver_funcion.png)
+
+### Podemos buscar funciones
+![Funci��n pelicula](docs/screenshots/ver_funcion_pelicula.png)
+
+### Podemos ver todas las reservas, tambien filtrando por sala y pel��culas
+![Reservas](docs/screenshots/ver_reservas.png)
+
+### Y tambien podemos ver los usuarios
+![Usuarios](docs/screenshots/ver_usuarios.png)
+
+### Salas - todavia no se ha implementado nada.
+
+### Cartelera nueva
+![Cartelera nueva](docs/screenshots/en_cartelera.png)
+
+### Home pel��cula agregada
+![Home pelicula creada](docs/screenshots/pelicula_creada_funcion.png)
+
+### Funcion pel��cula agregada
+![Pelicula creada](docs/screenshots/reservar_pelicula.png)
+
+### Seleccionar butacas y realizamos la compra
+![Seleccionar butacas](docs/screenshots/seleccionar_butacas.png)
+
+### Verificamos en otra compra las butacas
+![Verificacion butacas](docs/screenshots/verificar_butacas.png)
+
+### Pr��ximos estrenos
+![Pr��ximos estrenos](docs/screenshots/prox_estrenos.png)
+
+### Candy - todav��a no se ha implementado nada
 
 ## 🚀 Cómo correrlo localmente
 
@@ -254,11 +303,11 @@ dotnet ef database update --project Cinemon.Infrastructure --startup-project Cin
 **4. Correr la API y el Web (dos terminales)**
 
 ```bash
-# Terminal 1 — API
+# Terminal 1 �?API
 cd Cinemon.Api
 dotnet run
 
-# Terminal 2 — Web
+# Terminal 2 �?Web
 cd Cinemon.Web
 dotnet run
 ```
@@ -289,9 +338,9 @@ Sin entrar en detalles explotables, el sistema parte de una base sólida en mate
 - **Manejo centralizado de errores** que evita filtrar stack traces al cliente (todo pasa por `GlobalExceptionHandler` y se devuelve `ProblemDetails`).
 - **Secretos nunca en el repo**: connection string, clave JWT y token de TMDB viajan por user-secrets y el `.gitignore` excluye los `appsettings.*.local.json`.
 
-## 🗺️ Posibles mejoras a futuro
+## 🗺�?Posibles mejoras a futuro
 
-- ✅/❌ **Tests automatizados** (xUnit) para los handlers y la regla de concurrencia de reservas (es la mejora #1 pendiente).
+- �?�?**Tests automatizados** (xUnit) para los handlers y la regla de concurrencia de reservas (es la mejora #1 pendiente).
 - **Paginación** en listados de películas, funciones y reservas (hoy se trae todo).
 - **CI/CD**: el repo ya tiene `.github/workflows/` (vacío) listo para un pipeline de build + test.
 - **Notificaciones por email** (confirmación y recordatorio de funciones).
@@ -301,13 +350,6 @@ Sin entrar en detalles explotables, el sistema parte de una base sólida en mate
 - **Ambientación**: soporte multi-idioma y moneda configurable.
 - **Migraciones explícitas en producción** en lugar del auto-migrate del seed.
 
-## 📄 Licencia y contacto
-
-### Licencia
-
-Distribuido bajo la licencia **MIT**. Ver [LICENSE](LICENSE) para más detalle.
-
-> *Nota: el archivo `LICENSE` todavía no está creado; si querés puedo generarlo con tu nombre/año.*
 
 ### Contacto
 
@@ -315,4 +357,4 @@ Hecho y mantenido con ❤️ por **Iván** como proyecto de portafolio.
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Perfil-0A66C2?style=flat-square&logo=linkedin)](https://linkedin.com/in/tu-usuario)
 
-Si algo del proyecto te sirvió, te gustó o tenés feedback, no dudes en escribirme — ¡me encantaría saberlo! 😄
+Si algo del proyecto te sirvió, te gustó o tenés feedback, no dudes en escribirme �?¡me encantaría saberlo! 😄
