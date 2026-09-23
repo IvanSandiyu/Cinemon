@@ -537,6 +537,12 @@
         _guardando = true;
 
         try {
+            if (_tmdbSeleccionado is not null) {
+                await TmdbService.VincularAsync(
+                    Id,
+                    _tmdbSeleccionado.Id);
+            }
+
             var request = new EditarPeliculaRequest(
                 _titulo,
                 _sinopsis,
@@ -553,12 +559,6 @@
             if (!ok) {
                 _error = ObtenerMensajeError(error);
                 return;
-            }
-
-            if (_tmdbSeleccionado is not null) {
-                await TmdbService.VincularAsync(
-                    Id,
-                    _tmdbSeleccionado.Id);
             }
 
             Navigation.NavigateTo("/admin/peliculas");

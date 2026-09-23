@@ -1,10 +1,680 @@
 ﻿@page "/admin/salas"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
+@using Cinemon.Web.Models.DTOs
+@using Cinemon.Web.Services
+@using System.Globalization
+
+@inject SalaApiService SalaService
+@inject ButacaApiService ButacaService
+@inject FuncionApiService FuncionService
+@inject PeliculaApiService PeliculaService
+@inject ReservaApiService ReservaService
+
+<PageTitle>Salas | Admin | Cinemon</PageTitle>
+
 <AdminGuard>
-<h3>Salas</h3>
+<div class="admin-page">
+
+    <div class="admin-header admin-section-header">
+
+        <div>
+            <span class="cinemon-kicker">Administración</span>
+
+            <h1 class="admin-title">
+                Salas
+            </h1>
+
+            <p class="admin-subtitle">
+                Inventario de salas, su capacidad y la actividad de cada una.
+            </p>
+        </div>
+
+    </div>
+
+    @if (_cargando) {
+        <div class="d-flex justify-content-center py-5">
+            <RadzenProgressBarCircular Indeterminate="true" />
+        </div>
+    } else {
+
+        <div class="sala-stats">
+
+            <div class="sala-stat">
+                <span class="material-icons">meeting_room</span>
+
+                <strong>@_salas.Count</strong>
+
+                <span>Salas</span>
+            </div>
+
+            <div class="sala-stat">
+                <span class="material-icons">event_seat</span>
+
+                <strong>@TotalButacas</strong>
+
+                <span>Butacas</span>
+            </div>
+
+            <div class="sala-stat">
+                <span class="material-icons">schedule</span>
+
+                <strong>@FuncionesActivas</strong>
+
+                <span>Funciones activas</span>
+            </div>
+
+            <div class="sala-stat">
+                <span class="material-icons">confirmation_number</span>
+
+                <strong>@ReservasConfirmadasTotal</strong>
+
+                <span>Reservas confirmadas</span>
+            </div>
+
+        </div>
+
+        <div class="admin-toolbar">
+
+            <div class="admin-search">
+                <span class="material-icons">search</span>
+
+                <input type="text"
+                       placeholder="Buscar sala (número o tipo)..."
+                       @bind="_busqueda"
+                       @bind:event="oninput" />
+            </div>
+
+            <div class="admin-filters">
+
+                <button class="admin-filter @( _filtroTipo == FiltroTipo.Todas ? "active" : "")"
+                        @onclick="() => CambiarFiltroTipo(FiltroTipo.Todas)">
+                    Todas
+                </button>
+
+                <button class="admin-filter @( _filtroTipo == FiltroTipo.Estándar ? "active" : "")"
+                        @onclick="() => CambiarFiltroTipo(FiltroTipo.Estándar)">
+                    Estándar
+                </button>
+
+                <button class="admin-filter @( _filtroTipo == FiltroTipo.Imax ? "active" : "")"
+                        @onclick="() => CambiarFiltroTipo(FiltroTipo.Imax)">
+                    IMAX
+                </button>
+
+            </div>
+
+        </div>
+
+        <section class="sala-recaudacion">
+
+            <div class="sala-recaudacion-header">
+
+                <div>
+                    <h3>
+                        <span class="material-icons">payments</span>
+                        Recaudación
+                    </h3>
+
+                    <p>
+                        @if (_periodo == PeriodoRecaudacion.Semana) {
+                            <text>Reservas confirmadas de esta semana (desde @InicioPeriodo.ToString("dd/MM")).</text>
+                        } else if (_periodo == PeriodoRecaudacion.Mes) {
+                            <text>Reservas confirmadas de @ObtenerNombreMes(InicioPeriodo.Month) @InicioPeriodo.Year.</text>
+                        } else {
+                            <text>Reservas confirmadas del año @InicioPeriodo.Year.</text>
+                        }
+                    </p>
+                </div>
+
+                <div class="sala-periodo-filters">
+                    <button class="admin-filter @( _periodo == PeriodoRecaudacion.Semana ? "active" : "")"
+                            @onclick="() => _periodo = PeriodoRecaudacion.Semana">
+                        Semana
+                    </button>
+
+                    <button class="admin-filter @( _periodo == PeriodoRecaudacion.Mes ? "active" : "")"
+                            @onclick="() => _periodo = PeriodoRecaudacion.Mes">
+                        Mes
+                    </button>
+
+                    <button class="admin-filter @( _periodo == PeriodoRecaudacion.Anio ? "active" : "")"
+                            @onclick="() => _periodo = PeriodoRecaudacion.Anio">
+                        Año
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="sala-recaudacion-stats">
+
+                <div class="sala-recaudacion-item">
+                    <span>Total del período</span>
+
+                    <strong>@RecaudacionPeriodo.ToString("C0", new CultureInfo("es-AR"))</strong>
+                </div>
+
+                <div class="sala-recaudacion-item">
+                    <span>Reservas</span>
+
+                    <strong>@ReservasEnPeriodo</strong>
+                </div>
+
+                <div class="sala-recaudacion-item">
+                    <span>Butacas vendidas</span>
+
+                    <strong>@ButacasVendidasEnPeriodo</strong>
+                </div>
+
+                <div class="sala-recaudacion-item">
+                    <span>Ticket promedio</span>
+
+                    <strong>@TicketPromedio.ToString("C0", new CultureInfo("es-AR"))</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+        @if (SalasFiltradas.Count() == 0) {
+            <div class="admin-empty">
+                <span class="material-icons">meeting_room</span>
+
+                <h3>No se encontraron salas</h3>
+
+                <p>
+                    Probá con otro término de búsqueda o modificá los filtros.
+                </p>
+            </div>
+        } else {
+            <div class="sala-grid">
+
+                @foreach (var sala in SalasFiltradas) {
+                    <article class="sala-card">
+                        <div class="sala-card-header">
+
+                            <div>
+                                <span class="sala-number">Sala @sala.Numero</span>
+
+                                <span class="sala-tipo @(EsImax(sala.TipoSala) ? "imax" : "")">
+                                    @NormalizarTipoSala(sala.TipoSala)
+                                </span>
+                            </div>
+
+                            <div class="sala-capacity">
+                                <span class="material-icons">event_seat</span>
+                                @sala.CantidadButacas butacas
+                            </div>
+
+                        </div>
+
+                        @if (FuncionesDeSala(sala.Id).Count() > 0) {
+
+                            <div class="sala-func-select">
+                                <label>
+                                    <span class="material-icons">movie_filter</span>
+                                    Elegí una función
+                                </label>
+
+<select @bind="_funcionSeleccionadaPorSala[sala.Id]"
+                                @bind:after="async () => await CargarFuncionAsync(sala.Id)">
+                                <option value="0">Seleccionar función...</option>
+
+                                    @foreach (var funcion in FuncionesDeSala(sala.Id)) {
+                                        <option value="@funcion.Id">
+                                            @funcion.Pelicula · @funcion.FechaHoraInicio.ToString("dd/MM/yyyy HH:mm")
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+
+                            @if (FuncionSeleccionada(sala.Id) is var funcionId && funcionId != 0 && _butacasPorFuncion.TryGetValue(funcionId, out var butacasFuncion) && butacasFuncion.Count > 0) {
+                                <div class="sala-map">
+
+                                    @foreach (var fila in ButacasDeFuncion(funcionId)) {
+                                        <div class="sala-map-row">
+
+                                            <span class="sala-map-row-label">@fila.Fila</span>
+
+                                            <div class="sala-map-seats">
+                                                @foreach (var butaca in fila.Butacas) {
+                                                    <span class="sala-seat @(butaca.Ocupada ? "occupied" : "free")"
+                                                          title="@($"{butaca.Fila}{butaca.Numero}")">
+                                                    </span>
+                                                }
+                                            </div>
+
+                                        </div>
+                                    }
+
+                                </div>
+
+                                <div class="sala-leyenda">
+                                    <span>
+                                        <i class="sala-leyenda-dot occupied"></i>
+                                        Ocupada
+                                    </span>
+
+                                    <span>
+                                        <i class="sala-leyenda-dot free"></i>
+                                        Libre
+                                    </span>
+
+                                    <strong class="sala-leyenda-total">
+                                        @OcupadasDeFuncion(funcionId) / @butacasFuncion.Count butacas
+                                    </strong>
+                                </div>
+                            } else {
+                                <div class="sala-sin-funciones">
+                                    <span class="material-icons">event_seat</span>
+                                    Seleccioná una función para ver la ocupación de butacas.
+                                </div>
+                            }
+                        } else {
+                            <div class="sala-sin-funciones">
+                                <span class="material-icons">event_busy</span>
+                                Sin funciones programadas
+                            </div>
+                        }
+
+                        <div class="sala-footer">
+
+                            <div class="sala-resumen">
+                                <span class="material-icons">event_seat</span>
+
+                                <span>
+                                    @ResumenOcupacionDe(sala.Id)
+                                </span>
+                            </div>
+
+                            <button class="sala-reservas-toggle @(_salasExpandidas.Contains(sala.Id) ? "open" : "")"
+                                    @onclick="() => ToggleReservas(sala.Id)">
+                                @(_salasExpandidas.Contains(sala.Id) ? "Ocultar reservas" : "Ver reservas")
+                                <span class="material-icons">expand_more</span>
+                            </button>
+
+                        </div>
+
+                        @if (_salasExpandidas.Contains(sala.Id)) {
+                            <div class="sala-reservas">
+                                @if (ReservasDeSala(sala.Id).Count() == 0) {
+                                    <div class="sala-reservas-vacio">
+                                        Esta sala todavía no tiene reservas.
+                                    </div>
+                                } else {
+                                    <div class="admin-table-wrap">
+                                        <table class="admin-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Cliente</th>
+                                                    <th>Película</th>
+                                                    <th>Fecha</th>
+                                                    <th>Butacas</th>
+                                                    <th>Total</th>
+                                                    <th class="col-state">Estado</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var reserva in ReservasDeSala(sala.Id)) {
+                                                    <tr>
+                                                        <td class="col-client">
+                                                            <span class="client-name">@reserva.Cliente.NombreApellido</span>
+                                                            <span class="client-email">@reserva.Cliente.Email</span>
+                                                        </td>
+                                                        <td class="col-movie">
+                                                            <span class="movie-title">@reserva.Pelicula.Titulo</span>
+
+                                                            <span class="movie-clasif">
+                                                                @NormalizarClasificacion(reserva.Pelicula.ClasificacionEdad)
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            @reserva.Funcion.FechaHoraInicio.ToString("dd/MM/yyyy HH:mm")
+                                                        </td>
+                                                        <td class="col-seats">
+                                                            @ObtenerButacas(reserva)
+                                                        </td>
+                                                        <td class="col-price">
+                                                            @reserva.Total.ToString("C0", new CultureInfo("es-AR"))
+                                                        </td>
+                                                        <td class="col-state">
+                                                            <span class="admin-state @(reserva.Estado == "Cancelada" ? "cancelada" : "programada")">
+                                                                @reserva.Estado
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                    </article>
+                }
+
+            </div>
+        }
+
+    }
+
+</div>
 </AdminGuard>
 
 @code {
 
+    private IReadOnlyCollection<SalaDto> _salas = [];
+    private Dictionary<int, IReadOnlyCollection<ButacaFuncionDto>> _butacasPorFuncion = [];
+    private IReadOnlyCollection<FuncionDto> _funciones = [];
+    private IReadOnlyCollection<PeliculaDto> _peliculas = [];
+    private IReadOnlyCollection<ReservaDto> _reservas = [];
+
+    private readonly HashSet<int> _salasExpandidas = [];
+
+    private bool _cargando = true;
+
+    private List<Task> _tareasButacas = [];
+    private Dictionary<int, int> _funcionSeleccionadaPorSala = [];
+
+    private string _busqueda = string.Empty;
+    private FiltroTipo _filtroTipo = FiltroTipo.Todas;
+    private PeriodoRecaudacion _periodo = PeriodoRecaudacion.Semana;
+
+    private int TotalButacas => _salas.Sum(s => s.CantidadButacas);
+
+    private int FuncionesActivas =>
+        _funciones.Count(f => f.EstadoFuncion == 1);
+
+    private int ReservasConfirmadasTotal =>
+        _reservas.Count(r => r.Estado == "Confirmada");
+
+    private DateTime InicioPeriodo =>
+        _periodo switch
+        {
+            PeriodoRecaudacion.Semana => InicioDeSemana(DateTime.Today),
+            PeriodoRecaudacion.Mes => new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1),
+            _ => new DateTime(DateTime.Today.Year, 1, 1)
+        };
+
+    private IEnumerable<ReservaDto> ReservasDelPeriodo =>
+        _reservas
+            .Where(r => r.Estado == "Confirmada")
+            .Where(r => r.FechaReserva >= InicioPeriodo);
+
+    private decimal RecaudacionPeriodo =>
+        ReservasDelPeriodo.Sum(r => r.Total);
+
+    private int ReservasEnPeriodo =>
+        ReservasDelPeriodo.Count();
+
+    private int ButacasVendidasEnPeriodo =>
+        ReservasDelPeriodo.Sum(r => r.Butacas.Count);
+
+    private decimal TicketPromedio =>
+        ReservasEnPeriodo == 0 ? 0 : RecaudacionPeriodo / ReservasEnPeriodo;
+
+    private IEnumerable<SalaDto> SalasFiltradas =>
+        _salas
+            .Where(PerteneceAlFiltroTipo)
+            .Where(PerteneceALaBusqueda)
+            .OrderBy(s => s.Numero);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarDatos();
+    }
+
+    private async Task CargarDatos()
+    {
+        _cargando = true;
+
+        try {
+            _salas = await SalaService.ObtenerTodasAsync();
+            _funciones = await FuncionService.ObtenerTodasAsync();
+            _peliculas = await PeliculaService.ObtenerTodasAsync();
+            _reservas = await ReservaService.ObtenerTodasAsync();
+
+            _funcionSeleccionadaPorSala = [];
+            _butacasPorFuncion = [];
+            _tareasButacas = [];
+
+            foreach (var sala in _salas) {
+                _funcionSeleccionadaPorSala[sala.Id] = 0;
+            }
+
+            foreach (var sala in _salas) {
+                var funciones = FuncionesDeSala(sala.Id).ToList();
+
+                if (funciones.Count == 0)
+                    continue;
+
+                foreach (var funcion in funciones) {
+                    _tareasButacas.Add(CargarButacasSiFaltan(funcion.Id));
+                }
+
+                var proxima = ProximaFuncionDeSala(sala.Id);
+
+                _funcionSeleccionadaPorSala[sala.Id] = proxima?.Id ?? funciones[0].Id;
+            }
+
+            await Task.WhenAll(_tareasButacas);
+        } catch {
+            _salas = [];
+            _funciones = [];
+            _peliculas = [];
+            _reservas = [];
+            _butacasPorFuncion = [];
+        } finally {
+            _cargando = false;
+        }
+    }
+
+    private async Task CargarButacasDeFuncion(int funcionId)
+    {
+        var butacas = await ButacaService.ObtenerPorFuncionAsync(funcionId);
+
+        _butacasPorFuncion[funcionId] = butacas;
+    }
+
+    private bool PerteneceAlFiltroTipo(SalaDto sala)
+    {
+        return _filtroTipo switch
+        {
+            FiltroTipo.Estándar => !EsImax(sala.TipoSala),
+            FiltroTipo.Imax => EsImax(sala.TipoSala),
+            _ => true
+        };
+    }
+
+    private bool PerteneceALaBusqueda(SalaDto sala)
+    {
+        if (string.IsNullOrWhiteSpace(_busqueda))
+            return true;
+
+        return sala.Numero.ToString()
+                .Contains(_busqueda, StringComparison.OrdinalIgnoreCase)
+            || NormalizarTipoSala(sala.TipoSala)
+                .Contains(_busqueda, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void CambiarFiltroTipo(FiltroTipo filtro)
+    {
+        _filtroTipo = filtro;
+    }
+
+    private IEnumerable<FilaButacas> ButacasDeFuncion(int funcionId)
+    {
+        if (!_butacasPorFuncion.TryGetValue(funcionId, out var butacas))
+            return [];
+
+        return butacas
+            .GroupBy(b => b.Fila)
+            .Select(g => new FilaButacas(
+                g.Key,
+                g.OrderBy(b => b.Numero).ToArray()))
+            .OrderBy(f => f.Fila);
+    }
+
+    private IEnumerable<FuncionInfo> FuncionesDeSala(int salaId)
+    {
+        return _funciones
+            .Where(f => f.SalaId == salaId
+                        && f.EstadoFuncion == 1)
+            .OrderByDescending(f => f.FechaHoraInicio)
+            .Select(f => new FuncionInfo(
+                f.Id,
+                _peliculas.FirstOrDefault(p => p.Id == f.PeliculaId)?.Titulo ?? "Película",
+                f.FechaHoraInicio,
+                f.Idioma,
+                f.Formato,
+                f.Precio));
+    }
+
+    private FuncionInfo? ProximaFuncionDeSala(int salaId)
+    {
+        return FuncionesDeSala(salaId)
+            .Where(f => f.FechaHoraInicio >= DateTime.Now)
+            .OrderBy(f => f.FechaHoraInicio)
+            .FirstOrDefault();
+    }
+
+    private async Task CargarFuncionAsync(int salaId)
+    {
+        if (!_funcionSeleccionadaPorSala.TryGetValue(salaId, out var funcionId))
+            return;
+
+        if (funcionId == 0)
+            return;
+
+        if (!_butacasPorFuncion.ContainsKey(funcionId)) {
+            await CargarButacasDeFuncion(funcionId);
+        }
+    }
+
+    private async Task CargarButacasSiFaltan(int funcionId)
+    {
+        if (funcionId == 0)
+            return;
+
+        if (!_butacasPorFuncion.ContainsKey(funcionId)) {
+            await CargarButacasDeFuncion(funcionId);
+        }
+    }
+
+    private int FuncionSeleccionada(int salaId)
+    {
+        return _funcionSeleccionadaPorSala.TryGetValue(salaId, out var funcionId)
+            ? funcionId
+            : 0;
+    }
+
+    private int OcupadasDeFuncion(int funcionId)
+    {
+        return _butacasPorFuncion.TryGetValue(funcionId, out var butacas)
+            ? butacas.Count(b => b.Ocupada)
+            : 0;
+    }
+
+    private string ResumenOcupacionDe(int salaId)
+    {
+        var funcionId = FuncionSeleccionada(salaId);
+
+        if (funcionId == 0)
+            return "Seleccioná una función para ver su ocupación.";
+
+        if (!_butacasPorFuncion.TryGetValue(funcionId, out var butacas))
+            return "Seleccioná una función para ver su ocupación.";
+
+        var ocupadas = butacas.Count(b => b.Ocupada);
+        var libres = butacas.Count(b => !b.Ocupada);
+
+        return $"{ocupadas} ocupadas · {libres} libres de la función";
+    }
+
+    private IEnumerable<ReservaDto> ReservasDeSala(int salaId)
+    {
+        var numero = _salas.FirstOrDefault(s => s.Id == salaId)?.Numero;
+
+        return _reservas
+            .Where(r => r.Sala.Numero == numero)
+            .OrderByDescending(r => r.FechaReserva);
+    }
+
+    private static DateTime InicioDeSemana(DateTime dia)
+    {
+        var diff = ((int)dia.DayOfWeek + 6) % 7;
+
+        return dia.Date.AddDays(-diff);
+    }
+
+    private static string ObtenerNombreMes(int mes)
+    {
+        return new CultureInfo("es-AR").DateTimeFormat.GetMonthName(mes);
+    }
+
+    private void ToggleReservas(int salaId)
+    {
+        if (!_salasExpandidas.Add(salaId)) {
+            _salasExpandidas.Remove(salaId);
+        }
+    }
+
+    private static bool EsImax(string tipoSala)
+    {
+        return tipoSala.Equals("Imax", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string NormalizarTipoSala(string tipoSala)
+    {
+        return tipoSala switch
+        {
+            "Estandar" => "Estándar",
+            "Imax" => "IMAX",
+            _ => tipoSala
+        };
+    }
+
+    private static string NormalizarClasificacion(string clasificacion)
+    {
+        return clasificacion switch
+        {
+            "ATP" => "ATP",
+            "MayorDe13" => "+13",
+            "MayorDe16" => "+16",
+            "MayorDe18" => "+18",
+            _ => clasificacion
+        };
+    }
+
+    private static string ObtenerButacas(ReservaDto reserva)
+    {
+        return string.Join(", ", reserva.Butacas.Select(b => b.Codigo));
+    }
+
+    private sealed record FilaButacas(
+        string Fila,
+        IReadOnlyCollection<ButacaFuncionDto> Butacas);
+
+    private sealed record FuncionInfo(
+        int Id,
+        string Pelicula,
+        DateTime FechaHoraInicio,
+        int Idioma,
+        int Formato,
+        decimal Precio);
+
+    private enum FiltroTipo
+    {
+        Todas,
+        Estándar,
+        Imax
+    }
+
+    private enum PeriodoRecaudacion
+    {
+        Semana,
+        Mes,
+        Anio
+    }
 }

@@ -1,0 +1,673 @@
+/* ===== Página ===== */
+.admin-page {
+    max-width: 1250px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.admin-header {
+    margin-bottom: 2rem;
+}
+
+.admin-section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.cinemon-kicker {
+    display: inline-block;
+    color: #7BC6C9;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+}
+
+.admin-title {
+    color: #E7F3F2;
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 0.3rem;
+}
+
+.admin-subtitle {
+    color: #8AB8BB;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* ===== Stats ===== */
+.sala-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.9rem;
+    margin-bottom: 1.75rem;
+}
+
+.sala-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(154, 159, 191, 0.12);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.sala-stat .material-icons {
+    color: #7BC6C9;
+    font-size: 20px;
+}
+
+.sala-stat strong {
+    color: #f5f6ff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.sala-stat > span:last-child {
+    color: #858aa8;
+    font-size: 0.72rem;
+}
+
+/* ===== Recaudación ===== */
+.sala-recaudacion {
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(123, 198, 201, 0.2);
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(123, 198, 201, 0.08), rgba(123, 198, 201, 0.02));
+}
+
+.sala-recaudacion-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+}
+
+.sala-recaudacion-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0 0 0.25rem;
+    color: #e7f3f2;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.sala-recaudacion-header h3 .material-icons {
+    color: #7bc6c9;
+    font-size: 19px;
+}
+
+.sala-recaudacion-header p {
+    margin: 0;
+    color: #8ab8bb;
+    font-size: 0.72rem;
+}
+
+.sala-periodo-filters {
+    display: flex;
+    gap: 0.35rem;
+    padding: 0.25rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.sala-recaudacion-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.9rem;
+}
+
+.sala-recaudacion-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.sala-recaudacion-item span {
+    color: #858aa8;
+    font-size: 0.68rem;
+}
+
+.sala-recaudacion-item strong {
+    color: #7bc6c9;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* ===== Toolbar ===== */
+.admin-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.admin-search {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    width: min(360px, 100%);
+    padding: 0.7rem 0.9rem;
+    border: 1px solid rgba(154, 159, 191, 0.14);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.admin-search .material-icons {
+    color: #777c9b;
+    font-size: 20px;
+}
+
+.admin-search input {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #f5f6ff;
+    font-size: 0.9rem;
+}
+
+.admin-search input::placeholder {
+    color: #6f7492;
+}
+
+.admin-filters {
+    display: flex;
+    gap: 0.35rem;
+    padding: 0.25rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.admin-filter {
+    border: 0;
+    border-radius: 7px;
+    padding: 0.5rem 0.85rem;
+    background: transparent;
+    color: #858aa8;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.admin-filter:hover {
+    color: #f5f6ff;
+}
+
+.admin-filter.active {
+    background: rgba(123, 198, 201, 0.12);
+    color: #7BC6C9;
+}
+
+/* ===== Grid de salas ===== */
+.sala-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.sala-card {
+    overflow: hidden;
+    border: 1px solid rgba(154, 159, 191, 0.12);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.02);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.sala-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(123, 198, 201, 0.35);
+}
+
+/* ===== Header de tarjeta ===== */
+.sala-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1rem 1.1rem 0.75rem;
+    border-bottom: 1px solid rgba(154, 159, 191, 0.1);
+}
+
+.sala-card-header > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sala-number {
+    color: #f5f6ff;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.sala-tipo {
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(123, 198, 201, 0.12);
+    color: #7BC6C9;
+    font-size: 0.66rem;
+    font-weight: 600;
+}
+
+.sala-tipo.imax {
+    background: rgba(177, 74, 237, 0.15);
+    color: #c99bef;
+}
+
+.sala-capacity {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #858aa8;
+    font-size: 0.72rem;
+}
+
+.sala-capacity .material-icons {
+    font-size: 16px;
+}
+
+/* ===== Mapa de butacas ===== */
+.sala-func-select {
+    padding: 0.85rem 1.1rem 0;
+    border-top: 1px solid rgba(154, 159, 191, 0.08);
+}
+
+.sala-func-select label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0 0 0.5rem;
+    color: #8ab8bb;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.sala-func-select label .material-icons {
+    font-size: 16px;
+}
+
+.sala-func-select select {
+    width: 100%;
+    height: 38px;
+    padding: 0 0.7rem;
+    border: 1px solid rgba(154, 159, 191, 0.14);
+    border-radius: 9px;
+    outline: 0;
+    background: rgba(255, 255, 255, 0.03);
+    color: #e7f3f2;
+    font-size: 0.8rem;
+}
+
+.sala-func-select select option {
+    background: #16202b;
+    color: #e7f3f2;
+}
+
+.sala-map {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0.9rem 1.1rem 0.25rem;
+    overflow-x: auto;
+}
+
+.sala-map-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.sala-map-row-label {
+    width: 18px;
+    flex-shrink: 0;
+    color: #6f7492;
+    font-size: 0.62rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.sala-map-seats {
+    display: flex;
+    gap: 4px;
+}
+
+.sala-seat {
+    width: 14px;
+    height: 12px;
+    flex-shrink: 0;
+    border-radius: 3px 3px 2px 2px;
+    background: #5a6670;
+}
+
+.sala-seat.occupied {
+    background: #e5484d;
+    opacity: 0.85;
+}
+
+.sala-seat.free {
+    background: rgba(123, 198, 201, 0.55);
+}
+
+.sala-leyenda {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    padding: 0.35rem 1.1rem 0.85rem;
+    border-top: 1px solid rgba(154, 159, 191, 0.08);
+}
+
+.sala-leyenda span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #777c9b;
+    font-size: 0.68rem;
+}
+
+.sala-leyenda-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+}
+
+.sala-leyenda-dot.occupied {
+    background: #e5484d;
+    opacity: 0.85;
+}
+
+.sala-leyenda-dot.free {
+    background: rgba(123, 198, 201, 0.55);
+}
+
+.sala-leyenda-total {
+    margin-left: auto;
+    color: #8ab8bb;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.sala-sin-funciones {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 1.25rem;
+    border-top: 1px solid rgba(154, 159, 191, 0.08);
+    color: #6f7492;
+    font-size: 0.75rem;
+}
+
+.sala-sin-funciones .material-icons {
+    font-size: 17px;
+}
+
+/* ===== Footer de tarjeta ===== */
+.sala-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.7rem 1.1rem 0.85rem;
+    border-top: 1px solid rgba(154, 159, 191, 0.08);
+}
+
+.sala-resumen {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #777c9b;
+    font-size: 0.72rem;
+}
+
+.sala-resumen .material-icons {
+    font-size: 16px;
+}
+
+.sala-resumen strong {
+    color: #8ab8bb;
+}
+
+.sala-reservas-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border: 0;
+    border-radius: 7px;
+    padding: 0.45rem 0.7rem;
+    background: rgba(123, 198, 201, 0.1);
+    color: #7bc6c9;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.sala-reservas-toggle:hover {
+    background: rgba(123, 198, 201, 0.18);
+}
+
+.sala-reservas-toggle .material-icons {
+    font-size: 16px;
+    transition: transform 0.2s ease;
+}
+
+.sala-reservas-toggle.open .material-icons {
+    transform: rotate(180deg);
+}
+
+/* ===== Reservas ===== */
+.sala-reservas {
+    padding: 0.6rem 1.1rem 1rem;
+    border-top: 1px solid rgba(154, 159, 191, 0.08);
+}
+
+.sala-reservas-vacio {
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.02);
+    color: #777c9b;
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+.admin-table-wrap {
+    overflow-x: auto;
+    border: 1px solid rgba(30, 111, 125, 0.45);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.72rem;
+}
+
+.admin-table th {
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid rgba(30, 111, 125, 0.45);
+    background: rgba(255, 255, 255, 0.02);
+    color: #8ab8bb;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.admin-table td {
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid rgba(154, 159, 191, 0.08);
+    color: #e7f3f2;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.admin-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.admin-table tbody tr:hover td {
+    background: rgba(123, 198, 201, 0.04);
+}
+
+.admin-table .col-price {
+    color: #7bc6c9;
+}
+
+.admin-table .col-state {
+    text-align: right;
+}
+
+.client-name {
+    display: block;
+    font-weight: 600;
+}
+
+.client-email {
+    display: block;
+    max-width: 170px;
+    overflow: hidden;
+    color: #777c9b;
+    font-size: 0.65rem;
+    text-overflow: ellipsis;
+}
+
+.movie-title {
+    display: block;
+    max-width: 170px;
+    overflow: hidden;
+    font-weight: 600;
+    text-overflow: ellipsis;
+}
+
+.movie-clasif {
+    display: inline-block;
+    margin-top: 0.15rem;
+    padding: 0.12rem 0.4rem;
+    border-radius: 999px;
+    background: rgba(123, 198, 201, 0.12);
+    color: #7bc6c9;
+    font-size: 0.58rem;
+    font-weight: 600;
+}
+
+.admin-state {
+    display: inline-block;
+    padding: 0.25rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.62rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.admin-state.programada {
+    background: rgba(40, 180, 110, 0.15);
+    color: #62d99c;
+}
+
+.admin-state.cancelada {
+    background: rgba(200, 70, 90, 0.12);
+    color: #d98591;
+}
+
+/* ===== Vacío ===== */
+.admin-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    text-align: center;
+}
+
+.admin-empty .material-icons {
+    margin-bottom: 1rem;
+    color: #555a78;
+    font-size: 42px;
+}
+
+.admin-empty h3 {
+    margin-bottom: 0.4rem;
+    font-size: 1rem;
+    color: #e7f3f2;
+}
+
+.admin-empty p {
+    margin: 0;
+    color: #777c9b;
+    font-size: 0.85rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1100px) {
+    .sala-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .sala-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sala-recaudacion-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-section-header,
+    .admin-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .admin-search {
+        width: 100%;
+    }
+
+    .admin-filters {
+        width: fit-content;
+    }
+
+    .sala-recaudacion-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 640px) {
+    .admin-page {
+        padding: 1.25rem 1rem;
+    }
+
+    .admin-title {
+        font-size: 1.5rem;
+    }
+
+    .sala-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .sala-recaudacion-stats {
+        grid-template-columns: 1fr;
+    }
+}

@@ -76,8 +76,8 @@
 
 .admin-movie-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.8rem;
 }
 
 .admin-movie-card {
@@ -95,7 +95,7 @@
 
 .admin-movie-poster {
     position: relative;
-    aspect-ratio: 2 / 3;
+    aspect-ratio: 3 / 4;
     overflow: hidden;
     background: #111322;
 }
@@ -108,12 +108,12 @@
 
 .admin-status {
     position: absolute;
-    top: 0.7rem;
-    left: 0.7rem;
-    padding: 0.3rem 0.55rem;
+    top: 0.45rem;
+    left: 0.45rem;
+    padding: 0.22rem 0.45rem;
     border-radius: 6px;
     backdrop-filter: blur(8px);
-    font-size: 0.68rem;
+    font-size: 0.6rem;
     font-weight: 600;
 }
 
@@ -128,31 +128,43 @@
     }
 
 .admin-movie-content {
-    padding: 1rem 1rem 0.5rem;
+    padding: 0.6rem 0.75rem 0.35rem;
 }
 
     .admin-movie-content h3 {
-        margin: 0 0 0.4rem;
+        margin: 0 0 0.3rem;
         overflow: hidden;
         color: #f5f6ff;
-        font-size: 0.95rem;
+        font-size: 0.85rem;
         font-weight: 600;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
 .admin-movie-meta {
-    display: flex;
-    gap: 0.35rem;
     overflow: hidden;
     color: #858aa8;
     font-size: 0.72rem;
 }
 
-    .admin-movie-meta span:first-child {
+    .admin-movie-meta span {
+        display: block;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+    }
+
+.admin-movie-duration {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.35rem;
+    color: #777c9b;
+    font-size: 0.7rem;
+}
+
+    .admin-movie-duration .material-icons {
+        font-size: 14px;
     }
 
 .admin-movie-release {
@@ -165,9 +177,9 @@
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    margin-top: 0.65rem;
+    margin-top: 0.45rem;
     color: #b14aed;
-    font-size: 0.68rem;
+    font-size: 0.62rem;
 }
 
     .admin-tmdb-linked .material-icons {
@@ -176,8 +188,8 @@
 
 .admin-movie-actions {
     display: flex;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem 1rem;
+    gap: 0.4rem;
+    padding: 0.55rem 0.75rem 0.75rem;
 }
 
 .admin-action-button {
@@ -239,7 +251,19 @@
         font-size: 0.85rem;
     }
 
+@media (max-width: 1400px) {
+    .admin-movie-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 1200px) {
+    .admin-movie-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 992px) {
     .admin-movie-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
