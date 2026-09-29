@@ -1,0 +1,270 @@
+/* ===== Página de precios ===== */
+.admin-page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.admin-header {
+    margin-bottom: 2.5rem;
+}
+
+.cinemon-kicker {
+    display: inline-block;
+    color: #7BC6C9;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+}
+
+.admin-title {
+    color: #E7F3F2;
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 0.3rem;
+}
+
+.admin-subtitle {
+    color: #8AB8BB;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* ===== Secciones ===== */
+.precios-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(30, 111, 125, 0.45);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.precios-section-header {
+    margin-bottom: 1.4rem;
+}
+
+.precios-section-header h2 {
+    margin: 0 0 0.3rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #E7F3F2;
+}
+
+.precios-section-header p {
+    margin: 0;
+    color: #8AB8BB;
+    font-size: 0.8rem;
+}
+
+/* ===== Lista editable ===== */
+.precios-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.precio-fila {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.9rem 1rem;
+    background: #0F2D3A;
+    border: 1px solid rgba(30, 111, 125, 0.45);
+    border-radius: 12px;
+    transition: border-color 0.2s ease;
+}
+
+.precio-fila:focus-within {
+    border-color: rgba(123, 198, 201, 0.55);
+}
+
+.precio-fila-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.precio-fila-nombre {
+    color: #E7F3F2;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.precio-fila-nota {
+    color: #8AB8BB;
+    font-size: 0.72rem;
+}
+
+.precio-fila-control {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.precio-input {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid rgba(154, 159, 191, 0.14);
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.025);
+    transition: border-color 0.2s ease;
+}
+
+.precio-input:focus-within {
+    border-color: rgba(123, 198, 201, 0.5);
+}
+
+.precio-input.error {
+    border-color: rgba(217, 133, 145, 0.7);
+}
+
+.precio-input span {
+    color: #7BC6C9;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.precio-input input {
+    width: 110px;
+    padding: 0.25rem 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #E7F3F2;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.precio-input input::-webkit-outer-spin-button,
+.precio-input input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.precio-input input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.precio-guardar {
+    border-radius: 9px !important;
+    background-color: rgba(123, 198, 201, 0.16) !important;
+    background-image: none !important;
+    color: #7BC6C9 !important;
+    border: 1px solid rgba(123, 198, 201, 0.5) !important;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.precio-guardar:hover:not([disabled]) {
+    background-color: rgba(123, 198, 201, 0.24) !important;
+    color: #A5E0E3 !important;
+}
+
+.precio-guardar:disabled {
+    opacity: 0.45;
+}
+
+.precio-ok {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #7BC6C9;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.precio-error {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: #D98591;
+    font-size: 0.75rem;
+}
+
+.precios-cargando {
+    color: #8AB8BB;
+    font-size: 0.85rem;
+    padding: 1rem 0;
+}
+
+/* ===== Promoción ===== */
+.promo-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.2rem 1.1rem;
+    background: linear-gradient(135deg, rgba(123, 198, 201, 0.14), rgba(30, 111, 125, 0.08));
+    border: 1px solid rgba(123, 198, 201, 0.5);
+    border-radius: 12px;
+}
+
+.promo-card-icon {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(123, 198, 201, 0.18);
+    border-radius: 12px;
+    color: #A5E0E3;
+    font-size: 1.4rem;
+}
+
+.promo-card-body h3 {
+    margin: 0 0 0.3rem;
+    color: #E7F3F2;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.promo-card-body p {
+    margin: 0 0 0.75rem;
+    color: #C7D8DD;
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+.promo-dias {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.promo-dia {
+    padding: 0.25rem 0.7rem;
+    background: rgba(123, 198, 201, 0.16);
+    border: 1px solid rgba(123, 198, 201, 0.45);
+    border-radius: 999px;
+    color: #A5E0E3;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+    .admin-page {
+        padding: 1.25rem 1rem;
+    }
+    .admin-title {
+        font-size: 1.5rem;
+    }
+    .precios-section {
+        padding: 1rem;
+    }
+    .precio-fila {
+        grid-template-columns: 1fr;
+    }
+    .precio-fila-control {
+        justify-content: space-between;
+    }
+    .promo-card {
+        flex-direction: column;
+    }
+}

@@ -1,2 +1,243 @@
-/* Estilos de la tarjeta de película movidos a wwwroot/css/app.css
-   (compartidos con la página Próximos estrenos). */
+.cartelera-seccion {
+    background-color: #FFFFFF;
+    border-radius: 18px;
+    padding: 22px 18px 26px;
+}
+
+/* ===== Filtros: todos en el mismo encuadre ===== */
+.cartelera-filtros {
+    display: flex;
+    margin-bottom: 20px;
+    border: 1px solid #D8E3E7;
+    border-radius: 999px;
+    background: #F7FAFB;
+    padding: 4px;
+    gap: 4px;
+}
+
+.cartelera-filtro {
+    flex: 1;
+    padding: 7px 10px;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: #5A6B74;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.25s ease,
+                color 0.25s ease,
+                box-shadow 0.25s ease;
+}
+
+.cartelera-filtro:hover {
+    color: #0F2D3A;
+}
+
+.cartelera-filtro:active {
+    transform: scale(0.98);
+}
+
+.cartelera-filtro.activo {
+    background: linear-gradient(135deg, #0F2D3A, #1E6F7D);
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(30, 111, 125, 0.35);
+}
+
+/* ===== Estado vacío ===== */
+.cartelera-vacio {
+    text-align: center;
+    padding-top: 8px;
+}
+
+.cartelera-grid {
+    width: 100%;
+    margin-inline: auto;
+}
+
+/* ===== Tarjeta cuadrada ===== */
+.cartelera-tarjeta {
+    position: relative;
+    width: 100%;
+    margin: 0 auto;
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #08121A;
+    box-shadow: 0 6px 18px rgba(8, 18, 26, 0.18);
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.3, 1),
+                box-shadow 0.3s ease;
+}
+
+.cartelera-tarjeta:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 30px rgba(30, 111, 125, 0.4);
+}
+
+.cartelera-poster {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+}
+
+.cartelera-poster-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.3, 1),
+                filter 0.4s ease;
+}
+
+.cartelera-tarjeta:hover .cartelera-poster-img {
+    transform: scale(1.05);
+    filter: brightness(0.92);
+}
+
+/* Sombra inferior para legibilidad del texto */
+.cartelera-sombra {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(to top,
+        rgba(8, 18, 26, 0.92) 0%,
+        rgba(8, 18, 26, 0.55) 32%,
+        rgba(8, 18, 26, 0) 55%);
+}
+
+/* Botones flotantes sobre el póster */
+.cartelera-btn-play,
+.cartelera-btn-favorito {
+    position: absolute;
+    top: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    color: #FFFFFF;
+    cursor: pointer;
+    background: rgba(8, 18, 26, 0.55);
+    backdrop-filter: blur(4px);
+    transition: background-color 0.25s ease,
+                color 0.25s ease,
+                transform 0.15s ease;
+    z-index: 3;
+}
+
+.cartelera-btn-play {
+    left: 8px;
+}
+
+.cartelera-btn-favorito {
+    right: 8px;
+}
+
+.cartelera-btn-play:hover {
+    background: #7BC6C9;
+    color: #08121A;
+    transform: scale(1.08);
+}
+
+.cartelera-btn-favorito:hover {
+    background: rgba(255, 213, 79, 0.9);
+    color: #08121A;
+    transform: scale(1.08);
+}
+
+.cartelera-btn-favorito.activo {
+    background: #FFD54F;
+    color: #08121A;
+}
+
+.cartelera-btn-favorito .rzi,
+.cartelera-btn-play .rzi {
+    font-size: 1.05rem;
+}
+
+/* ===== Info superpuesta al pie ===== */
+.cartelera-info {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 10px 10px 12px;
+    background-color: #0F2D3A;
+    min-height: 58px;
+    z-index: 2;
+}
+
+.cartelera-texto {
+    min-width: 0;
+}
+
+.cartelera-titulo {
+    margin: 0 0 4px;
+    color: #E7F3F2;
+    font-weight: 700;
+    font-size: 0.8rem;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cartelera-clasificacion {
+    display: inline-block;
+    padding: 1px 7px;
+    border: 1px solid rgba(123, 198, 201, 0.7);
+    border-radius: 999px;
+    color: #A5E0E3;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px;
+}
+
+.cartelera-generos {
+    color: #C7D8DD;
+    font-size: 0.62rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Botón Entradas (RadzenLink -> <a>) */
+::deep .cartelera-entradas {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 7px 12px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #0F2D3A, #1E6F7D);
+    color: #FFFFFF;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color 0.25s ease,
+                transform 0.15s ease,
+                box-shadow 0.25s ease;
+}
+
+::deep .cartelera-entradas:hover {
+    background: #7BC6C9;
+    color: #08121A;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(30, 111, 125, 0.35);
+}
+
+@media (max-width: 768px) {
+    .cartelera-filtro {
+        font-size: 0.64rem;
+        padding: 6px 6px;
+    }
+}

@@ -4,6 +4,7 @@ using Cinemon.Domain.Entidades.Butacas;
 using Cinemon.Domain.Entidades.Reservas;
 using Cinemon.Domain.Enums;
 using Cinemon.Domain.Exceptions;
+using Cinemon.Domain.Promociones;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -75,7 +76,11 @@ namespace Cinemon.Application.Reservas.Commands.CrearReserva
             if (!butacasDisponibles)
                 throw new ConflictException("Una o más butacas ya están reservadas para esta función.");
 
-            var total = funcion.Precio * request.ButacasIds.Count;
+            var total = Promocion2x1.CalcularTotal(
+                funcion.FechaHoraInicio,
+                funcion.Precio,
+                request.ButacasIds.Count);
+
             var usuarioId = _currentUserService.UserId;
 
             var reserva = new Reserva(usuarioId, usuarioId, request.FuncionId, total);

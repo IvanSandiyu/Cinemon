@@ -7,6 +7,7 @@
 
 @inject FuncionApiService FuncionService
 @inject ButacaApiService ButacaService
+@inject ReservaApiService ReservaService
 @inject AuthService Auth
 @inject NavigationManager Navigation
 
@@ -92,9 +93,25 @@
                     <span class="cinemon-subtitle2">@_butacasSeleccionadas.Count</span>
                 </div>
 
+                @if (_presupuesto?.Aplica2x1 == true) {
+                    <div class="cinemon-promo cinemon-promo-compact">
+                        <RadzenIcon Icon="card_giftcard" />
+                        <div>
+                            <strong>2x1 aplicado</strong>
+                            <span>
+                                Pagás @_presupuesto.EntradasAPagar de
+                                @_presupuesto.CantidadEntradas entradas.
+                            </span>
+                        </div>
+                    </div>
+                }
+
                 <div class="d-flex justify-content-between mb-3">
                     <span class="cinemon-muted">Total</span>
-                    <span class="cinemon-price">$@(_funcion.Precio * _butacasSeleccionadas.Count)</span>
+                    <span class="cinemon-price">
+                        @( _presupuesto?.Total
+                            ?? (_funcion.Precio * _butacasSeleccionadas.Count) )
+                    </span>
                 </div>
 
                 <hr class="cinemon-hr my-3" />
@@ -144,6 +161,7 @@
     private FuncionDto? _funcion;
     private IReadOnlyCollection<ButacaFuncionDto> _butacas = [];
     private readonly HashSet<int> _butacasSeleccionadas = [];
+    private PresupuestoDto? _presupuesto;
     private bool _cargando = true;
 
     private readonly CancellationTokenSource _cts = new();
@@ -243,7 +261,7 @@
         _cts.Dispose();
     }
 
-    private void AlternarButaca(int butacaId)
+    private async Task AlternarButaca(int butacaId)
     {
         if (_tiempoAgotado)
             return;
@@ -256,6 +274,22 @@
         if (!_butacasSeleccionadas.Add(butacaId)) {
             _butacasSeleccionadas.Remove(butacaId);
         }
+
+        await CargarPresupuesto();
+    }
+
+    private async Task CargarPresupuesto()
+    {
+        if (_butacasSeleccionadas.Count == 0) {
+            _presupuesto = null;
+            return;
+        }
+
+        var (presupuesto, _) = await ReservaService.CalcularPresupuestoAsync(
+            FuncionId,
+            _butacasSeleccionadas.Count);
+
+        _presupuesto = presupuesto;
     }
 
     private void Continuar()

@@ -58,6 +58,28 @@ namespace Cinemon.Web.Services
             return (creada?.Id ?? 0, null);
         }
 
+        public async Task<(ProgramacionResultDto? Resultado, string? Error)> CrearProgramacionAsync(
+            CrearProgramacionRequest request)
+        {
+            AdjuntarToken();
+
+            var response = await _httpClient.PostAsJsonAsync(
+                "api/funciones/programacion",
+                request);
+
+            if (!response.IsSuccessStatusCode) {
+                var contenido = await response.Content
+                    .ReadAsStringAsync();
+
+                return (null, contenido);
+            }
+
+            var resultado = await response.Content
+                .ReadFromJsonAsync<ProgramacionResultDto>();
+
+            return (resultado, null);
+        }
+
         public async Task<(bool Ok, string? Error)> EditarAsync(int id,FuncionDto funcion)
         {
             AdjuntarToken();

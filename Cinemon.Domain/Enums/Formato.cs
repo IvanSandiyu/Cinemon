@@ -9,6 +9,7 @@ namespace Cinemon.Domain.Enums
     public enum Formato
     {
         DosD = 1,
-        TresD = 2
+        TresD = 2,
+        CuatroD = 3
     }
 }

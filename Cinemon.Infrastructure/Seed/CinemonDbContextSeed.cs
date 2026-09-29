@@ -1,5 +1,6 @@
 ﻿using Cinemon.Domain.Entidades.Butacas;
 using Cinemon.Domain.Entidades.Generos;
+using Cinemon.Domain.Entidades.Precios;
 using Cinemon.Domain.Entidades.Salas;
 using Cinemon.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,7 @@ namespace Cinemon.Infrastructure.Seed
             await context.Database.MigrateAsync();
             //await SeedSalasAsync(context);
             await SeedGenerosAsync(context);
+            await SeedPreciosAsync(context);
 
             if (await context.Salas.AnyAsync())
                 return;
@@ -83,6 +85,24 @@ namespace Cinemon.Infrastructure.Seed
                             numero));
                 }
             }
+        }
+
+        private static async Task SeedPreciosAsync(CinemonDbContext context)
+        {
+            if (await context.Precios.AnyAsync())
+                return;
+
+            var precios = new List<Precio>
+        {
+            new(Formato.DosD, TipoSala.Estandar, 8000m),
+            new(Formato.TresD, TipoSala.Estandar, 10000m),
+            new(Formato.CuatroD, TipoSala.Estandar, 14000m),
+            new(Formato.DosD, TipoSala.Imax, 12000m)
+        };
+
+            context.Precios.AddRange(precios);
+
+            await context.SaveChangesAsync();
         }
 
         private static async Task SeedGenerosAsync(CinemonDbContext context)

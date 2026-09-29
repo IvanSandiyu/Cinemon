@@ -65,57 +65,58 @@
 
     </div>
 
-    <hr class="my-4 cinemon-hr" />
+    <div class="cinemon-pagina-blanca">
 
-    <div class="text-center">
-        <h4 class="cinemon-title mb-1">Funciones</h4>
-        <p class="cinemon-muted mb-4">Seleccioná el día y elegí el horario que prefieras.</p>
+        <div class="text-center">
+            <h4 class="cinemon-title mb-1">Funciones</h4>
+            <p class="cinemon-muted mb-4">Seleccioná el día y elegí el horario que prefieras.</p>
+        </div>
+
+        @if (_diasFunciones.Count == 0) {
+            <RadzenAlert AlertStyle="AlertStyle.Info">
+                No hay funciones disponibles para esta película.
+            </RadzenAlert>
+        } else {
+
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                @foreach (var dia in _diasFunciones) {
+                    <RadzenButton Text="@dia.Key.ToString("ddd dd MMM")"
+                                  Variant="@(dia.Key == _diaSeleccionado ? Variant.Filled : Variant.Outlined)"
+                                  ButtonStyle="ButtonStyle.Primary"
+                                  Size="ButtonSize.Medium"
+                                  Click="@(() => _diaSeleccionado = dia.Key)" />
+                }
+            </div>
+
+            <div class="row g-3">
+                @foreach (var (funcion, index) in _funcionesDelDia.Select((funcion, index) => (funcion, index))) {
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 cinemon-funcion-col" style="animation-delay:@(index * 90)ms">
+                        <RadzenCard class="cinemon-funcion-card">
+                            <div class="p-2">
+                                <h5 class="cinemon-hours mb-1">@funcion.FechaHoraInicio.ToString("HH:mm")</h5>
+                                <div class="cinemon-meta small">Sala @funcion.SalaId</div>
+                                <div class="cinemon-meta small mb-2">@ObtenerIdioma(funcion.Idioma)</div>
+
+                                @if (funcion.EstadoFuncion == 1) {
+                                    <RadzenButton Text="Continuar"
+                                                  ButtonStyle="ButtonStyle.Primary"
+                                                  Variant="Variant.Filled"
+                                                  FullWidth="true"
+                                                  Click="@(() => ContinuarReserva(funcion))" />
+                                } else {
+                                    <RadzenButton Text="@ObtenerEstado(funcion.EstadoFuncion)"
+                                                  ButtonStyle="ButtonStyle.Secondary"
+                                                  Variant="Variant.Outlined"
+                                                  Disabled="true"
+                                                  FullWidth="true" />
+                                }
+                            </div>
+                        </RadzenCard>
+                    </div>
+                }
+            </div>
+        }
     </div>
-
-    @if (_diasFunciones.Count == 0) {
-        <RadzenAlert AlertStyle="AlertStyle.Info">
-            No hay funciones disponibles para esta película.
-        </RadzenAlert>
-    } else {
-
-        <div class="d-flex flex-wrap gap-2 mb-4">
-            @foreach (var dia in _diasFunciones) {
-                <RadzenButton Text="@dia.Key.ToString("ddd dd MMM")"
-                              Variant="@(dia.Key == _diaSeleccionado ? Variant.Filled : Variant.Outlined)"
-                              ButtonStyle="ButtonStyle.Primary"
-                              Size="ButtonSize.Medium"
-                              Click="@(() => _diaSeleccionado = dia.Key)" />
-            }
-        </div>
-
-        <div class="row g-3">
-            @foreach (var (funcion, index) in _funcionesDelDia.Select((funcion, index) => (funcion, index))) {
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3 cinemon-funcion-col" style="animation-delay:@(index * 90)ms">
-                    <RadzenCard class="cinemon-funcion-card">
-                        <div class="p-2">
-                            <h5 class="cinemon-hours mb-1">@funcion.FechaHoraInicio.ToString("HH:mm")</h5>
-                            <div class="cinemon-meta small">Sala @funcion.SalaId</div>
-                            <div class="cinemon-meta small mb-2">@ObtenerIdioma(funcion.Idioma)</div>
-
-                            @if (funcion.EstadoFuncion == 1) {
-                                <RadzenButton Text="Continuar"
-                                              ButtonStyle="ButtonStyle.Primary"
-                                              Variant="Variant.Filled"
-                                              FullWidth="true"
-                                              Click="@(() => ContinuarReserva(funcion))" />
-                            } else {
-                                <RadzenButton Text="@ObtenerEstado(funcion.EstadoFuncion)"
-                                              ButtonStyle="ButtonStyle.Secondary"
-                                              Variant="Variant.Outlined"
-                                              Disabled="true"
-                                              FullWidth="true" />
-                            }
-                        </div>
-                    </RadzenCard>
-                </div>
-            }
-        </div>
-    }
 }
 
 @code {

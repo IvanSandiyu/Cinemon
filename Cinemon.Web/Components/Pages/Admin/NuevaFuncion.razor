@@ -8,6 +8,7 @@
 @inject FuncionApiService FuncionService
 @inject PeliculaApiService PeliculaService
 @inject SalaApiService SalaService
+@inject PrecioApiService PrecioService
 @inject NavigationManager Navigation
 
 <PageTitle>Nueva función | Admin | Cinemon</PageTitle>
@@ -61,9 +62,11 @@
                             Película
                         </label>
 
-                        <select @bind="_peliculaId">
+                        <select @bind="_peliculaId" disabled="@(_peliculas.Count == 0)">
                             <option value="0">
-                                Seleccionar película...
+                                @( _peliculas.Count == 0
+                                        ? "No hay películas activas"
+                                        : "Seleccionar película..." )
                             </option>
 
                             @foreach (var pelicula in _peliculas) {
@@ -74,7 +77,13 @@
                             }
                         </select>
 
-                        @if (_peliculaSeleccionada is not null) {
+                        @if (_peliculas.Count == 0) {
+                            <span class="admin-field-hint">
+                                No hay películas activas en cartelera. Activá una película
+                                desde Películas para poder programarle funciones.
+                            </span>
+                        }
+                        else if (_peliculaSeleccionada is not null) {
                             <span class="admin-field-hint">
                                 Cartelera: el fin de la función se calculará con la duración de
                                 @_peliculaSeleccionada.Duracion minutos.
@@ -131,19 +140,47 @@
 
                     </div>
 
-                    <div class="admin-form-row">
+                    <div class="admin-form-row admin-form-row-precio">
 
                         <div class="admin-form-field">
 
                             <label>
-                                Precio por entrada ($)
+                                Precio por entrada
                             </label>
 
-                            <input type="number"
-                                   min="1"
-                                   step="0.01"
-                                   @bind="_precio"
-                                   placeholder="Ej: 6500" />
+                            <select @bind="_precioId"
+                                    @bind:after="CambiarPrecio"
+                                    disabled="@(_precios.Count == 0)">
+
+                                <option value="0">
+                                    @( _precios.Count == 0
+                                            ? "No hay precios cargados"
+                                            : "Seleccionar precio..." )
+                                </option>
+
+                                @foreach (var precio in _precios) {
+                                    <option value="@precio.Id">
+                                        @precio.Nombre — $@precio.Valor.ToString("N0")
+                                    </option>
+                                }
+
+                            </select>
+
+                            @if (_precios.Count == 0) {
+                                <span class="admin-field-hint">
+                                    No hay precios cargados. Cargalos desde
+                                    Admin › Precios.
+                                </span>
+                            }
+                            else if (_precioSeleccionado is not null) {
+                                <span class="admin-field-hint">
+                                    Entrada
+                                    <strong>$@_precioSeleccionado.Valor.ToString("N0")</strong>
+                                    @if (_precioSeleccionado.TipoSala == 2) {
+                                        <text> · requiere una sala IMAX</text>
+                                    }
+                                </span>
+                            }
 
                         </div>
 
@@ -171,31 +208,108 @@
 
                         </div>
 
-                        <div class="admin-form-field">
+                    </div>
 
-                            <label>
-                                Formato
-                            </label>
+                </div>
 
-                            <div class="admin-segmented">
+                <div class="admin-repetir">
 
-                                <button type="button"
-                                        class="@(_formato == 1 ? "selected" : "")"
-                                        @onclick="() => _formato = 1">
-                                    2D
-                                </button>
+                    <button type="button"
+                            class="admin-repetir-toggle @( _repetir ? "open" : "" )"
+                            @onclick="AlternarRepeticion">
 
-                                <button type="button"
-                                        class="@(_formato == 2 ? "selected" : "")"
-                                        @onclick="() => _formato = 2">
-                                    3D
-                                </button>
+                        <span class="admin-repetir-toggle-text">
+                            Programar la misma función en varios días
+                        </span>
+
+                        <span class="admin-repetir-toggle-hint">
+                            Misma película, sala, hora y precio
+                        </span>
+
+                    </button>
+
+                    @if (_repetir) {
+                        <div class="admin-repetir-body">
+
+                            <div class="admin-repetir-grid">
+
+                                <div class="admin-form-field">
+
+                                    <label>
+                                        Días de la semana
+                                    </label>
+
+                                    <div class="admin-dias">
+
+                                        @foreach (var dia in DiasSemana) {
+                                            <button type="button"
+                                                    class="@(_diasSeleccionados.Contains(dia.Dia) ? "selected" : "")"
+                                                    @onclick="() => AlternarDia(dia.Dia)">
+                                                @dia.Nombre
+                                            </button>
+                                        }
+
+                                    </div>
+
+                                </div>
+
+                                <div class="admin-form-field">
+
+                                    <label>
+                                        Cantidad de semanas
+                                    </label>
+
+                                    <div class="admin-segmented">
+
+                                        @foreach (var semanas in OpcionesSemanas) {
+                                            <button type="button"
+                                                    class="@(_semanas == semanas ? "selected" : "")"
+                                                    @onclick="() => _semanas = semanas">
+                                                @semanas
+                                            </button>
+                                        }
+
+                                    </div>
+
+                                </div>
 
                             </div>
 
-                        </div>
+                            @if (_fechasProgramadas.Count > 0) {
+                                <div class="admin-preview">
+                                    <p class="admin-preview-titulo">
+                                        Se van a crear
+                                        <strong>@_fechasProgramadas.Count</strong>
+                                        @( _fechasProgramadas.Count == 1
+                                                ? "función"
+                                                : "funciones" )
+                                        en la misma sala, a las
+                                        <strong>@_hora.ToString("hh\\:mm")</strong>.
+                                    </p>
 
-                    </div>
+                                    <div class="admin-preview-dias">
+                                        @foreach (var fecha in _fechasProgramadas) {
+                                            <span class="admin-preview-fecha">
+                                                @fecha.ToString("ddd dd/MM")
+                                            </span>
+                                        }
+                                    </div>
+
+                                    <p class="admin-preview-nota">
+                                        Los días donde la sala ya tenga una función
+                                        a ese horario se omiten automáticamente.
+                                    </p>
+                                </div>
+                            }
+                            else {
+                                <p class="admin-preview-vacio">
+                                    Seleccioná al menos un día para ver la
+                                    programación.
+                                </p>
+                            }
+
+                        </div>
+                    }
 
                 </div>
 
@@ -205,13 +319,42 @@
                     </div>
                 }
 
+                @if (_resultadoProgramacion is not null) {
+                    <div class="admin-form-ok">
+                        <strong>
+                            Se crearon @_resultadoProgramacion.Creadas.Count
+                            @( _resultadoProgramacion.Creadas.Count == 1
+                                    ? "función"
+                                    : "funciones" ).
+                        </strong>
+
+                        @if (_resultadoProgramacion.Omitidas.Count > 0) {
+                            <span>
+                                Se omitieron
+                                @_resultadoProgramacion.Omitidas.Count por
+                                conflicto de sala:
+                                @string.Join(", ", _resultadoProgramacion.Omitidas
+                                    .Select(f => f.ToString("ddd dd/MM"))).
+                            </span>
+                        }
+                    </div>
+                }
+
                 <div class="admin-form-actions">
 
                     <RadzenButton Text="Cancelar"
                                   Click="Cancelar"
                                   class="admin-cancel-button" />
 
-                    <RadzenButton Text="Guardar función"
+                    @if (_repetir) {
+                        <RadzenButton Text="Programar días"
+                                      Icon="date_range"
+                                      Click="ProgramarSemanal"
+                                      Disabled="@_guardando"
+                                      class="admin-secondary-button" />
+                    }
+
+                    <RadzenButton Text="@(_repetir ? "Guardar solo esta" : "Guardar función")"
                                   Icon="save"
                                   Click="Guardar"
                                   Disabled="@_guardando" />
@@ -231,6 +374,7 @@
 
     private IReadOnlyCollection<PeliculaDto> _peliculas = [];
     private IReadOnlyCollection<SalaDto> _salas = [];
+    private IReadOnlyCollection<PrecioDto> _precios = [];
 
     private bool _cargando = true;
     private bool _guardando;
@@ -242,11 +386,36 @@
     private DateTime _fecha = DateTime.Today;
     private TimeOnly _hora = new(20, 0);
     private int _idioma = 1;
-    private int _formato = 1;
+    private int _precioId;
     private decimal _precio;
+    private int _formato = 1;
+    private int _precioTipoSalaRequerida;
+
+    private bool _repetir;
+    private int _semanas = 1;
+    private readonly HashSet<DayOfWeek> _diasSeleccionados = [];
+    private ProgramacionResultDto? _resultadoProgramacion;
+
+    private static readonly (DayOfWeek Dia,string Nombre)[] DiasSemana =
+    [
+        (DayOfWeek.Monday, "Lun"),
+        (DayOfWeek.Tuesday, "Mar"),
+        (DayOfWeek.Wednesday, "Mié"),
+        (DayOfWeek.Thursday, "Jue"),
+        (DayOfWeek.Friday, "Vie"),
+        (DayOfWeek.Saturday, "Sáb"),
+        (DayOfWeek.Sunday, "Dom")
+    ];
+
+    private static readonly int[] OpcionesSemanas = [1, 2, 4, 8];
+
+    private List<DateTime> _fechasProgramadas => CalcularFechasProgramacion();
 
     private PeliculaDto? _peliculaSeleccionada =>
         _peliculas.FirstOrDefault(p => p.Id == _peliculaId);
+
+    private PrecioDto? _precioSeleccionado =>
+        _precios.FirstOrDefault(p => p.Id == _precioId);
 
     protected override async Task OnInitializedAsync()
     {
@@ -259,51 +428,64 @@
         _error = null;
 
         try {
-            _peliculas = await PeliculaService.ObtenerTodasAsync();
+            _peliculas = (await PeliculaService.ObtenerTodasAsync())
+                .Where(p => p.Activa)
+                .OrderBy(p => p.Titulo)
+                .ToList();
             _salas = await SalaService.ObtenerTodasAsync();
+            _precios = await PrecioService.ObtenerTodosAsync();
 
             var proxima = ObtenerProximaMediaHora();
             _fecha = proxima.Date;
             _hora = TimeOnly.FromDateTime(proxima);
+
+            var primerPrecio = _precios.FirstOrDefault();
+
+            if (primerPrecio is not null) {
+                SeleccionarPrecio(primerPrecio.Id);
+            }
         } catch {
-            _error = "No se pudieron cargar las películas y las salas.";
+            _error = "No se pudieron cargar las películas, las salas y los precios.";
         } finally {
             _cargando = false;
         }
     }
 
+    private void CambiarPrecio()
+    {
+        SeleccionarPrecio(_precioId);
+        _resultadoProgramacion = null;
+    }
+
+    private void SeleccionarPrecio(int precioId)
+    {
+        var precio = _precios.FirstOrDefault(p => p.Id == precioId);
+
+        if (precio is null) {
+            _precioId = 0;
+            _precio = 0;
+            _formato = 1;
+            _precioTipoSalaRequerida = 1;
+            return;
+        }
+
+        _precioId = precio.Id;
+        _precio = precio.Valor;
+        _formato = precio.Formato;
+        _precioTipoSalaRequerida = precio.TipoSala;
+    }
+
     private async Task Guardar()
     {
         _error = null;
+        _resultadoProgramacion = null;
 
-        if (_peliculaId <= 0) {
-            _error = "Seleccioná una película.";
-            return;
-        }
+        _error = ValidarFormulario();
 
-        if (_salaId <= 0) {
-            _error = "Seleccioná una sala.";
+        if (_error is not null)
             return;
-        }
 
         var inicio = _fecha.Add(_hora.ToTimeSpan());
-
-        if (inicio <= DateTime.UtcNow) {
-            _error = "La fecha y hora debe ser en el futuro.";
-            return;
-        }
-
-        if (_precio <= 0) {
-            _error = "El precio debe ser mayor a 0.";
-            return;
-        }
-
-        var sala = _salas.FirstOrDefault(s => s.Id == _salaId);
-
-        if (sala?.TipoSala == "Imax" && _formato == 2) {
-            _error = "Una sala IMAX no puede tener funciones 3D.";
-            return;
-        }
 
         _guardando = true;
 
@@ -327,6 +509,132 @@
             Navigation.NavigateTo("/admin/funciones");
         } catch (Exception) {
             _error = "No se pudo guardar la función.";
+        } finally {
+            _guardando = false;
+        }
+    }
+
+    private string? ValidarFormulario()
+    {
+        if (_peliculaId <= 0)
+            return "Seleccioná una película.";
+
+        if (_salaId <= 0)
+            return "Seleccioná una sala.";
+
+        if (_precioId <= 0)
+            return "Seleccioná un precio.";
+
+        if (_fecha.Add(_hora.ToTimeSpan()) <= DateTime.UtcNow)
+            return "La fecha y hora debe ser en el futuro.";
+
+        var esSalaImax = _salas
+            .FirstOrDefault(s => s.Id == _salaId)?.TipoSala == "Imax";
+
+        if (_precioTipoSalaRequerida == 2 && !esSalaImax)
+            return "El precio IMAX requiere una sala IMAX.";
+
+        if (_formato == 2 && esSalaImax)
+            return "Una sala IMAX no puede tener funciones 3D.";
+
+        return null;
+    }
+
+    private void AlternarRepeticion()    {
+        _repetir = !_repetir;
+        _resultadoProgramacion = null;
+    }
+
+    private void AlternarDia(DayOfWeek dia)
+    {
+        if (!_diasSeleccionados.Add(dia))
+            _diasSeleccionados.Remove(dia);
+
+        _resultadoProgramacion = null;
+    }
+
+    private List<DateTime> CalcularFechasProgramacion()
+    {
+        var fechas = new List<DateTime>();
+
+        if (_fecha == default ||
+            _diasSeleccionados.Count == 0) {
+            return fechas;
+        }
+
+        var inicio = _fecha.Date;
+        var hora = _hora.ToTimeSpan();
+
+        foreach (var dia in _diasSeleccionados) {
+            var diasDeEspera = ((int)dia - (int)inicio.DayOfWeek + 7) % 7;
+
+            var primerDia = inicio.AddDays(diasDeEspera);
+
+            for (var semana = 0; semana < _semanas; semana++) {
+                var fecha = primerDia.AddDays(semana * 7);
+
+                if (!fechas.Contains(fecha))
+                    fechas.Add(fecha.Add(hora));
+            }
+        }
+
+        fechas.Sort();
+
+        return fechas;
+    }
+
+    private async Task ProgramarSemanal()
+    {
+        _error = null;
+        _resultadoProgramacion = null;
+
+        _error = ValidarFormulario();
+
+        if (_error is not null)
+            return;
+
+        if (_diasSeleccionados.Count == 0) {
+            _error = "Seleccioná al menos un día de la semana.";
+            return;
+        }
+
+        var inicio = _fecha.Add(_hora.ToTimeSpan());
+
+        _guardando = true;
+
+        try {
+            var request = new CrearProgramacionRequest(
+                _peliculaId,
+                _salaId,
+                inicio,
+                _diasSeleccionados.Select(d => (int)d).ToList(),
+                _semanas,
+                _idioma,
+                _formato,
+                _precio);
+
+            var (resultado, error) =
+                await FuncionService.CrearProgramacionAsync(request);
+
+            if (error is not null) {
+                _error = ObtenerMensajeError(error);
+                return;
+            }
+
+            if (resultado is null) {
+                _error = "No se pudo guardar la programación.";
+                return;
+            }
+
+            if (resultado.Creadas.Count == 0) {
+                _error = "No se pudo crear ninguna función: " +
+                    "la sala está ocupada en todos los días seleccionados.";
+                return;
+            }
+
+            _resultadoProgramacion = resultado;
+        } catch (Exception) {
+            _error = "No se pudo guardar la programación.";
         } finally {
             _guardando = false;
         }

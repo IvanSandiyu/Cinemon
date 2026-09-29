@@ -1,0 +1,168 @@
+/* El root es hijo directo del grid del header, por eso se posiciona ahí */
+.appbar-search {
+    grid-area: search;
+    justify-self: start;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.search-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    color: #7BC6C9;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: color 0.25s ease;
+}
+
+.search-trigger .rzi {
+    font-size: 1.3rem;
+}
+
+.search-trigger:hover {
+    color: #A5E0E3;
+}
+
+/* Input: solo el campo, pegado al ícono, sin recuadro alrededor.
+   z-index > backdrop para que quede clickeable por encima del fondo transparente. */
+.search-input {
+    position: relative;
+    z-index: 2;
+    width: 210px;
+    max-width: 40vw;
+    padding: 5px 2px;
+    border: none;
+    border-bottom: 1px solid #1E6F7D;
+    outline: none;
+    background: transparent;
+    color: #E7F3F2;
+    font-size: 0.85rem;
+    font-family: inherit;
+    animation: searchInputIn 0.2s ease both;
+    transition: border-color 0.25s ease;
+}
+
+.search-input::placeholder {
+    color: #5A9A9D;
+}
+
+.search-input:focus {
+    border-bottom-color: #7BC6C9;
+}
+
+@keyframes searchInputIn {
+    from {
+        opacity: 0;
+        transform: translateX(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Fondo invisible para cerrar al clickear fuera */
+.search-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    cursor: default;
+}
+
+.search-estado {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 2;
+    color: #8AB8BB;
+    font-size: 0.78rem;
+    white-space: nowrap;
+}
+
+/* Resultados: lista simple debajo del input, sin caja */
+.search-resultados {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 42px;
+    z-index: 2;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 280px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.search-resultados li + li {
+    margin-top: 2px;
+}
+
+.search-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 6px 8px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(15, 45, 58, 0.92);
+    color: #E7F3F2;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.search-item:hover {
+    background: #1E6F7D;
+}
+
+.search-item-poster {
+    width: 34px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 4px;
+    background: #08121A;
+    flex-shrink: 0;
+}
+
+.search-item-datos {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.search-item-titulo {
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-item-meta {
+    color: #A5E0E3;
+    font-size: 0.68rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+    .appbar-search {
+        margin-top: 0;
+    }
+    .search-input {
+        width: 150px;
+    }
+    .search-resultados {
+        width: 230px;
+    }
+}

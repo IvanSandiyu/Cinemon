@@ -6,7 +6,11 @@
 
 @if (!Auth.EstaAutenticado)
 {
-    <RadzenLink Path="/login" Icon="login" class="app-nav-link login-cta">Ingresar</RadzenLink>
+    <RadzenLink Path="/login"
+                Icon="person"
+                class="app-nav-link login-cta"
+                title="Ingresar"
+                aria-label="Ingresar" />
 }
 else
 {

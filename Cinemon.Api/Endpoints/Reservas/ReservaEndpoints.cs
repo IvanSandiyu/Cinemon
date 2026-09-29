@@ -1,6 +1,7 @@
 ﻿using Cinemon.Application.Interfaces;
 using Cinemon.Application.Reservas.Commands.CancelarReserva;
 using Cinemon.Application.Reservas.Commands.CrearReserva;
+using Cinemon.Application.Reservas.Queries.CalcularPresupuesto;
 using Cinemon.Application.Reservas.Queries.ObtenerReservas;
 using MediatR;
 
@@ -27,7 +28,22 @@ namespace Cinemon.Api.Endpoints.Reservas
 
             group.MapGet("/mis-reservas", HistorialReservas).RequireAuthorization(policy => policy.RequireRole("Cliente", "Admin"));
 
+            group.MapPost("/presupuesto", CalcularPresupuesto)
+                .RequireAuthorization(policy => policy.RequireRole("Cliente", "Admin"));
+
             return app;
+        }
+
+        private static async Task<IResult> CalcularPresupuesto(CalcularPresupuestoRequest request,ISender sender,
+            CancellationToken cancellationToken)
+        {
+            var presupuesto = await sender.Send(
+                new CalcularPresupuestoQuery(
+                    request.FuncionId,
+                    request.CantidadButacas),
+                cancellationToken);
+
+            return Results.Ok(presupuesto);
         }
 
         private static async Task<IResult> HistorialReservas(ICurrentUserService currentUserService,ISender sender,CancellationToken cancellationToken)

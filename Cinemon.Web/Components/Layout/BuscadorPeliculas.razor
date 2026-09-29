@@ -1,0 +1,183 @@
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using System.Globalization
+@using System.Text
+@using Cinemon.Web.Models.DTOs
+@using Cinemon.Web.Services
+@inject PeliculaApiService PeliculaService
+@inject NavigationManager Navigation
+
+<div class="appbar-search">
+    <button type="button"
+            class="search-trigger"
+            @onclick="AlternarPanel"
+            title="Buscar películas"
+            aria-label="Buscar películas"
+            aria-expanded="_abierto">
+        <RadzenIcon Icon="search" />
+    </button>
+
+    @if (_abierto) {
+        <input type="text"
+               class="search-input"
+               placeholder="Nombre de la película..."
+               @bind="_texto"
+               @bind:event="oninput"
+               @bind:after="OnTextoCambiado"
+               @onkeydown="OnTecla"
+               @ref="_inputRef"
+               autocomplete="off" />
+
+        <div class="search-backdrop" @onclick="CerrarPanel" aria-hidden="true"></div>
+
+        @if (_cargando) {
+            <div class="search-estado">Buscando películas...</div>
+        }
+        else if (!string.IsNullOrWhiteSpace(_texto) && _resultados.Count == 0) {
+            <div class="search-estado">Sin resultados para "@_texto".</div>
+        }
+        else if (_resultados.Count > 0) {
+            <ul class="search-resultados">
+                @foreach (var pelicula in _resultados) {
+                    <li>
+                        <button type="button"
+                                class="search-item"
+                                @onclick="() => Seleccionar(pelicula)">
+                            <img src="@pelicula.PosterUrl"
+                                 alt="Póster de @pelicula.Titulo"
+                                 class="search-item-poster"
+                                 loading="lazy" />
+                            <span class="search-item-datos">
+                                <span class="search-item-titulo">@pelicula.Titulo</span>
+                                <span class="search-item-meta">
+                                    @pelicula.ClasificacionEdad
+                                    @if (pelicula.Generos.Any()) {
+                                        <span>· @string.Join(", ", pelicula.Generos)</span>
+                                    }
+                                </span>
+                            </span>
+                        </button>
+                    </li>
+                }
+            </ul>
+        }
+    }
+</div>
+
+@code {
+    private const int MaxResultados = 8;
+
+    private bool _abierto;
+    private bool _cargando;
+    private string _texto = string.Empty;
+
+    private IReadOnlyCollection<PeliculaDto> _todas = [];
+    private List<PeliculaDto> _resultados = [];
+
+    private ElementReference _inputRef;
+    private bool _enfocarInput;
+
+    private async Task AlternarPanel()
+    {
+        if (_abierto) {
+            CerrarPanel();
+            return;
+        }
+
+        _abierto = true;
+        _enfocarInput = true;
+
+        if (_todas.Count == 0) {
+            await CargarPeliculas();
+        }
+    }
+
+    private async Task CargarPeliculas()
+    {
+        _cargando = true;
+
+        try {
+            _todas = await PeliculaService.ObtenerTodasAsync();
+        }
+        catch {
+            _todas = [];
+        }
+        finally {
+            _cargando = false;
+        }
+    }
+
+    private Task OnTextoCambiado()
+    {
+        var consulta = Normalizar(_texto);
+
+        _resultados = string.IsNullOrWhiteSpace(consulta)
+            ? []
+            : _todas
+                .Where(p => Normalizar(p.Titulo).Contains(consulta))
+                .OrderBy(p => p.Titulo)
+                .Take(MaxResultados)
+                .ToList();
+
+        return Task.CompletedTask;
+    }
+
+    private void Seleccionar(PeliculaDto pelicula)
+    {
+        CerrarPanel();
+        Navigation.NavigateTo($"/peliculas/{pelicula.Id}");
+    }
+
+    private void CerrarPanel()
+    {
+        _abierto = false;
+        _texto = string.Empty;
+        _resultados = [];
+    }
+
+    private void OnTecla(KeyboardEventArgs e)
+    {
+        if (e.Code == "Escape") {
+            CerrarPanel();
+        }
+        else if (e.Code == "Enter" && _resultados.Count > 0) {
+            Seleccionar(_resultados[0]);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_enfocarInput) {
+            return;
+        }
+
+        _enfocarInput = false;
+
+        try {
+            await _inputRef.FocusAsync();
+        }
+        catch {
+            // Si el interop falla (elemento no montado a tiempo), el input
+            // sigue usable: solo se pierde el foco automático.
+        }
+    }
+
+    private static string Normalizar(string? texto)
+    {
+        if (string.IsNullOrWhiteSpace(texto)) {
+            return string.Empty;
+        }
+
+        var descompuesto = texto.Normalize(NormalizationForm.FormD);
+        var sb = new StringBuilder(descompuesto.Length);
+
+        foreach (var c in descompuesto) {
+            if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark) {
+                sb.Append(c);
+            }
+        }
+
+        return sb.ToString()
+            .Normalize(NormalizationForm.FormC)
+            .ToLowerInvariant();
+    }
+}

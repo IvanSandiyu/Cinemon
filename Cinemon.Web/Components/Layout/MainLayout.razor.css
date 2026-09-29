@@ -1,30 +1,75 @@
+/* ===== Shell: columna flex para que el footer quede al final ===== */
+.cinemon-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
 /* ===== Header / marca ===== */
+.reloj-bar {
+    display: flex;
+    justify-content: center;
+    padding: 6px 0 2px;
+    background-color: #12313F;
+}
+
+.reloj-fecha-hora {
+    color: #9A9FBF;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
 .cinemon-header {
     background-color: #0F2D3A;
     border-bottom: 1px solid #1E6F7D;
     z-index: 10;
+    position: relative;
+    flex-shrink: 0;
 }
 
 .appbar-inner {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+        "search brand account"
+        ".      nav    .";
     align-items: center;
-    justify-content: space-between;
+    justify-items: center;
     width: 100%;
-    height: 64px;
-    padding: 0 1.25rem;
+    min-height: 80px;
+    padding: 10px 1.25rem 8px;
 }
 
-.appbar-nav {
-    display: flex;
+.appbar-search {
+    grid-area: search;
+    justify-self: start;
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    padding: 6px;
+    margin-top: 4px;
+    color: #7BC6C9;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.appbar-search .rzi {
+    font-size: 1.3rem;
+}
+
+.appbar-search:hover {
+    color: #A5E0E3;
 }
 
 .app-brand {
+    grid-area: brand;
+    margin-top: 4px;
     color: #7BC6C9;
     font-weight: 700;
     letter-spacing: 4px;
-    font-size: 1.4rem;
+    font-size: 1.725rem;
     text-decoration: none;
     cursor: pointer;
     transition: opacity 0.2s ease;
@@ -32,6 +77,20 @@
 
 .app-brand:hover {
     opacity: 0.9;
+}
+
+.appbar-account {
+    grid-area: account;
+    justify-self: end;
+    margin-top: 4px;
+}
+
+.appbar-nav {
+    grid-area: nav;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 6px;
 }
 
 /* Animación SIEMPRE activa: pulso de brillo teal */
@@ -107,18 +166,19 @@
     color: #7BC6C9;
 }
 
-/* Acción principal (Ingresar): pastilla outline que se rellena suavemente */
+/* Acción principal (Ingresar): solo la silueta del usuario */
 ::deep .app-nav-link.login-cta {
-    padding: 6px 16px;
-    border: 1px solid rgba(123, 198, 201, 0.55);
-    border-radius: 20px;
+    padding: 6px;
+    border: none;
+    border-radius: 0;
     color: #7BC6C9;
-    font-weight: 600;
-    background-color: rgba(123, 198, 201, 0.08);
-    overflow: hidden;
-    transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    background: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.3s cubic-bezier(0.2, 0.7, 0.3, 1),
+                text-shadow 0.3s ease;
 }
 
 ::deep .app-nav-link.login-cta::after {
@@ -126,51 +186,152 @@
 }
 
 ::deep .app-nav-link.login-cta .rzi {
+    margin: 0;
     color: #7BC6C9;
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 1.5rem;
+    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 ::deep .app-nav-link.login-cta:hover {
-    color: #08121A;
-    border-color: #7BC6C9;
-    background-color: #7BC6C9;
-    box-shadow: 0 4px 18px rgba(123, 198, 201, 0.35);
+    color: #7BC6C9;
 }
 
 ::deep .app-nav-link.login-cta:hover .rzi {
-    color: #08121A;
-    transform: translateX(2px);
+    color: #A5E0E3;
 }
 
 /* ===== Body ===== */
 .cinemon-body {
+    flex: 1 0 auto;
     background-color: #08121A;
-    min-height: calc(100vh - 64px);
     padding: 0;
     margin: 0;
+}
+
+/* ===== Footer ===== */
+.cinemon-footer {
+    flex-shrink: 0;
+    background-color: #0F2D3A;
+    border-top: 1px solid #1E6F7D;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-inner {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 28px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 1.5rem 22px;
+}
+
+.footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.footer-logo {
+    color: #7BC6C9;
+    font-weight: 700;
+    letter-spacing: 4px;
+    font-size: 1.15rem;
+}
+
+.footer-tagline {
+    color: #8AB8BB;
+    font-size: 0.8rem;
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* La clase del <a> la renderiza el RadzenLink (subcomponente) */
+::deep .footer-links a {
+    color: #C7D8DD;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: color 0.25s ease, transform 0.25s ease;
+}
+
+::deep .footer-links a:hover {
+    color: #7BC6C9;
+    transform: translateX(3px);
+}
+
+.footer-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer-contact-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #C7D8DD;
+    font-size: 0.85rem;
+}
+
+.footer-contact-item .rzi {
+    color: #7BC6C9;
+    font-size: 1rem;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(123, 198, 201, 0.2);
+    padding: 14px 1.5rem;
+    text-align: center;
+    color: #7E9EA1;
+    font-size: 0.75rem;
+    letter-spacing: 0.2px;
 }
 
 @media (max-width: 768px) {
     .appbar-inner {
         height: auto;
         min-height: 56px;
-        flex-wrap: wrap;
-        gap: 4px;
-        padding: 6px 0.75rem;
+        grid-template-columns: 1fr auto 1fr;
+        grid-template-areas:
+            "search brand account"
+            "nav    nav   nav";
+        gap: 4px 8px;
+        padding: 8px 0.75rem;
+    }
+    .appbar-search,
+    .app-brand,
+    .appbar-account {
+        margin-top: 0;
     }
     .appbar-nav {
-        gap: 6px;
+        gap: 10px;
+        margin-top: 2px;
         flex-wrap: wrap;
     }
     .app-nav-link {
         padding: 6px 2px;
         font-size: 0.75rem;
     }
-    .app-nav-link.login-cta {
-        padding: 5px 12px;
-    }
     .app-brand {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         letter-spacing: 3px;
+    }
+    .footer-inner {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 22px;
+        padding: 26px 1rem 18px;
+    }
+    .footer-brand,
+    .footer-links,
+    .footer-contact {
+        align-items: center;
     }
 }

@@ -118,6 +118,58 @@
     opacity: 1;
 }
 
+/* ===== Página blanca a partir del final del hero/trailer ===== */
+.cinemon-pagina-blanca {
+    background-color: #FFFFFF;
+    border-radius: 18px 18px 0 0;
+    margin-top: -18px;
+    padding: 34px 5vw 52px;
+}
+
+.cinemon-pagina-blanca .cinemon-title {
+    color: #0F2D3A;
+}
+
+.cinemon-pagina-blanca .cinemon-muted {
+    color: #5A6B74;
+}
+
+.cinemon-pagina-blanca .cinemon-hr {
+    border-color: #1E6F7D;
+    opacity: 1;
+}
+
+/* Tarjeta de función sobre fondo blanco */
+::deep .cinemon-funcion-card {
+    background: #FFFFFF;
+    border: 1px solid #0F2D3A;
+    border-radius: 12px;
+    padding: 0;
+    height: 100%;
+    box-shadow: 0 5px 16px rgba(15, 45, 58, 0.12);
+    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+::deep .cinemon-funcion-card:hover {
+    transform: translateY(-3px);
+    border-color: #1E6F7D;
+    box-shadow: 0 12px 26px rgba(30, 111, 125, 0.32);
+}
+
+.cinemon-hours {
+    color: #0F2D3A;
+    font-weight: 700;
+    font-size: 1.15rem;
+}
+
+.cinemon-meta {
+    color: #5A6B74;
+}
+
+.cinemon-meta strong {
+    color: #0F2D3A;
+}
+
 /* Animación de entrada escalonada de las tarjetas de función */
 .cinemon-funcion-col {
     animation: cinemon-funcion-in 0.45s ease both;
@@ -136,32 +188,34 @@
 
 /* La clase vive en el elemento raíz del RadzenCard (subcomponente) */
 ::deep .cinemon-funcion-card {
-    background: #0F2D3A;
-    border: 1px solid #1E6F7D;
-    border-radius: 8px;
+    background: #FFFFFF;
+    border: 1px solid #0F2D3A;
+    border-radius: 10px;
     padding: 0;
     height: 100%;
-    transition: transform 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 4px 14px rgba(8, 18, 26, 0.12);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 ::deep .cinemon-funcion-card:hover {
     transform: translateY(-3px);
-    border-color: #7BC6C9;
+    border-color: #1E6F7D;
+    box-shadow: 0 10px 24px rgba(30, 111, 125, 0.3);
 }
 
 .cinemon-hours {
-    color: #7BC6C9;
+    color: #0F2D3A;
     font-weight: 600;
     font-size: 1.1rem;
 }
 
 .cinemon-meta {
-    color: #8AB8BB;
+    color: #5A6B74;
     font-size: 0.9rem;
 }
 
 .cinemon-meta strong {
-    color: #E7F3F2;
+    color: #0F2D3A;
 }
 
 .small {

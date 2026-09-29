@@ -22,6 +22,8 @@ builder.Services.AddScoped<ReservaApiService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TmdbApiService>();
 builder.Services.AddScoped<GeneroApiService>();
+builder.Services.AddScoped<PrecioApiService>();
+builder.Services.AddScoped<FavoritosService>();
 
 
 builder.Services.AddRadzenComponents();

@@ -20,7 +20,7 @@
     </div>
 } else if (_funcion is null || _pelicula is null) {
     <RadzenAlert AlertStyle="AlertStyle.Danger">
-        No se pudo obtener la informaci�n de la funci�n.
+        No se pudo obtener la informaci�n de la función.
     </RadzenAlert>
 } else {
 
@@ -63,6 +63,37 @@
                     <span class="cinemon-muted">Cantidad</span>
                     <span class="cinemon-muted">@_butacasSeleccionadas.Count</span>
                 </div>
+
+                @if (_presupuesto?.Aplica2x1 == true) {
+                    <div class="cinemon-promo">
+                        <RadzenIcon Icon="card_giftcard" />
+                        <div>
+                            <strong>Promoción 2x1</strong>
+                            <span>
+                                Lunes, martes y miércoles. Pagás
+                                @_presupuesto.EntradasAPagar
+                                @( _presupuesto.EntradasAPagar == 1
+                                        ? "entrada"
+                                        : "entradas" )
+                                de @_presupuesto.CantidadEntradas.
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="cinemon-muted">Subtotal</span>
+                        <span class="cinemon-muted">
+                            <s>@_presupuesto.Subtotal.ToString("C")</s>
+                        </span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="cinemon-muted cinemon-ahorro">Ahorro</span>
+                        <span class="cinemon-ahorro">
+                            -@_presupuesto.Ahorro.ToString("C")
+                        </span>
+                    </div>
+                }
 
                 <hr class="cinemon-hr my-3" />
 
@@ -115,9 +146,9 @@
     private bool _procesando;
     private string? _error;
 
-    private decimal Total =>
-        (_funcion?.Precio ?? 0) *
-        _butacasSeleccionadas.Count;
+    private PresupuestoDto? _presupuesto;
+
+    private decimal Total => _presupuesto?.Total ?? 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -162,10 +193,24 @@
                 _butacasInfo = butacasFuncion
                     .Where(x => _butacasSeleccionadas.Contains(x.Id))
                     .ToList();
+
+                await CargarPresupuesto();
             }
         } finally {
             _cargando = false;
         }
+    }
+
+    private async Task CargarPresupuesto()
+    {
+        if (_butacasSeleccionadas.Count == 0)
+            return;
+
+        var (presupuesto, _) = await ReservaService.CalcularPresupuestoAsync(
+            FuncionId,
+            _butacasSeleccionadas.Count);
+
+        _presupuesto = presupuesto;
     }
 
     private async Task Confirmar()

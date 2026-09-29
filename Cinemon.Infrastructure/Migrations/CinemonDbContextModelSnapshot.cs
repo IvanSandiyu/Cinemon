@@ -209,6 +209,32 @@ namespace Cinemon.Infrastructure.Migrations
                     b.ToTable("PeliculaGenero", (string)null);
                 });
 
+            modelBuilder.Entity("Cinemon.Domain.Entidades.Precios.Precio", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Formato")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TipoSala")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Valor")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Formato", "TipoSala")
+                        .IsUnique();
+
+                    b.ToTable("Precios", (string)null);
+                });
+
             modelBuilder.Entity("Cinemon.Domain.Entidades.Reservas.Reserva", b =>
                 {
                     b.Property<int>("Id")

@@ -37,6 +37,49 @@
     font-weight: 600;
 }
 
+.cinemon-promo {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin: 0.4rem 0 0.7rem;
+    padding: 0.6rem 0.7rem;
+    background: rgba(123, 198, 201, 0.12);
+    border: 1px solid rgba(123, 198, 201, 0.45);
+    border-radius: 9px;
+    color: #A5E0E3;
+}
+
+.cinemon-promo rzi {
+    color: #7BC6C9;
+    font-size: 1.1rem;
+}
+
+.cinemon-promo div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.cinemon-promo strong {
+    color: #E7F3F2;
+    font-size: 0.82rem;
+}
+
+.cinemon-promo span {
+    color: #C7D8DD;
+    font-size: 0.72rem;
+    line-height: 1.4;
+}
+
+.cinemon-promo-compact {
+    margin-bottom: 0.5rem;
+}
+
+.cinemon-ahorro {
+    color: #7BC6C9;
+    font-weight: 600;
+}
+
 .cinemon-butaca-chip {
     background: #1E6F7D;
     color: #E7F3F2;

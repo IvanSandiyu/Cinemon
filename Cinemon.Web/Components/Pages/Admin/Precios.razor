@@ -1,0 +1,245 @@
+@page "/admin/precios"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@using System.Globalization
+@using Cinemon.Web.Models.DTOs
+@using Cinemon.Web.Services
+
+@inject PrecioApiService PrecioService
+
+<PageTitle>Precios | Admin | Cinemon</PageTitle>
+
+<AdminGuard>
+<div class="admin-page">
+
+    <div class="admin-header">
+        <span class="cinemon-kicker">Administración</span>
+        <h1 class="admin-title">Precios</h1>
+        <p class="admin-subtitle">
+            Estos valores son los únicos precios disponibles al programar una función.
+        </p>
+    </div>
+
+    @if (_cargando) {
+        <p class="precios-cargando">Cargando precios...</p>
+    }
+    else if (_error is not null && _precios.Count == 0) {
+        <p class="admin-form-error">@_error</p>
+    }
+    else {
+        <section class="precios-section">
+
+            <div class="precios-section-header">
+                <h2>Precios por formato</h2>
+                <p>Modificá el valor y guardá. El cambio aplica a las funciones que se programen de aquí en adelante.</p>
+            </div>
+
+            <div class="precios-lista">
+
+                @foreach (var precio in _precios) {
+                    <div class="precio-fila" @key="precio.Id">
+
+                        <div class="precio-fila-info">
+                            <span class="precio-fila-nombre">@precio.Nombre</span>
+                            <span class="precio-fila-nota">@ObtenerDescripcion(precio)</span>
+                        </div>
+
+                        <div class="precio-fila-control">
+
+                            <div class="precio-input @(precio.Error is not null ? "error" : "")">
+                                <span>$</span>
+                                <input type="number"
+                                       min="1"
+                                       step="100"
+                                       value="@precio.ValorEditado"
+                                       @onchange="e => CambiarValor(precio,e.Value)" />
+                            </div>
+
+                            <RadzenButton Icon="save"
+                                          class="precio-guardar"
+                                          Disabled="@( precio.Guardando || precio.SinCambios )"
+                                          Click="() => Guardar(precio)" />
+
+                            @if (precio.Guardado) {
+                                <span class="precio-ok">
+                                    <RadzenIcon Icon="check" /> Guardado
+                                </span>
+                            }
+                        </div>
+
+                        @if (precio.Error is not null) {
+                            <p class="precio-error">@precio.Error</p>
+                        }
+
+                    </div>
+                }
+
+            </div>
+
+        </section>
+    }
+
+    <section class="precios-section">
+
+        <div class="precios-section-header">
+            <h2>Promociones</h2>
+            <p>Aplican sobre el precio de la entrada del formato elegido.</p>
+        </div>
+
+        <div class="promo-card">
+            <div class="promo-card-icon">
+                <RadzenIcon Icon="card_giftcard" />
+            </div>
+            <div class="promo-card-body">
+                <h3>2x1 en todas las entradas</h3>
+                <p>
+                    Lunes, martes y miércoles. El descuento se aplica sobre el precio
+                    del formato de la función (2D, 3D, 4D o IMAX).
+                </p>
+                <div class="promo-dias">
+                    @foreach (var dia in DiasPromo) {
+                        <span class="promo-dia">@dia</span>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</div>
+</AdminGuard>
+
+@code {
+
+    private List<PrecioEditable> _precios = [];
+    private bool _cargando = true;
+    private string? _error;
+
+    private static readonly string[] DiasPromo = ["Lunes", "Martes", "Miércoles"];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarPrecios();
+    }
+
+    private async Task CargarPrecios()
+    {
+        _cargando = true;
+        _error = null;
+
+        try {
+            var precios = await PrecioService.ObtenerTodosAsync();
+
+            _precios = precios
+                .Select(p => new PrecioEditable(p))
+                .ToList();
+
+            if (_precios.Count == 0) {
+                _error = "No hay precios cargados. Ejecutá la migración y el seed de la base.";
+            }
+        } catch {
+            _error = "No se pudieron cargar los precios.";
+        } finally {
+            _cargando = false;
+        }
+    }
+
+    private async Task Guardar(PrecioEditable precio)
+    {
+        precio.Guardando = true;
+        precio.Error = null;
+        precio.Guardado = false;
+
+        try {
+            var (ok, error) = await PrecioService.ActualizarAsync(
+                precio.Id,
+                precio.ValorEditado);
+
+            if (!ok) {
+                precio.Error = ObtenerMensajeError(error);
+                return;
+            }
+
+            precio.Valor = precio.ValorEditado;
+            precio.Guardado = true;
+        } catch {
+            precio.Error = "No se pudo guardar el precio.";
+        } finally {
+            precio.Guardando = false;
+        }
+    }
+
+    private static string ObtenerDescripcion(PrecioEditable precio)
+    {
+        if (precio.TipoSala == 2)
+            return "Salas IMAX";
+
+        if (precio.Formato == 3)
+            return "Formato premium";
+
+        return "Salas estándar";
+    }
+
+    private static void CambiarValor(PrecioEditable precio,object? valor)
+    {
+        precio.ValorEditado = Parsear(valor?.ToString());
+        precio.Guardado = false;
+    }
+
+    private static decimal Parsear(string? texto)
+    {
+        return decimal.TryParse(texto,
+            NumberStyles.Number,
+            CultureInfo.InvariantCulture,
+            out var valor)
+                ? valor
+                : 0m;
+    }
+
+    private static string ObtenerMensajeError(string? respuesta)
+    {
+        if (string.IsNullOrWhiteSpace(respuesta))
+            return "No se pudo guardar el precio.";
+
+        try {
+            var problema = System.Text.Json.JsonSerializer.Deserialize<
+                ApiProblemDetails>(respuesta);
+
+            if (problema?.Errors is not null) {
+                var mensajes = problema.Errors
+                    .SelectMany(x => x.Value)
+                    .Where(x => !string.IsNullOrWhiteSpace(x));
+
+                if (mensajes.Any()) {
+                    return string.Join(" ", mensajes);
+                }
+            }
+
+            return problema?.Detail ??
+                problema?.Title ??
+                "No se pudo guardar el precio.";
+        } catch {
+            return "No se pudo guardar el precio.";
+        }
+    }
+
+    private sealed record ApiProblemDetails(
+        string? Title,
+        string? Detail,
+        Dictionary<string, string[]>? Errors);
+
+    private sealed class PrecioEditable(PrecioDto dto)
+    {
+        public int Id { get; } = dto.Id;
+        public string Nombre { get; } = dto.Nombre;
+        public int Formato { get; } = dto.Formato;
+        public int TipoSala { get; } = dto.TipoSala;
+        public decimal Valor { get; set; } = dto.Valor;
+        public decimal ValorEditado { get; set; } = dto.Valor;
+        public bool Guardando { get; set; }
+        public bool Guardado { get; set; }
+        public string? Error { get; set; }
+        public bool SinCambios => Valor == ValorEditado;
+    }
+
+}

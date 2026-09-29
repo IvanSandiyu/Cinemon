@@ -1,0 +1,45 @@
+.buscar-head {
+    text-align: center;
+}
+
+.buscar-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    max-width: 460px;
+    margin: 0 auto;
+}
+
+.buscar-icon {
+    position: absolute;
+    left: 14px;
+    color: #7BC6C9;
+    font-size: 1.1rem;
+    pointer-events: none;
+}
+
+.buscar-input {
+    width: 100%;
+    padding: 10px 14px 10px 42px;
+    border: 1px solid rgba(30, 111, 125, 0.55);
+    border-radius: 24px;
+    background: #0F2D3A;
+    color: #E7F3F2;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.buscar-input::placeholder {
+    color: #9A9FBF;
+}
+
+.buscar-input:focus {
+    border-color: rgba(123, 198, 201, 0.7);
+    box-shadow: 0 0 0 3px rgba(123, 198, 201, 0.18);
+}
+
+.buscar-input:focus-visible {
+    outline: 2px solid #7BC6C9;
+    outline-offset: 1px;
+}

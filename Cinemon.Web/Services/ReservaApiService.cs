@@ -53,6 +53,26 @@ namespace Cinemon.Web.Services
             return reservas ?? [];
         }
 
+        public async Task<(PresupuestoDto? Presupuesto, string? Error)> CalcularPresupuestoAsync(
+            int funcionId,int cantidadButacas,CancellationToken cancellationToken = default)
+        {
+            AdjuntarToken();
+
+            var response = await _httpClient.PostAsJsonAsync(
+                "api/reservas/presupuesto",
+                new { funcionId, cantidadButacas },
+                cancellationToken);
+
+            if (!response.IsSuccessStatusCode) {
+                return (null, await response.Content.ReadAsStringAsync(cancellationToken));
+            }
+
+            var presupuesto = await response.Content.ReadFromJsonAsync<PresupuestoDto>(
+                cancellationToken);
+
+            return (presupuesto, null);
+        }
+
         private void AdjuntarToken()
         {
             if (!_authService.EstaAutenticado)
