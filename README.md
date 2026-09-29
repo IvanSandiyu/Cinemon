@@ -26,10 +26,11 @@ Sistema de reserva de entradas de cine que combina un backend con arquitectura l
 3. [Tecnologías utilizadas](#-tecnologías-utilizadas)
 4. [Arquitectura y estructura del proyecto](#-arquitectura-y-estructura-del-proyecto)
 5. [Capturas](#-capturas)
-6. [Cómo correrlo localmente](#-cómo-correrlo-localmente)
-7. [Decisiones de seguridad](#-decisiones-de-seguridad-implementadas)
-8. [Roadmap](#-posibles-mejoras-a-futuro)
-9. [Licencia y contacto](#-licencia-y-contacto)
+6. [Actualización de interfaz](#-actualización-de-interfaz)
+7. [Cómo correrlo localmente](#-cómo-correrlo-localmente)
+8. [Decisiones de seguridad](#-decisiones-de-seguridad-implementadas)
+9. [Roadmap](#-posibles-mejoras-a-futuro)
+10. [Licencia y contacto](#-licencia-y-contacto)
 
 ## 💡 Motivación y decisiones de diseño
 
@@ -195,8 +196,8 @@ Cinemon.sln
 
 ## 📸 Capturas
 
-### Inicio
-![Inicio](docs/screenshots/inicio_nuevo.png)
+### Home
+![Home](docs/screenshots/home.png)
 
 ### Cartelera
 ![Cartelera](docs/screenshots/cartelera_1.png)
@@ -205,13 +206,13 @@ Cinemon.sln
 ![Seleccion pelicula](docs/screenshots/pelicula_home.png)
 
 ### Selección de función
-![Funcion pelicula](docs/screenshots/reservar_funciones_nuevo.png)
+![Funcion pelicula](docs/screenshots/funcion_pelicula.png)
 
 ### Login
 ![Login](docs/screenshots/login.png)
 
 ### Selección de butacas
-![Selección de butacas](docs/screenshots/reservar_butacas_nuevo.png)
+![Selección de butacas](docs/screenshots/reserva_pelicula.png)
 
 ### Confirmación de reserva
 ![Reserva confirmada](docs/screenshots/confirmar_reserva.png)
@@ -223,7 +224,7 @@ Cinemon.sln
 ![Mis compras](docs/screenshots/mis_compras.png)
 
 ### Panel admin
-![Panel admin](docs/screenshots/panel_nuevo.png)
+![Panel admin](docs/screenshots/panel_admin.png)
 
 ### Panel de administración (películas)
 ![Panel admin películas](docs/screenshots/peliculas_admin.png)
@@ -240,8 +241,8 @@ Cinemon.sln
 ### Editar película
 ![Editar película](docs/screenshots/editar_pelicula.png)
 
-### Crear función (precio del catálogo y programación semanal)
-![Crear función](docs/screenshots/crear_funcion_nuevo.png)
+### Crear función
+![Crear función](docs/screenshots/crear_funcion.png)
 
 ### Funciones (pasadas, presentes y futuras) — se pueden filtrar
 ![Funciones](docs/screenshots/ver_funciones.png)
@@ -255,11 +256,7 @@ Cinemon.sln
 ### Usuarios
 ![Usuarios](docs/screenshots/ver_usuarios.png)
 
-### Catálogo de precios
-![Precios](docs/screenshots/precios_nuevo.png)
-
-### Salas
-![Salas](docs/screenshots/salas_nuevo.png)
+### Salas — todavía no se ha implementado nada
 
 ### Cartelera nueva
 ![Cartelera nueva](docs/screenshots/en_cartelera.png)
@@ -278,6 +275,48 @@ Cinemon.sln
 
 ### Próximos estrenos
 ![Próximos estrenos](docs/screenshots/prox_estrenos.png)
+
+### Candy — todavía no se ha implementado nada
+
+## 🆕 Actualización de interfaz
+
+Después de la primera versión del panel y del flujo de reserva se renovaron varias pantallas. La galería anterior se conserva como registro de la interfaz original; esta es la versión actual.
+
+**Para el usuario**
+
+- 🔍 Buscador de películas siempre visible en el header, que filtra por título.
+- 🎞️ Cartelera rediseñada y detalle de película con la información sobre fondo claro.
+- 🏷️ Total con la promoción 2x1 calculado por el servidor durante la selección de butacas: cuántas entradas se pagan, cuánto se ahorra y el total final.
+- 🎟️ Selección de función con precio, formato e idioma por función.
+
+**Para el administrador**
+
+- 💵 Nueva pantalla de catálogo de precios (`/admin/precios`) para editar el precio de cada formato y tipo de sala.
+- 📆 Programación semanal dentro del alta de funciones: elegir días, semanas y preview de las fechas a generar.
+- 🎬 El alta de funciones ahora lista solo películas activas y toma el precio del catálogo en lugar de escribirlo a mano.
+- 🏷️ Gestión de salas con su butacaera.
+- 📊 Panel de administración con acceso directo a las nuevas secciones.
+
+### Inicio
+![Inicio](docs/screenshots/inicio_nuevo.png)
+
+### Selección de función
+![Seleccion funcion](docs/screenshots/reservar_funciones_nuevo.png)
+
+### Selección de butacas con promoción aplicada
+![Reservar butacas](docs/screenshots/reservar_butacas_nuevo.png)
+
+### Crear función — precio del catálogo y programación semanal
+![Crear funcion nuevo](docs/screenshots/crear_funcion_nuevo.png)
+
+### Catálogo de precios
+![Precios](docs/screenshots/precios_nuevo.png)
+
+### Salas
+![Salas](docs/screenshots/salas_nuevo.png)
+
+### Panel de administración
+![Panel admin nuevo](docs/screenshots/panel_nuevo.png)
 
 ## 🚀 Cómo correrlo localmente
 
