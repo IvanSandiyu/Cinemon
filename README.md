@@ -66,9 +66,11 @@ También probé que el frontend muestre las butacas ya ocupadas (vía un DTO con
 **Para el usuario (Rol Cliente)**
 
 - 📝 **Registro y login** con contraseñas hasheadas y sesión persistida (JWT en el navegador).
+- 🔍 **Buscador de películas** en el header, siempre visible, que filtra por título y redirige a la cartelera.
 - 🎞️ **Cartelera** con películas activas: sinopsis, duración, clasificación (ATP/+13/+16/+18), géneros, tráiler y afiches traídos de TMDB.
 - 📅 **Próximos estrenos** y detalle de película.
 - 🎟️ **Selección visual de butacas** por función: mapa interactivo de la sala, butacas ocupadas en gris, y precio/idioma/formato únicos por función.
+- 🏷️ **Promoción 2x1 los lunes, martes y miércoles**: al seleccionar butacas ya se muestra el total real, cuántas entradas se pagan, el ahorro y el total final.
 - ✅ **Reserva de entradas** y pantalla de confirmación con el detalle.
 - 📖 **Historial de reservas** ("Mis compras") con opción de cancelar y liberar las butacas.
 - 👤 **Mi cuenta** con datos personales y cierre de sesión.
@@ -76,11 +78,19 @@ También probé que el frontend muestre las butacas ya ocupadas (vía un DTO con
 **Para el administrador (Rol Admin)**
 
 - 🎬 **Gestión de películas**: alta manual o buscando en **TMDB** (afiche, sinopsis y duración se completan solos), edición, activar/desactivar.
-- 🕒 **Gestión de funciones**: crear, editar, finalizar y cancelar; evita solapadas en la misma sala y 3D en salas IMAX.
+- 🕒 **Gestión de funciones**: crear, editar, finalizar y cancelar; evita solapadas en la misma sala y 3D en salas IMAX. Al crear una función solo se listan **películas activas**, y el precio se elige de un catálogo precargado.
+- 📆 **Programación semanal**: generar en una sola operación todas las ocurrencias de una función para varios días de la semana, en la **misma sala** y durante 1, 2, 4 u 8 semanas. Las fechas que chocan con otra función de la sala se omiten y se informan al admin en lugar de romper todo.
+- 💵 **Catálogo de precios editable** (`/admin/precios`): precio por formato y tipo de sala (2D, 3D, 4D e IMAX) con guardado inmediato. Alimenta automáticamente el precio de las nuevas funciones.
 - 🏷️ **Gestión de salas** (con butacas generadas por tamaño: estándar e IMAX).
 - 📋 **Panel de reservas**: filtros por sala, función y estado, búsqueda por cliente o película.
 - 👥 **Panel de usuarios**: búsqueda, filtros por rol/estado y detalle de sus reservas.
 - 🔑 **Registro de administradores** (solo un admin existente puede crear otro).
+
+### 📐 Reglas de negocio destacadas
+
+- **Promoción 2x1 (lunes, martes y miércoles)**: el descuento se decide por el día de la **función**, no por el de la compra, y vive en una única regla de dominio (`Promocion2x1`) reutilizada por el handler de reservas y por el endpoint de presupuesto. Se paga la mitad de las entradas redondeando hacia arriba (3 entradas → se pagan 2), así que 1 sola entrada no genera descuento. El total que ve el usuario **y** el que se persiste en la reserva los calcula el servidor: el frontend nunca decide el descuento.
+- **Programación semanal (batch)**: un endpoint dedicado (`POST /api/funciones/programacion`) recibe película, sala, formato, precio, hora y días de la semana, valida las mismas reglas que el alta manual y devuelve cuántas funciones creó y cuáles omitió por conflicto. El preview del frontend replica el mismo algoritmo de fechas para que el admin vea exactamente lo que se va a guardar.
+- **Precios como catálogo, no como texto libre**: el precio y el formato salen de la tabla de precios por formato + tipo de sala, con índice único para evitar duplicados y un seed idempotente. Al elegir un precio, el formato se deriva solo y las incompatibilidades se validan (precio IMAX exige sala IMAX; 3D sigue prohibido en IMAX).
 
 ## 🛠️ Tecnologías utilizadas
 
@@ -101,14 +111,14 @@ También probé que el frontend muestre las butacas ya ocupadas (vía un DTO con
 
 ### Base de datos — `Cinemon.Infrastructure`
 - **SQL Server** con **Entity Framework Core 8.0.28** (`Microsoft.EntityFrameworkCore.SqlServer`).
-- Migraciones EF (`InitialMigration` → `AddPeliculaGenero` → `AddUsuarioPasswordHash` → `AddTmdbId` → `AddTmdbPosterAndBackdropPaths`).
-- Seed inicial: 5 géneros, 4 salas (2 estándar + 1 estándar grande + 1 IMAX) y sus butacas (80, 120, 150 y 220).
+- Migraciones EF (`InitialMigration` → `AddPeliculaGenero` → `AddUsuarioPasswordHash` → `AddTmdbId` → `AddTmdbPosterAndBackdropPaths` → `AddPrecios`).
+- Seed inicial: 5 géneros, 4 salas (2 estándar + 1 estándar grande + 1 IMAX) y sus butacas (80, 120, 150 y 220), más el catálogo de precios por formato y tipo de sala (2D estándar, 3D estándar, 4D estándar e IMAX). El seed de precios es idempotente, así que no pisa ajustes hechos por el admin.
 
 ### Integraciones externas
 - **TMDB API** (`api.themoviedb.org/3`) — búsqueda, detalle, clasificación por país (AR/US) e imágenes (poster `w500`, backdrop original).
 
 ### Testing / Herramientas
-- **xUnit**: aún no hay tests. Muy pendiente en el [roadmap](#-posibles-mejoras-a-futuro) (expliqué el *approach* en la sección de la butaca doble-reservada).
+- **xUnit**: aún no hay suite de tests en el repo. La regla de la promoción 2x1 sí se verificó con una batería temporal de 14 casos (días con y sin promoción, cantidad par e impar y límites horarios). Sigue siendo la mejora #1 pendiente del [roadmap](#-posibles-mejoras-a-futuro) (expliqué el *approach* en la sección de la butaca doble-reservada).
 - **Swagger** como documentación interactiva de la API.
 - **`dotnet user-secrets`** para los secretos locales (no hay claves en el repo).
 
@@ -145,16 +155,17 @@ Regla de dependencias: **Domain** no depende de nada; **Application** → Domain
 ```
 Cinemon.sln
 ├── Cinemon.Domain/                  # Núcleo: sin dependencias externas
-│   ├── Entidades/                   # Pelicula, Sala, Butaca, Funcion, Reserva, Usuario, ...
-│   │   ├── Butacas/  Funcion/  Generos/  Peliculas/  Reservas/  Salas/  Usuarios/
+│   ├── Entidades/                   # Pelicula, Sala, Butaca, Funcion, Reserva, Usuario, Precio, ...
+│   │   ├── Butacas/  Funcion/  Generos/  Peliculas/  Precios/  Reservas/  Salas/  Usuarios/
 │   ├── Enums/                       # Rol, IdiomaFuncion, Formato, EstadoFuncion, TipoSala...
+│   ├── Promociones/                 # Promocion2x1 (reglas de descuento del dominio)
 │   ├── Exceptions/                  # BusinessRuleException, ConflictException, ...
 │   └── Interfaces/
 ├── Cinemon.Application/             # Casos de uso (CQRS + validación)
 │   ├── Abstractions/                # I*Repository, IUnitOfWork, ICurrentUserService
 │   ├── Behaviors/                   # ValidationBehavior (pipeline / validation)
 │   ├── Commands + Queries por feature:
-│   │   ├── Funciones/  Peliculas/  Reservas/  Usuarios/  Butacas/  Tmdb/
+│   │   ├── Funciones/  Peliculas/  Precios/  Reservas/  Usuarios/  Butacas/  Tmdb/
 │   ├── DTOs/                        # Respuestas para la API
 │   └── Interfaces/
 ├── Cinemon.Infrastructure/          # Adaptadores: EF Core, seguridad, TMDB
@@ -164,18 +175,18 @@ Cinemon.sln
 │   ├── Authentication/              # JwtTokenService, PasswordService
 │   ├── ExternalServices/Tmdb/       # HttpClient + mapeo a TMDB
 │   ├── Migrations/                  # Migraciones de la base de datos
-│   └── Seed/                        # Géneros, salas y butacas iniciales
+│   └── Seed/                        # Géneros, salas, butacas y precios iniciales
 ├── Cinemon.Api/                     # Presentación de la API (Minimal API)
-│   ├── Endpoints/                   # Peliculas, Funciones, Salas, Butacas, Reservas, ...
+│   ├── Endpoints/                   # Peliculas, Funciones, Salas, Butacas, Reservas, Precios, ...
 │   ├── Middleware/                  # GlobalExceptionHandler → ProblemDetails
 │   ├── Services/                    # CurrentUserService
 │   └── Program.cs                   # DI, JWT, Swagger, seed automático
 ├── Cinemon.Web/                     # Frontend (Blazor Server)
 │   ├── Components/
-│   │   ├── Layout/                  # MainLayout (Radzen), AccountArea, AdminGuard
-│   │   ├── Pages/                   # Cartelera, Proximos Estrenos, Login, Butacas,
-│   │   │   └── Admin/               #   Películas, Funciones, Salas, Reservas, Usuarios
-│   │   └── Shared/                  # Carátulas de película, etc.
+│   │   ├── Layout/                  # MainLayout (Radzen), BuscadorPeliculas, AccountArea, AdminGuard
+│   │   ├── Pages/                   # Cartelera, Buscar, Próximos estrenos, Login, Butacas,
+│   │   │   └── Admin/               #   Películas, Funciones, Salas, Precios, Reservas, Usuarios
+│   │   └── Shared/                  # Carátulas de película, CarteleraGrid, etc.
 │   ├── Models/DTOs/                 # DTOs del frontend
 │   ├── Services/                    # ApiServices por recurso + AuthService
 │   └── wwwroot/                     # CSS, Bootstrap, JS, favicon
@@ -184,8 +195,8 @@ Cinemon.sln
 
 ## 📸 Capturas
 
-### Home
-![Home](docs/screenshots/home.png)
+### Inicio
+![Inicio](docs/screenshots/inicio_nuevo.png)
 
 ### Cartelera
 ![Cartelera](docs/screenshots/cartelera_1.png)
@@ -194,13 +205,13 @@ Cinemon.sln
 ![Seleccion pelicula](docs/screenshots/pelicula_home.png)
 
 ### Selección de función
-![Funcion pelicula](docs/screenshots/funcion_pelicula.png)
+![Funcion pelicula](docs/screenshots/reservar_funciones_nuevo.png)
 
 ### Login
 ![Login](docs/screenshots/login.png)
 
 ### Selección de butacas
-![Selección de butacas](docs/screenshots/reserva_pelicula.png)
+![Selección de butacas](docs/screenshots/reservar_butacas_nuevo.png)
 
 ### Confirmación de reserva
 ![Reserva confirmada](docs/screenshots/confirmar_reserva.png)
@@ -212,7 +223,7 @@ Cinemon.sln
 ![Mis compras](docs/screenshots/mis_compras.png)
 
 ### Panel admin
-![Panel admin](docs/screenshots/panel_admin.png)
+![Panel admin](docs/screenshots/panel_nuevo.png)
 
 ### Panel de administración (películas)
 ![Panel admin películas](docs/screenshots/peliculas_admin.png)
@@ -229,8 +240,8 @@ Cinemon.sln
 ### Editar película
 ![Editar película](docs/screenshots/editar_pelicula.png)
 
-### Crear función
-![Crear función](docs/screenshots/crear_funcion.png)
+### Crear función (precio del catálogo y programación semanal)
+![Crear función](docs/screenshots/crear_funcion_nuevo.png)
 
 ### Funciones (pasadas, presentes y futuras) — se pueden filtrar
 ![Funciones](docs/screenshots/ver_funciones.png)
@@ -244,7 +255,11 @@ Cinemon.sln
 ### Usuarios
 ![Usuarios](docs/screenshots/ver_usuarios.png)
 
-### Salas — todavía no se ha implementado nada
+### Catálogo de precios
+![Precios](docs/screenshots/precios_nuevo.png)
+
+### Salas
+![Salas](docs/screenshots/salas_nuevo.png)
 
 ### Cartelera nueva
 ![Cartelera nueva](docs/screenshots/en_cartelera.png)
@@ -263,8 +278,6 @@ Cinemon.sln
 
 ### Próximos estrenos
 ![Próximos estrenos](docs/screenshots/prox_estrenos.png)
-
-### Candy — todavía no se ha implementado nada
 
 ## 🚀 Cómo correrlo localmente
 
@@ -300,7 +313,7 @@ dotnet user-secrets set "Tmdb:AccessToken" "tu-access-token-de-tmdb"
 
 **3. Levantar la base de datos**
 
-La API aplica las migraciones automáticamente en el arranque (vía seed), así que con solo correrla la base se crea y se pobla (géneros, salas y butacas).
+La API aplica las migraciones automáticamente en el arranque (vía seed), así que con solo correrla la base se crea y se pobla (géneros, salas, butacas y el catálogo de precios).
 
 Si preferís aplicarlas a mano:
 
@@ -348,7 +361,10 @@ Sin entrar en detalles explotables, el sistema parte de una base sólida en mate
 
 ## 🗺️ Posibles mejoras a futuro
 
-- **Tests automatizados** (xUnit) para los handlers y la regla de concurrencia de reservas (es la mejora #1 pendiente).
+- **Tests automatizados** (xUnit) para los handlers, la regla de concurrencia de reservas y la promoción 2x1 (es la mejora #1 pendiente).
+- **Promociones configurables**: hoy el 2x1 tiene los días (lunes, martes y miércoles) hardcodeados en el dominio; la idea es modelar promociones como datos (vigencia, días, porcentaje o NxM) administrables desde el panel.
+- **Usar el catálogo de precios también al editar funciones**: el alta ya no permite escribir el precio a mano, pero la edición todavía lo hace.
+- **Transacción para la programación semanal**: hoy cada función del lote se guarda por separado y los conflictos se omiten; con una transacción se podría garantizar todo-o-nada.
 - **Paginación** en listados de películas, funciones y reservas (hoy se trae todo).
 - **CI/CD**: el repo ya tiene `.github/workflows/` (vacío) listo para un pipeline de build + test.
 - **Notificaciones por email** (confirmación y recordatorio de funciones).
