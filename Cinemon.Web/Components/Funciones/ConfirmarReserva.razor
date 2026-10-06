@@ -20,7 +20,7 @@
     </div>
 } else if (_funcion is null || _pelicula is null) {
     <RadzenAlert AlertStyle="AlertStyle.Danger">
-        No se pudo obtener la informaci�n de la función.
+        No se pudo obtener la información de la función.
     </RadzenAlert>
 } else {
 
@@ -64,14 +64,13 @@
                     <span class="cinemon-muted">@_butacasSeleccionadas.Count</span>
                 </div>
 
-                @if (_presupuesto?.Aplica2x1 == true) {
+                @if (_presupuesto?.AplicaPromocion == true) {
                     <div class="cinemon-promo">
                         <RadzenIcon Icon="card_giftcard" />
                         <div>
-                            <strong>Promoción 2x1</strong>
+                            <strong>@_presupuesto.PromocionNombre</strong>
                             <span>
-                                Lunes, martes y miércoles. Pagás
-                                @_presupuesto.EntradasAPagar
+                                Pagás @_presupuesto.EntradasAPagar
                                 @( _presupuesto.EntradasAPagar == 1
                                         ? "entrada"
                                         : "entradas" )
@@ -235,7 +234,7 @@
 
             if (response.StatusCode ==
                 System.Net.HttpStatusCode.Unauthorized) {
-                _error = "Deb�s iniciar sesi�n para comprar entradas.";
+                _error = "Debés iniciar sesión para comprar entradas.";
                 return;
             }
 
@@ -243,11 +242,11 @@
                 System.Net.HttpStatusCode.BadRequest) {
                 _error =
                     "No se pudo realizar la reserva. " +
-                    "Una o m�s butacas podr�an haber sido reservadas.";
+                    "Una o más butacas podrían haber sido reservadas.";
                 return;
             }
 
-            _error = "Ocurri� un error al realizar la reserva.";
+            _error = "Ocurrió un error al realizar la reserva.";
         } catch {
             _error =
                 "No se pudo conectar con el servidor.";

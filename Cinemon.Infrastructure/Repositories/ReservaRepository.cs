@@ -68,8 +68,11 @@ namespace Cinemon.Infrastructure.Repositories
                     "Una o más butacas ya están reservadas para esta función.");
             } catch {
                 await transaction.RollbackAsync(cancellationToken);
+
+                throw;
             }
         }
+
         public async Task<IReadOnlyCollection<Reserva>> ObtenerTodasAsync(CancellationToken cancellationToken)
         {
             return await _context.Reservas

@@ -93,11 +93,11 @@
                     <span class="cinemon-subtitle2">@_butacasSeleccionadas.Count</span>
                 </div>
 
-                @if (_presupuesto?.Aplica2x1 == true) {
+                @if (_presupuesto?.AplicaPromocion == true) {
                     <div class="cinemon-promo cinemon-promo-compact">
                         <RadzenIcon Icon="card_giftcard" />
                         <div>
-                            <strong>2x1 aplicado</strong>
+                            <strong>@_presupuesto.PromocionNombre</strong>
                             <span>
                                 Pagás @_presupuesto.EntradasAPagar de
                                 @_presupuesto.CantidadEntradas entradas.

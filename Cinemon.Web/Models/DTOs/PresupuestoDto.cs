@@ -5,8 +5,12 @@ namespace Cinemon.Web.Models.DTOs
         decimal PrecioEntrada,
         int CantidadEntradas,
         int EntradasAPagar,
-        bool Aplica2x1,
+        int? PromocionId,
+        string? PromocionNombre,
         decimal Subtotal,
         decimal Total,
-        decimal Ahorro);
+        decimal Ahorro)
+    {
+        public bool AplicaPromocion => PromocionId is not null;
+    }
 }

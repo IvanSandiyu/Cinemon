@@ -23,6 +23,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TmdbApiService>();
 builder.Services.AddScoped<GeneroApiService>();
 builder.Services.AddScoped<PrecioApiService>();
+builder.Services.AddScoped<PromocionApiService>();
 builder.Services.AddScoped<FavoritosService>();
 
 

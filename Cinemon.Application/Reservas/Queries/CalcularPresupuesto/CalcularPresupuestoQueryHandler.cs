@@ -1,12 +1,7 @@
 using Cinemon.Application.Abstractions;
-using Cinemon.Application.Reservas.Queries.CalcularPresupuesto;
 using Cinemon.Domain.Exceptions;
 using Cinemon.Domain.Promociones;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Cinemon.Application.Reservas.Queries.CalcularPresupuesto
@@ -14,10 +9,14 @@ namespace Cinemon.Application.Reservas.Queries.CalcularPresupuesto
     public sealed class CalcularPresupuestoQueryHandler: IRequestHandler<CalcularPresupuestoQuery,PresupuestoDto>
     {
         private readonly IFuncionRepository _funcionRepository;
+        private readonly IPromocionRepository _promocionRepository;
 
-        public CalcularPresupuestoQueryHandler(IFuncionRepository funcionRepository)
+        public CalcularPresupuestoQueryHandler(
+            IFuncionRepository funcionRepository,
+            IPromocionRepository promocionRepository)
         {
             _funcionRepository = funcionRepository;
+            _promocionRepository = promocionRepository;
         }
 
         public async Task<PresupuestoDto> Handle(CalcularPresupuestoQuery request,
@@ -25,7 +24,7 @@ namespace Cinemon.Application.Reservas.Queries.CalcularPresupuesto
         {
             if (request.CantidadButacas <= 0) {
                 throw new BusinessRuleException(
-                    "Seleccioná al menos una butaca.");
+                    "Seleccione al menos una butaca.");
             }
 
             var funcion = await _funcionRepository.ObtenerPorIdAsync(
@@ -34,26 +33,29 @@ namespace Cinemon.Application.Reservas.Queries.CalcularPresupuesto
 
             if (funcion is null) {
                 throw new NotFoundException(
-                    "La función no existe.");
+                    "La funcion no existe.");
             }
 
-            var subtotal = funcion.Precio * request.CantidadButacas;
-
-            var entradasAPagar = Promocion2x1.CalcularEntradasAPagar(
+            var promociones = await _promocionRepository.ObtenerActivasParaFechaAsync(
                 funcion.FechaHoraInicio,
-                request.CantidadButacas);
+                cancellationToken);
 
-            var total = funcion.Precio * entradasAPagar;
+            var resultado = MotorPromociones.Calcular(
+                promociones,
+                funcion.FechaHoraInicio,
+                funcion.Precio,
+                request.CantidadButacas);
 
             return new PresupuestoDto(
                 funcion.Id,
                 funcion.Precio,
                 request.CantidadButacas,
-                entradasAPagar,
-                Promocion2x1.Aplica(funcion.FechaHoraInicio),
-                subtotal,
-                total,
-                subtotal - total);
+                resultado.EntradasAPagar,
+                resultado.Promocion?.Id,
+                resultado.Promocion?.Nombre,
+                resultado.Subtotal,
+                resultado.Total,
+                resultado.Ahorro);
         }
     }
 }

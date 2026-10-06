@@ -1,6 +1,7 @@
 ﻿using Cinemon.Domain.Entidades.Butacas;
 using Cinemon.Domain.Entidades.Generos;
 using Cinemon.Domain.Entidades.Precios;
+using Cinemon.Domain.Entidades.Promociones;
 using Cinemon.Domain.Entidades.Salas;
 using Cinemon.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace Cinemon.Infrastructure.Seed
             //await SeedSalasAsync(context);
             await SeedGenerosAsync(context);
             await SeedPreciosAsync(context);
+            await SeedPromocionesAsync(context);
 
             if (await context.Salas.AnyAsync())
                 return;
@@ -101,6 +103,50 @@ namespace Cinemon.Infrastructure.Seed
         };
 
             context.Precios.AddRange(precios);
+
+            await context.SaveChangesAsync();
+        }
+
+        private static async Task SeedPromocionesAsync(CinemonDbContext context)
+        {
+            if (await context.Promociones.AnyAsync())
+                return;
+
+            var hoy = DateTime.UtcNow.Date;
+
+            var promociones = new List<Promocion>
+        {
+            new(
+                "2x1 Lunes a Miércoles",
+                "Se cobran 2 entradas y la tercera es gratis. Válida en funciones de lunes, martes y miércoles.",
+                TipoPromocion.NxM,
+                2,
+                1,
+                null,
+                hoy,
+                hoy.AddYears(5),
+                [DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday]),
+            new(
+                "20% OFF enTodos los días",
+                "Descuento del 20% sobre el subtotal de la reserva.",
+                TipoPromocion.Porcentaje,
+                null,
+                null,
+                20m,
+                hoy,
+                hoy.AddYears(5),
+                [
+                    DayOfWeek.Sunday,
+                    DayOfWeek.Monday,
+                    DayOfWeek.Tuesday,
+                    DayOfWeek.Wednesday,
+                    DayOfWeek.Thursday,
+                    DayOfWeek.Friday,
+                    DayOfWeek.Saturday
+                ])
+        };
+
+            context.Promociones.AddRange(promociones);
 
             await context.SaveChangesAsync();
         }

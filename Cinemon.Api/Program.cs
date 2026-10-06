@@ -4,6 +4,7 @@ using Cinemon.Api.Endpoints.Funciones;
 using Cinemon.Api.Endpoints.Generos;
 using Cinemon.Api.Endpoints.Peliculas;
 using Cinemon.Api.Endpoints.Precios;
+using Cinemon.Api.Endpoints.Promociones;
 using Cinemon.Api.Endpoints.Reservas;
 using Cinemon.Api.Endpoints.Salas;
 using Cinemon.Api.Endpoints.Usuarios;
@@ -52,7 +53,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Ingres� el JWT obtenido mediante /api/usuarios/login."
+        Description = "Ingresá el JWT obtenido mediante /api/usuarios/login."
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -125,6 +126,7 @@ app.MapUsuarioEndpoints();
 app.MapTmdbEndpoints();
 app.MapGeneroEndpoints();
 app.MapPrecioEndpoints();
+app.MapPromocionEndpoints();
 
 using (var scope = app.Services.CreateScope()) {
     var context = scope.ServiceProvider

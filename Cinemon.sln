@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinemon.Web", "Cinemon.Web\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinemon.Api", "Cinemon.Api\Cinemon.Api.csproj", "{20B4FDE6-6843-4D2E-9158-02732A8AB975}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cinemon.Tests", "Cinemon.Tests\Cinemon.Tests.csproj", "{DF4044F8-38CF-4649-BE9A-5FE915DA739E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{20B4FDE6-6843-4D2E-9158-02732A8AB975}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20B4FDE6-6843-4D2E-9158-02732A8AB975}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20B4FDE6-6843-4D2E-9158-02732A8AB975}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF4044F8-38CF-4649-BE9A-5FE915DA739E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF4044F8-38CF-4649-BE9A-5FE915DA739E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF4044F8-38CF-4649-BE9A-5FE915DA739E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF4044F8-38CF-4649-BE9A-5FE915DA739E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

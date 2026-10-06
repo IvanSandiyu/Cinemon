@@ -47,6 +47,7 @@ namespace Cinemon.Infrastructure
             services.AddScoped<IUsuarioRepository, UsuarioRepository>();
             services.AddScoped<IReservaRepository, ReservaRepository>();
             services.AddScoped<IPrecioRepository, PrecioRepository>();
+services.AddScoped<IPromocionRepository, PromocionRepository>();
             services.AddScoped<IPasswordService, PasswordService>();
             services.AddScoped<ITokenService, JwtTokenService>();
 

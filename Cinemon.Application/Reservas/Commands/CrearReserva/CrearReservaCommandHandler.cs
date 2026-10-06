@@ -20,6 +20,7 @@ namespace Cinemon.Application.Reservas.Commands.CrearReserva
         private readonly IFuncionRepository _funcionRepository;
         private readonly IButacaRepository _butacaRepository;
         private readonly IReservaRepository _reservaRepository;
+        private readonly IPromocionRepository _promocionRepository;
         private readonly ICurrentUserService _currentUserService;
 
         public CrearReservaCommandHandler(
@@ -27,12 +28,14 @@ namespace Cinemon.Application.Reservas.Commands.CrearReserva
             IFuncionRepository funcionRepository,
             IButacaRepository butacaRepository,
             IReservaRepository reservaRepository,
+            IPromocionRepository promocionRepository,
             ICurrentUserService currentUserService)
         {
             _usuarioRepository = usuarioRepository;
             _funcionRepository = funcionRepository;
             _butacaRepository = butacaRepository;
             _reservaRepository = reservaRepository;
+            _promocionRepository = promocionRepository;
             _currentUserService = currentUserService;
         }
 
@@ -76,10 +79,17 @@ namespace Cinemon.Application.Reservas.Commands.CrearReserva
             if (!butacasDisponibles)
                 throw new ConflictException("Una o más butacas ya están reservadas para esta función.");
 
-            var total = Promocion2x1.CalcularTotal(
+            var promociones = await _promocionRepository.ObtenerActivasParaFechaAsync(
+                funcion.FechaHoraInicio,
+                cancellationToken);
+
+            var resultado = MotorPromociones.Calcular(
+                promociones,
                 funcion.FechaHoraInicio,
                 funcion.Precio,
                 request.ButacasIds.Count);
+
+            var total = resultado.Total;
 
             var usuarioId = _currentUserService.UserId;
 

@@ -17,7 +17,7 @@ namespace Cinemon.Application.Reservas.Queries.ObtenerReservas
 
         public async Task<ReservaDto?> Handle(ObtenerReservaPorIdQuery request,CancellationToken cancellationToken)
         {
-            // Consulta liviana (una sola fila) solo para validar quién es el dueño
+            // Consulta liviana (una sola fila) solo para validar quiÃ©n es el dueÃ±o
             var reserva = await _reservaRepository.ObtenerPorIdAsync(
                 request.Id,
                 cancellationToken);

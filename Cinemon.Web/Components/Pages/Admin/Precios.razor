@@ -86,23 +86,19 @@
             <p>Aplican sobre el precio de la entrada del formato elegido.</p>
         </div>
 
-        <div class="promo-card">
+        <a href="/admin/promociones" class="promo-card">
             <div class="promo-card-icon">
                 <RadzenIcon Icon="card_giftcard" />
             </div>
             <div class="promo-card-body">
-                <h3>2x1 en todas las entradas</h3>
+                <h3>Administrar promociones</h3>
                 <p>
-                    Lunes, martes y miércoles. El descuento se aplica sobre el precio
-                    del formato de la función (2D, 3D, 4D o IMAX).
+                    Las promociones se configuran por tipo (NxM o porcentaje),
+                    días de la semana y período de vigencia.
                 </p>
-                <div class="promo-dias">
-                    @foreach (var dia in DiasPromo) {
-                        <span class="promo-dia">@dia</span>
-                    }
-                </div>
+                <span class="promo-card-link">Ir a promociones →</span>
             </div>
-        </div>
+        </a>
 
     </section>
 
@@ -114,8 +110,6 @@
     private List<PrecioEditable> _precios = [];
     private bool _cargando = true;
     private string? _error;
-
-    private static readonly string[] DiasPromo = ["Lunes", "Martes", "Miércoles"];
 
     protected override async Task OnInitializedAsync()
     {

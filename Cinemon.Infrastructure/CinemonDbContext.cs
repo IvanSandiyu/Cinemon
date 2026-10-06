@@ -9,6 +9,7 @@ using Cinemon.Domain.Entidades.Funcion;
 using Cinemon.Domain.Entidades.Generos;
 using Cinemon.Domain.Entidades.Peliculas;
 using Cinemon.Domain.Entidades.Precios;
+using Cinemon.Domain.Entidades.Promociones;
 using Cinemon.Domain.Entidades.Reservas;
 using Cinemon.Domain.Entidades.Salas;
 using Cinemon.Domain.Entidades.Usuarios;
@@ -40,6 +41,10 @@ namespace Cinemon.Infrastructure
         public DbSet<ReservaButaca> ReservasButacas => Set<ReservaButaca>();
 
         public DbSet<Precio> Precios => Set<Precio>();
+
+        public DbSet<Promocion> Promociones => Set<Promocion>();
+
+        public DbSet<PromocionDia> PromocionesDias => Set<PromocionDia>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

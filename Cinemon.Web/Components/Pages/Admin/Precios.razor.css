@@ -202,6 +202,13 @@
     background: linear-gradient(135deg, rgba(123, 198, 201, 0.14), rgba(30, 111, 125, 0.08));
     border: 1px solid rgba(123, 198, 201, 0.5);
     border-radius: 12px;
+    text-decoration: none;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.promo-card:hover {
+    border-color: rgba(123, 198, 201, 0.85);
+    transform: translateY(-2px);
 }
 
 .promo-card-icon {
@@ -229,6 +236,12 @@
     color: #C7D8DD;
     font-size: 0.82rem;
     line-height: 1.5;
+}
+
+.promo-card-link {
+    color: #A5E0E3;
+    font-size: 0.8rem;
+    font-weight: 600;
 }
 
 .promo-dias {

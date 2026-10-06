@@ -235,6 +235,74 @@ namespace Cinemon.Infrastructure.Migrations
                     b.ToTable("Precios", (string)null);
                 });
 
+            modelBuilder.Entity("Cinemon.Domain.Entidades.Promociones.Promocion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Activa")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("CantidadGratis")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CantidadPagadas")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Descripcion")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("FechaDesde")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaHasta")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal?>("PorcentajeDescuento")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Activa");
+
+                    b.ToTable("Promociones", (string)null);
+                });
+
+            modelBuilder.Entity("Cinemon.Domain.Entidades.Promociones.PromocionDia", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Dia")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PromocionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PromocionId", "Dia")
+                        .IsUnique();
+
+                    b.ToTable("PromocionesDias", (string)null);
+                });
+
             modelBuilder.Entity("Cinemon.Domain.Entidades.Reservas.Reserva", b =>
                 {
                     b.Property<int>("Id")
@@ -394,6 +462,15 @@ namespace Cinemon.Infrastructure.Migrations
                     b.Navigation("Pelicula");
                 });
 
+            modelBuilder.Entity("Cinemon.Domain.Entidades.Promociones.PromocionDia", b =>
+                {
+                    b.HasOne("Cinemon.Domain.Entidades.Promociones.Promocion", null)
+                        .WithMany("DiasSemana")
+                        .HasForeignKey("PromocionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Cinemon.Domain.Entidades.Reservas.Reserva", b =>
                 {
                     b.HasOne("Cinemon.Domain.Entidades.Funcion.Funcion", null)
@@ -418,6 +495,11 @@ namespace Cinemon.Infrastructure.Migrations
             modelBuilder.Entity("Cinemon.Domain.Entidades.Peliculas.Pelicula", b =>
                 {
                     b.Navigation("Generos");
+                });
+
+            modelBuilder.Entity("Cinemon.Domain.Entidades.Promociones.Promocion", b =>
+                {
+                    b.Navigation("DiasSemana");
                 });
 
             modelBuilder.Entity("Cinemon.Domain.Entidades.Salas.Sala", b =>
