@@ -65,6 +65,9 @@
 
 .app-brand {
     grid-area: brand;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
     margin-top: 4px;
     color: #7BC6C9;
     font-weight: 700;
@@ -77,6 +80,20 @@
 
 .app-brand:hover {
     opacity: 0.9;
+}
+
+/* Emblema del logo: la altura sigue el font-size del brand, así escala
+   sola en los breakpoints (1.725rem -> ~47px, 1.2rem -> ~33px). */
+.app-brand-mark {
+    display: block;
+    height: 1.7em;
+    width: auto;
+    animation: appBrandMarkPulse 3s ease-in-out infinite;
+}
+
+@keyframes appBrandMarkPulse {
+    0%, 100% { filter: drop-shadow(0 0 6px rgba(123, 198, 201, 0.30)); }
+    50%      { filter: drop-shadow(0 0 16px rgba(123, 198, 201, 0.70)); }
 }
 
 .appbar-account {
@@ -234,11 +251,10 @@
     gap: 6px;
 }
 
-.footer-logo {
-    color: #7BC6C9;
-    font-weight: 700;
-    letter-spacing: 4px;
-    font-size: 1.15rem;
+.footer-logo-img {
+    display: block;
+    width: 150px;
+    height: auto;
 }
 
 .footer-tagline {

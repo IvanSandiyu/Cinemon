@@ -15,7 +15,14 @@
     <RadzenTheme Theme="material" />
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
-    <HeadOutlet />
+    @* HeadOutlet interactivo: así recibe el <PageTitle> de TODAS las páginas,
+       incluidas las que declaran prerender: false, y actualiza document.title
+       vía JS. Si fuera estático solo vería el PageTitle durante el prerender y
+       el resto de las rutas se quedaba sin <title> (el navegador mostraba la
+       URL). Como el HeadOutlet del circuito reemplaza el título con el que
+       renderiza él, las páginas estáticas deben declarar @rendermode para que
+       su PageTitle llegue también al circuito. *@
+    <HeadOutlet @rendermode="InteractiveServer" />
 </head>
 
 <body>

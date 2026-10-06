@@ -128,3 +128,20 @@ i.fa-arrow-right {
         height: 62vh !important;
     }
 }
+
+/* ===== Banner promocional (slide 0) =====
+   El banner ya trae fondo #09202B: con object-fit: contain no se recorta y
+   las bandas laterales quedan del mismo tono que la propia imagen. */
+.carousel-inner .carousel-item-banner {
+    background-color: #09202B;
+}
+
+.carousel-inner .carousel-item-banner img {
+    object-fit: contain;
+}
+
+/* Sin Ken Burns en el banner: el texto del cartel no debe agrandarse. */
+.carousel-inner .carousel-item.active.carousel-item-banner img {
+    animation: none;
+    transform: none;
+}

@@ -124,7 +124,8 @@
             .Where(p => p.Activa)
             .ToList(),
         FiltroCartelera.Proximamente => _peliculas
-            .Where(p => !p.Activa && p.FechaEstreno > DateTime.Today)
+            .Where(p => p.FechaEstreno > DateTime.Today)
+            .OrderBy(p => p.FechaEstreno)
             .ToList(),
         FiltroCartelera.Todo => _peliculas
             .ToList(),

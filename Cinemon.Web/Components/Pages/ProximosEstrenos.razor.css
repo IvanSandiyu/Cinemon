@@ -1,0 +1,71 @@
+/* ===== Próximos estrenos (página pública) ===== */
+.prenest-seccion {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+}
+
+.prenest-head {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.prenest-kicker {
+    color: #E7F3F2;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 3px;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.prenest-subtitulo {
+    margin: 0.6rem auto 0;
+    max-width: 56ch;
+    color: #8AB8BB;
+    font-size: 0.9rem;
+}
+
+/* ===== Vacío / error ===== */
+.prenest-vacio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.9rem;
+    max-width: 520px;
+    margin: 1.5rem auto 0;
+    text-align: center;
+}
+
+.prenest-vacio ::deep .rz-alert {
+    width: 100%;
+    margin: 0;
+    text-align: left;
+}
+
+/* ===== Fecha de estreno en la tarjeta ===== */
+.prenest-estreno {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0 12px;
+    color: #7BC6C9;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+}
+
+.prenest-estreno .material-icons {
+    font-size: 13px;
+}
+
+@media (max-width: 576px) {
+    .prenest-seccion {
+        padding: 1.25rem 1rem 2.5rem;
+    }
+
+    .prenest-kicker {
+        font-size: 0.75rem;
+        letter-spacing: 2px;
+    }
+}

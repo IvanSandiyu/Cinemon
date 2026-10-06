@@ -1,23 +1,55 @@
-@page "/proximos-estrenos"
+﻿@page "/proximos-estrenos"
+
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 @using Cinemon.Web.Models.DTOs
 @using Cinemon.Web.Services
 @inject PeliculaApiService PeliculaService
 
-@if (_cargando) {
-    <div class="d-flex justify-content-center mt-4">
-        <RadzenProgressBarCircular Indeterminate="true" />
-    </div>
-} else if (_peliculas.Count == 0) {
-    <RadzenAlert AlertStyle="AlertStyle.Info">
-        No hay películas disponibles actualmente.
-    </RadzenAlert>
-} else {
-    <div class="row g-3 justify-content-center">
+<PageTitle>Próximos estrenos | Cinemon</PageTitle>
 
-        @foreach (var (pelicula, index) in _peliculas.Select((p, i) => (p, i))) {
-            @if (!pelicula.Activa && pelicula.FechaEstreno > DateTime.Today) {
+<div class="prenest-seccion">
+
+    <div class="prenest-head reveal">
+        <h5 class="prenest-kicker">Próximos estrenos</h5>
+
+        <p class="prenest-subtitulo">
+            Películas con fecha de estreno futura. Tocá un título para ver sus funciones.
+        </p>
+    </div>
+
+    @if (_cargando) {
+        <div class="d-flex justify-content-center mt-4">
+            <RadzenProgressBarCircular Indeterminate="true" />
+        </div>
+    }
+    else if (_error is not null) {
+        <div class="prenest-vacio">
+
+            <RadzenAlert AlertStyle="AlertStyle.Danger">
+                @_error
+            </RadzenAlert>
+
+            <RadzenButton Text="Reintentar"
+                          Icon="refresh"
+                          Click="CargarAsync"
+                          ButtonStyle="ButtonStyle.Secondary" />
+
+        </div>
+    }
+    else if (Proximos.Count == 0) {
+        <div class="prenest-vacio">
+
+            <RadzenAlert AlertStyle="AlertStyle.Info">
+                Todavía no hay próximos estrenos cargados.
+            </RadzenAlert>
+
+        </div>
+    }
+    else {
+        <div class="row g-3 justify-content-center">
+
+            @foreach (var (pelicula, index) in Proximos.Select((p, i) => (p, i))) {
                 <div class="col-6 col-sm-4 col-md-3 col-lg-3">
                     <div class="cinemon-movie-card reveal"
                          style="@($"--reveal-delay: {Math.Min((index % 6) * 50, 200)}ms;")">
@@ -43,6 +75,11 @@
                                 <span class="cinemon-divider"></span>
                                 <span class="cinemon-duration">@pelicula.Duracion min</span>
                             </div>
+
+                            <span class="prenest-estreno">
+                                <span class="material-icons">event</span>
+                                @pelicula.FechaEstreno.ToString("dd/MM/yyyy")
+                            </span>
                         </div>
 
                         <div class="movie-actions">
@@ -54,19 +91,36 @@
                 </div>
             }
 
-        }
+        </div>
+    }
 
-    </div>
-}
+</div>
 
 @code {
     private IReadOnlyCollection<PeliculaDto> _peliculas = [];
     private bool _cargando = true;
+    private string? _error;
 
-    protected override async Task OnInitializedAsync()
+    // Próximo estreno = fecha futura, sin importar si ya está en cartelera
+    // (una película puede estar habilitada para preventa antes de estrenar).
+    private IReadOnlyList<PeliculaDto> Proximos =>
+        _peliculas
+            .Where(p => p.FechaEstreno > DateTime.Today)
+            .OrderBy(p => p.FechaEstreno)
+            .ToList();
+
+    protected override async Task OnInitializedAsync() => await CargarAsync();
+
+    private async Task CargarAsync()
     {
+        _cargando = true;
+        _error = null;
+
         try {
             _peliculas = await PeliculaService.ObtenerTodasAsync();
+        } catch {
+            _peliculas = [];
+            _error = "No se pudieron cargar los próximos estrenos. Revisá que el servicio de la API esté disponible.";
         } finally {
             _cargando = false;
         }
