@@ -1,4 +1,5 @@
 using Cinemon.Domain.Entidades.Butacas;
+using Cinemon.Domain.Entidades.Candy;
 using Cinemon.Domain.Entidades.Funcion;
 using Cinemon.Domain.Entidades.Generos;
 using Cinemon.Domain.Entidades.Peliculas;
@@ -147,6 +148,30 @@ namespace Cinemon.Tests.Infrastructure
             await Context.SaveChangesAsync();
 
             return funcion;
+        }
+
+        public async Task<ProductoCandy> CrearProductoCandyAsync(
+            string? nombre = null,
+            decimal precio = 5000m,
+            CategoriaCandy categoria = CategoriaCandy.Pochoclo,
+            bool activo = true,
+            IEnumerable<ProductoComboItem>? componentes = null)
+        {
+            var producto = new ProductoCandy(
+                nombre ?? $"Producto {Guid.NewGuid():N}"[..14],
+                "Producto de prueba.",
+                precio,
+                categoria,
+                componentes);
+
+            if (!activo)
+                producto.Desactivar();
+
+            Context.ProductosCandy.Add(producto);
+
+            await Context.SaveChangesAsync();
+
+            return producto;
         }
 
         public async Task<Promocion> CrearPromocionNxMAsync(

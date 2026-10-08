@@ -5,6 +5,7 @@ using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using Cinemon.Domain.Entidades.Butacas;
+using Cinemon.Domain.Entidades.Candy;
 using Cinemon.Domain.Entidades.Funcion;
 using Cinemon.Domain.Entidades.Generos;
 using Cinemon.Domain.Entidades.Peliculas;
@@ -45,6 +46,14 @@ namespace Cinemon.Infrastructure
         public DbSet<Promocion> Promociones => Set<Promocion>();
 
         public DbSet<PromocionDia> PromocionesDias => Set<PromocionDia>();
+
+        public DbSet<ProductoCandy> ProductosCandy => Set<ProductoCandy>();
+
+        public DbSet<ProductoComboItem> ProductoComboItems => Set<ProductoComboItem>();
+
+        public DbSet<PedidoCandy> PedidosCandy => Set<PedidoCandy>();
+
+        public DbSet<PedidoCandyItem> PedidosCandyItems => Set<PedidoCandyItem>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

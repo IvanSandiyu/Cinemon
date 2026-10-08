@@ -1,0 +1,236 @@
+@page "/carrito"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@using Cinemon.Web.Models.DTOs
+@using Cinemon.Web.Services
+
+@inject CarritoService CarritoService
+@inject AuthService Auth
+@inject CandyApiService CandyService
+@inject NavigationManager Navigation
+
+<PageTitle>Carrito | Cinemon</PageTitle>
+
+<div class="carrito-page">
+
+    <div class="carrito-header">
+        <span class="cinemon-kicker">Candy</span>
+        <h1 class="carrito-title">Tu carrito</h1>
+        <p class="carrito-subtitle">
+            Revisá los productos antes de confirmar. Se retiran en el mostrador del cine.
+        </p>
+    </div>
+
+    @if (!_cargado) {
+        <div class="d-flex justify-content-center py-5">
+            <RadzenProgressBarCircular Indeterminate="true" />
+        </div>
+    } else if (CarritoService.Items.Count == 0) {
+        <div class="carrito-vacio">
+            <span class="material-icons">shopping_bag</span>
+            <h3>Tu carrito está vacío</h3>
+            <p>Agregá pochoclos, gaseosas o combos desde el menú de Candy.</p>
+            <RadzenButton Text="Ir al menú de Candy"
+                          ButtonStyle="ButtonStyle.Primary"
+                          Click="IrACandy" />
+        </div>
+    } else {
+        <div class="carrito-layout">
+
+            <div class="carrito-lista">
+
+                @foreach (var item in CarritoService.Items) {
+                    <article class="carrito-item" @key="item.ProductoId">
+
+                        <div class="carrito-item-info">
+                            <span class="carrito-item-categoria">@NombreCategoria(item.Categoria)</span>
+                            <h3 class="carrito-item-nombre">@item.Nombre</h3>
+                        </div>
+
+                        <div class="carrito-cantidad">
+                            <button type="button"
+                                    class="carrito-cantidad-btn"
+                                    aria-label="Restar"
+                                    @onclick="() => Restar(item)">
+                                <span class="material-icons">remove</span>
+                            </button>
+
+                            <span class="carrito-cantidad-valor">@item.Cantidad</span>
+
+                            <button type="button"
+                                    class="carrito-cantidad-btn"
+                                    aria-label="Sumar"
+                                    @onclick="() => Sumar(item)">
+                                <span class="material-icons">add</span>
+                            </button>
+                        </div>
+
+                        <strong class="carrito-item-subtotal">
+                            $@((item.PrecioUnitario * item.Cantidad).ToString("#,##0"))
+                        </strong>
+
+                        <button type="button"
+                                class="carrito-item-quitar"
+                                title="Quitar del carrito"
+                                @onclick="() => Quitar(item)">
+                            <span class="material-icons">delete</span>
+                        </button>
+
+                    </article>
+                }
+
+            </div>
+
+            <aside class="carrito-resumen">
+
+                <h2>Resumen</h2>
+
+                <div class="carrito-resumen-fila">
+                    <span>Productos</span>
+                    <span>@CarritoService.CantidadTotal</span>
+                </div>
+
+                <div class="carrito-resumen-fila carrito-resumen-total">
+                    <span>Total</span>
+                    <strong>$@CarritoService.Total.ToString("#,##0")</strong>
+                </div>
+
+                @if (_error is not null) {
+                    <p class="carrito-error">@_error</p>
+                }
+
+                <button type="button"
+                        class="carrito-confirmar"
+                        disabled="@_confirmando"
+                        @onclick="Confirmar">
+                    <span class="material-icons">check_circle</span>
+                    @(_confirmando ? "Confirmando..." : "Confirmar pedido")
+                </button>
+
+                <p class="carrito-nota">
+                    Necesitás iniciar sesión para confirmar el pedido.
+                </p>
+
+            </aside>
+
+        </div>
+    }
+
+</div>
+
+@code {
+
+    private bool _cargado;
+    private bool _confirmando;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Auth.CargarAsync();
+        await CarritoService.CargarAsync();
+
+        _cargado = true;
+    }
+
+    private async Task Sumar(CarritoItemDto item)
+    {
+        await CarritoService.CambiarCantidadAsync(item.ProductoId, item.Cantidad + 1);
+    }
+
+    private async Task Restar(CarritoItemDto item)
+    {
+        if (item.Cantidad <= 1) {
+            await Quitar(item);
+            return;
+        }
+
+        await CarritoService.CambiarCantidadAsync(item.ProductoId, item.Cantidad - 1);
+    }
+
+    private async Task Quitar(CarritoItemDto item)
+    {
+        await CarritoService.QuitarAsync(item.ProductoId);
+    }
+
+    private async Task Confirmar()
+    {
+        _error = null;
+
+        if (!Auth.EstaAutenticado) {
+            var destino = $"login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}";
+            Navigation.NavigateTo(destino, forceLoad: true);
+            return;
+        }
+
+        if (CarritoService.Items.Count == 0)
+            return;
+
+        _confirmando = true;
+
+        try {
+            var items = CarritoService.Items
+                .Select(x => new CrearPedidoCandyItemRequest(x.ProductoId, x.Cantidad))
+                .ToList();
+
+            var (id, error) = await CandyService.CrearPedidoAsync(items);
+
+            if (id is null) {
+                _error = ObtenerMensajeError(error);
+                return;
+            }
+
+            await CarritoService.VaciarAsync();
+
+            Navigation.NavigateTo($"/pedido-confirmado/{id.Value}");
+        } catch {
+            _error = "No se pudo confirmar el pedido. Intentá nuevamente.";
+        } finally {
+            _confirmando = false;
+        }
+    }
+
+    private void IrACandy()
+    {
+        Navigation.NavigateTo("/candy");
+    }
+
+    private static string NombreCategoria(int categoria) => categoria switch
+    {
+        1 => "Pochoclo",
+        2 => "Gaseosa",
+        3 => "Combo",
+        4 => "Extra",
+        _ => "Candy"
+    };
+
+    private static string ObtenerMensajeError(string? respuesta)
+    {
+        if (string.IsNullOrWhiteSpace(respuesta))
+            return "No se pudo confirmar el pedido.";
+
+        try {
+            var problema = System.Text.Json.JsonSerializer.Deserialize<
+                ApiProblemDetails>(respuesta);
+
+            if (problema?.Errors is not null) {
+                var mensajes = problema.Errors
+                    .SelectMany(x => x.Value)
+                    .Where(x => !string.IsNullOrWhiteSpace(x));
+
+                if (mensajes.Any())
+                    return string.Join(" ", mensajes);
+            }
+
+            return problema?.Detail ??
+                problema?.Title ??
+                "No se pudo confirmar el pedido.";
+        } catch {
+            return "No se pudo confirmar el pedido.";
+        }
+    }
+
+    private sealed record ApiProblemDetails(
+        string? Title,
+        string? Detail,
+        Dictionary<string, string[]>? Errors);
+}

@@ -1,0 +1,107 @@
+@page "/pedido-confirmado/{Id:int}"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@using Cinemon.Web.Models.DTOs
+@using Cinemon.Web.Services
+
+@inject AuthService Auth
+@inject CandyApiService CandyService
+@inject CarritoService Carrito
+@inject NavigationManager Navigation
+
+<PageTitle>Pedido confirmado | Cinemon</PageTitle>
+
+<div class="pedido-page">
+
+    @if (!_cargado) {
+        <div class="d-flex justify-content-center py-5">
+            <RadzenProgressBarCircular Indeterminate="true" />
+        </div>
+    } else {
+        <div class="pedido-card">
+
+            <span class="pedido-ico">
+                <span class="material-icons">check_circle</span>
+            </span>
+
+            <h1 class="pedido-titulo">¡Pedido confirmado!</h1>
+
+            <p class="pedido-subtitulo">
+                Tu pedido <strong>#@Id</strong> quedó registrado. Retiralo en el mostrador
+                de Candy con tu número de pedido.
+            </p>
+
+            @if (_pedido is not null) {
+                <div class="pedido-resumen">
+                    <div class="pedido-resumen-fila">
+                        <span>Fecha</span>
+                        <span>@_pedido.FechaPedido.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</span>
+                    </div>
+
+                    @foreach (var item in _pedido.Items) {
+                        <div class="pedido-resumen-fila">
+                            <span>@item.Cantidad × @item.NombreProducto</span>
+                            <span>$@item.Subtotal.ToString("#,##0")</span>
+                        </div>
+                    }
+
+                    <div class="pedido-resumen-fila pedido-resumen-total">
+                        <span>Total</span>
+                        <strong>$@_pedido.Total.ToString("#,##0")</strong>
+                    </div>
+                </div>
+            }
+
+            <div class="pedido-acciones">
+                <RadzenButton Text="Ver mis compras"
+                              ButtonStyle="ButtonStyle.Primary"
+                              Click="IrAMisCompras" />
+
+                <RadzenButton Text="Seguir comprando"
+                              Click="IrACandy" />
+            </div>
+
+        </div>
+    }
+
+</div>
+
+@code {
+
+    [Parameter] public int Id { get; set; }
+
+    private bool _cargado;
+    private PedidoCandyDto? _pedido;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Auth.CargarAsync();
+
+        if (!Auth.EstaAutenticado) {
+            var destino = $"login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}";
+            Navigation.NavigateTo(destino, forceLoad: true);
+            return;
+        }
+
+        await Carrito.VaciarAsync();
+
+        try {
+            var pedidos = await CandyService.ObtenerMisPedidosAsync();
+
+            _pedido = pedidos.FirstOrDefault(x => x.Id == Id);
+        } catch {
+        } finally {
+            _cargado = true;
+        }
+    }
+
+    private void IrAMisCompras()
+    {
+        Navigation.NavigateTo("/mis-compras");
+    }
+
+    private void IrACandy()
+    {
+        Navigation.NavigateTo("/candy");
+    }
+}

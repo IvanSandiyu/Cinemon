@@ -1,0 +1,44 @@
+.carrito-indicador {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: none;
+    color: #7BC6C9;
+    text-decoration: none;
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carrito-indicador .material-icons {
+    font-size: 1.35rem;
+}
+
+.carrito-indicador:hover,
+.carrito-indicador:focus-visible {
+    color: #A5E0E3;
+    background: rgba(30, 111, 125, 0.28);
+    border-color: rgba(123, 198, 201, 0.45);
+}
+
+.carrito-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: 9px;
+    background: #7BC6C9;
+    color: #08121A;
+    font-size: 0.66rem;
+    font-weight: 700;
+    line-height: 17px;
+    text-align: center;
+}

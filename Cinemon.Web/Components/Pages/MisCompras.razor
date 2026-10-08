@@ -6,6 +6,7 @@
 
 @inject AuthService Auth
 @inject ReservaApiService ReservaService
+@inject CandyApiService CandyService
 @inject NavigationManager Navigation
 
 <PageTitle>Mis compras | Cinemon</PageTitle>
@@ -21,9 +22,25 @@
             <span class="cinemon-kicker">Mi cuenta</span>
             <h1 class="compras-title">Mis compras</h1>
             <p class="compras-subtitle">
-                Todas tus reservas en Cinemon.
+                Tus entradas y tus pedidos de Candy, todos juntos.
             </p>
         </div>
+
+        <div class="compras-tabs">
+            <button type="button"
+                    class="compras-tab @(_pestana == Pestana.Entradas ? "activa" : "")"
+                    @onclick="() => _pestana = Pestana.Entradas">
+                Entradas
+            </button>
+
+            <button type="button"
+                    class="compras-tab @(_pestana == Pestana.Candy ? "activa" : "")"
+                    @onclick="CambiarAPestanaCandy">
+                Candy
+            </button>
+        </div>
+
+        @if (_pestana == Pestana.Entradas) {
 
         @if (_cargandoReservas) {
             <div class="d-flex justify-content-center py-5">
@@ -110,6 +127,68 @@
             </div>
         }
 
+        } else {
+
+            @if (_cargandoPedidos) {
+                <div class="d-flex justify-content-center py-5">
+                    <RadzenProgressBarCircular Indeterminate="true" />
+                </div>
+            } else if (_pedidos.Count == 0) {
+                <div class="compras-empty">
+                    <span class="material-icons">fastfood</span>
+
+                    <h3>Todavía no pediste nada de Candy</h3>
+
+                    <p>
+                        Cuando compres pochoclos, gaseosas o combos, van a aparecer acá.
+                    </p>
+
+                    <RadzenButton Text="Ir al menú de Candy"
+                                  ButtonStyle="ButtonStyle.Primary"
+                                  Click="IrACandy" />
+                </div>
+            } else {
+                <div class="compras-grid compras-grid-candy">
+
+                    @foreach (var pedido in _pedidos) {
+                        <article class="compra-card compra-card-candy" @key="pedido.Id">
+
+                            <div class="compra-body">
+
+                                <div class="compra-meta-row">
+                                    <span class="compra-clasificacion">Candy</span>
+                                    <span>@pedido.FechaPedido.ToLocalTime().ToString("dd/MM/yyyy")</span>
+                                </div>
+
+                                <h3 class="compra-titulo">Pedido #@pedido.Id</h3>
+
+                                <div class="compra-detalles">
+                                    @foreach (var item in pedido.Items) {
+                                        <div class="compra-detalle">
+                                            <span class="material-icons">fastfood</span>
+                                            @item.Cantidad × @item.NombreProducto
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="compra-footer">
+                                    <span class="compra-fecha">
+                                        Retirada en el mostrador de Candy
+                                    </span>
+                                    <strong class="compra-total">
+                                        $@pedido.Total.ToString("#,##0")
+                                    </strong>
+                                </div>
+
+                            </div>
+
+                        </article>
+                    }
+
+                </div>
+            }
+        }
+
     </div>
 }
 
@@ -120,6 +199,17 @@
 
     private bool _cargandoReservas = true;
     private IReadOnlyCollection<ReservaDto> _reservas = [];
+
+    private Pestana _pestana = Pestana.Entradas;
+    private bool _cargandoPedidos = true;
+    private bool _pedidosCargados;
+    private IReadOnlyCollection<PedidoCandyDto> _pedidos = [];
+
+    private enum Pestana
+    {
+        Entradas,
+        Candy
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -145,6 +235,30 @@
     private void IrACartelera()
     {
         Navigation.NavigateTo("/cartelera");
+    }
+
+    private void IrACandy()
+    {
+        Navigation.NavigateTo("/candy");
+    }
+
+    private async Task CambiarAPestanaCandy()
+    {
+        _pestana = Pestana.Candy;
+
+        if (_pedidosCargados)
+            return;
+
+        _cargandoPedidos = true;
+
+        try {
+            _pedidos = await CandyService.ObtenerMisPedidosAsync();
+        } catch {
+            _pedidos = [];
+        } finally {
+            _pedidosCargados = true;
+            _cargandoPedidos = false;
+        }
     }
 
     private static string ObtenerFechaFuncion(ReservaDto reserva)

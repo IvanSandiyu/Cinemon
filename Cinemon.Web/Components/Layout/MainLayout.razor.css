@@ -96,11 +96,14 @@
     50%      { filter: drop-shadow(0 0 16px rgba(123, 198, 201, 0.70)); }
 }
 
-.appbar-account {
-    grid-area: account;
-    justify-self: end;
-    margin-top: 4px;
-}
+    .appbar-account {
+        grid-area: account;
+        justify-self: end;
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
 
 .appbar-nav {
     grid-area: nav;

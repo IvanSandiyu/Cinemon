@@ -1,4 +1,38 @@
-﻿.admin-section-header {
+﻿/* ===== Header ===== */
+.admin-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.admin-header {
+    margin-bottom: 2rem;
+}
+
+.cinemon-kicker {
+    display: inline-block;
+    color: #7BC6C9;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+}
+
+.admin-title {
+    color: #E7F3F2;
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 0.3rem;
+}
+
+.admin-subtitle {
+    color: #8AB8BB;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.admin-section-header {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;

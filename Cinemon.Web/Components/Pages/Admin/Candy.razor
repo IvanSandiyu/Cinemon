@@ -1,0 +1,535 @@
+@page "/admin/candy"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+@using System.Globalization
+@using Cinemon.Web.Models.DTOs
+@using Cinemon.Web.Services
+
+@inject CandyApiService CandyService
+@inject AuthService Auth
+
+<PageTitle>Candy | Admin | Cinemon</PageTitle>
+
+<AdminGuard>
+<div class="admin-page">
+
+    <div class="admin-header admin-section-header">
+        <div>
+            <span class="cinemon-kicker">Administración</span>
+
+            <h1 class="admin-title">
+                Candy
+            </h1>
+
+            <p class="admin-subtitle">
+                Pochoclos, gaseosas, extras y combos. Un combo nunca puede costar
+                más que la suma de sus componentes comprados por separado.
+            </p>
+        </div>
+    </div>
+
+    @if (_cargando) {
+        <div class="d-flex justify-content-center py-5">
+            <RadzenProgressBarCircular Indeterminate="true" />
+        </div>
+    } else {
+
+        <section class="admin-form-section">
+
+            <div class="admin-form-section-header">
+                <div>
+                    <h2>@( _editando is null ? "Nuevo producto" : "Editar producto" )</h2>
+                    <p>
+                        Los combos se arman eligiendo productos ya cargados y su cantidad.
+                    </p>
+                </div>
+            </div>
+
+            <div class="admin-form">
+
+                <div class="admin-form-field">
+                    <label>Nombre</label>
+
+                    <input type="text"
+                           placeholder="Ej: Pochoclo Grande"
+                           value="@_nombre"
+                           @onchange="e => _nombre = e.Value?.ToString() ?? string.Empty" />
+                </div>
+
+                <div class="admin-form-field">
+                    <label>Descripción</label>
+
+                    <textarea rows="2"
+                              placeholder="Opcional"
+                              value="@_descripcion"
+                              @onchange="e => _descripcion = e.Value?.ToString() ?? string.Empty"></textarea>
+                </div>
+
+                <div class="admin-form-row">
+
+                    <div class="admin-form-field">
+                        <label>Categoría</label>
+
+                        <div class="admin-segmented">
+                            @foreach (var categoria in Categorias) {
+                                <button type="button"
+                                        class="@(_categoria == categoria.Valor ? "selected" : "")"
+                                        @onclick="() => _categoria = categoria.Valor">
+                                    @categoria.Etiqueta
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="admin-form-field">
+                        <label>Precio</label>
+
+                        <input type="number" min="1" step="0.01"
+                               value="@_precio"
+                               @onchange="e => _precio = ParsearDecimal(e.Value)" />
+                    </div>
+
+                </div>
+
+                @if (_categoria == 3) {
+
+                    <div class="admin-form-field">
+                        <label>Componentes del combo</label>
+
+                        <div class="combo-alta">
+                            <select value="@_componenteSeleccionado"
+                                    @onchange="e => _componenteSeleccionado = ParsearEntero(e.Value)">
+                                <option value="0">Elegir producto...</option>
+
+                                @foreach (var producto in ComponentesDisponibles) {
+                                    <option value="@producto.Id">
+                                        @producto.Nombre — $@producto.Precio.ToString("#,##0")
+                                    </option>
+                                }
+                            </select>
+
+                            <input type="number" min="1" step="1"
+                                   title="Cantidad"
+                                   value="@_componenteCantidad"
+                                   @onchange="e => _componenteCantidad = ParsearEntero(e.Value)" />
+
+                            <button type="button"
+                                    class="admin-cancel-button"
+                                    @onclick="AgregarComponente">
+                                Agregar
+                            </button>
+                        </div>
+
+                        @if (_componentes.Count == 0) {
+                            <span class="admin-field-hint">
+                                Todavía no agregaste ningún producto al combo.
+                            </span>
+                        } else {
+                            <div class="combo-lista">
+
+                                @foreach (var componente in _componentes) {
+                                    <span class="combo-chip" @key="componente.ProductoId">
+                                        @componente.Cantidad × @(NombreDe(componente.ProductoId))
+                                        <button type="button"
+                                                title="Quitar"
+                                                @onclick="() => QuitarComponente(componente.ProductoId)">
+                                            <span class="material-icons">close</span>
+                                        </button>
+                                    </span>
+                                }
+
+                            </div>
+
+                            <span class="admin-field-hint">
+                                Suma de los componentes: $@SumaComponentes.ToString("#,##0")
+                                @( _precio > SumaComponentes
+                                        ? $" · Ahorrás ${(SumaComponentes - _precio).ToString("#,##0")}"
+                                        : string.Empty )
+                            </span>
+                        }
+                    </div>
+
+                }
+
+                @if (_errorFormulario is not null) {
+                    <p class="admin-form-error">@_errorFormulario</p>
+                }
+
+                <div class="admin-form-actions">
+
+                    @if (_editando is not null) {
+                        <RadzenButton Text="Cancelar"
+                                      class="admin-cancel-button"
+                                      Click="LimpiarFormulario" />
+                    }
+
+                    <RadzenButton Icon="save"
+                                  Text="Guardar"
+                                  Disabled="@_guardando"
+                                  Click="Guardar" />
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="admin-form-section admin-form-section-separada">
+
+            <div class="admin-form-section-header">
+                <div>
+                    <h2>Productos cargados</h2>
+                    <p>@_productos.Count en total</p>
+                </div>
+            </div>
+
+            @if (_error is not null) {
+                <p class="admin-form-error">@_error</p>
+            }
+            else if (_productos.Count == 0) {
+                <div class="admin-empty">
+                    <span class="material-icons">fastfood</span>
+
+                    <h3>No hay productos cargados</h3>
+
+                    <p>
+                        Creá el primero desde el formulario de arriba.
+                    </p>
+                </div>
+            }
+            else {
+                <div class="admin-table-wrap">
+
+                    <table class="admin-table">
+
+                        <thead>
+                            <tr>
+                                <th class="col-promocion">Producto</th>
+                                <th>Categoría</th>
+                                <th>Precio</th>
+                                <th class="col-dias">Componentes</th>
+                                <th class="col-estado">Estado</th>
+                                <th class="col-acciones"></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var producto in _productos) {
+                                <tr @key="producto.Id">
+
+                                    <td class="col-promocion">
+                                        <span class="promo-nombre">@producto.Nombre</span>
+
+                                        @if (!string.IsNullOrWhiteSpace(producto.Descripcion)) {
+                                            <span class="promo-descripcion">@producto.Descripcion</span>
+                                        }
+                                    </td>
+
+                                    <td>@NombreCategoria(producto.Categoria)</td>
+
+                                    <td>$@producto.Precio.ToString("#,##0")</td>
+
+                                    <td class="col-dias">
+                                        @(producto.Componentes.Count == 0
+                                                ? "—"
+                                                : string.Join(", ", producto.Componentes.Select(x => $"{x.Cantidad} × {x.Nombre}")) )
+                                    </td>
+
+                                    <td class="col-estado">
+                                        <div class="admin-state-cell">
+                                            <span class="admin-state @(producto.Activo ? "programada" : "cancelada")">
+                                                @(producto.Activo ? "Activo" : "Inactivo")
+                                            </span>
+                                        </div>
+                                    </td>
+
+                                    <td class="col-acciones">
+                                        <div class="admin-state-cell">
+
+                                            <button type="button"
+                                                    class="admin-row-action"
+                                                    title="Editar"
+                                                    @onclick="() => Editar(producto)">
+                                                <span class="material-icons">edit</span>
+                                            </button>
+
+                                            <button type="button"
+                                                    class="admin-row-action"
+                                                    title="@( producto.Activo ? "Desactivar" : "Activar" )"
+                                                    @onclick="() => CambiarEstado(producto)">
+                                                <span class="material-icons">
+                                                    @( producto.Activo ? "toggle_off" : "toggle_on" )
+                                                </span>
+                                            </button>
+
+                                            <button type="button"
+                                                    class="admin-row-action admin-row-action-danger"
+                                                    title="Eliminar"
+                                                    @onclick="() => Eliminar(producto)">
+                                                <span class="material-icons">delete</span>
+                                            </button>
+
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+
+        </section>
+    }
+
+</div>
+</AdminGuard>
+
+@code {
+
+    private IReadOnlyCollection<ProductoCandyDto> _productos = [];
+
+    private bool _cargando = true;
+    private bool _guardando;
+    private string? _error;
+    private string? _errorFormulario;
+
+    private ProductoCandyDto? _editando;
+
+    private string _nombre = string.Empty;
+    private string _descripcion = string.Empty;
+    private decimal _precio = 1m;
+    private int _categoria = 1;
+
+    private List<ComponenteComboRequest> _componentes = [];
+    private int _componenteSeleccionado;
+    private int _componenteCantidad = 1;
+
+    private static readonly (int Valor, string Etiqueta)[] Categorias =
+    [
+        (1, "Pochoclo"),
+        (2, "Gaseosa"),
+        (3, "Combo"),
+        (4, "Extra")
+    ];
+
+    private IEnumerable<ProductoCandyDto> ComponentesDisponibles => _productos
+        .Where(x => x.Categoria != 3 && x.Id != (_editando?.Id ?? -1))
+        .OrderBy(x => x.Nombre);
+
+    private decimal SumaComponentes => _componentes
+        .Sum(x => (NombreAPrecio(x.ProductoId) ?? 0m) * x.Cantidad);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Auth.CargarAsync();
+        await CargarProductos();
+    }
+
+    private async Task CargarProductos()
+    {
+        _cargando = true;
+        _error = null;
+
+        try {
+            _productos = await CandyService.ObtenerTodasAsync();
+        } catch {
+            _error = "No se pudieron cargar los productos de Candy.";
+        } finally {
+            _cargando = false;
+        }
+    }
+
+    private void Editar(ProductoCandyDto producto)
+    {
+        _editando = producto;
+
+        _errorFormulario = null;
+
+        _nombre = producto.Nombre;
+        _descripcion = producto.Descripcion ?? string.Empty;
+        _precio = producto.Precio;
+        _categoria = producto.Categoria;
+
+        _componentes = producto.Componentes
+            .Select(x => new ComponenteComboRequest(x.ProductoId, x.Cantidad))
+            .ToList();
+
+        _componenteSeleccionado = 0;
+        _componenteCantidad = 1;
+    }
+
+    private void LimpiarFormulario()
+    {
+        _editando = null;
+        _errorFormulario = null;
+
+        _nombre = string.Empty;
+        _descripcion = string.Empty;
+        _precio = 1m;
+        _categoria = 1;
+        _componentes = [];
+        _componenteSeleccionado = 0;
+        _componenteCantidad = 1;
+    }
+
+    private void AgregarComponente()
+    {
+        _errorFormulario = null;
+
+        if (_componenteSeleccionado <= 0 || _componenteCantidad < 1) {
+            _errorFormulario = "Elegí un producto y una cantidad válida.";
+            return;
+        }
+
+        var existente = _componentes
+            .FirstOrDefault(x => x.ProductoId == _componenteSeleccionado);
+
+        if (existente is null)
+            _componentes.Add(new ComponenteComboRequest(
+                _componenteSeleccionado,
+                _componenteCantidad));
+        else
+            _componentes[_componentes.IndexOf(existente)] = existente with
+            {
+                Cantidad = existente.Cantidad + _componenteCantidad
+            };
+
+        _componenteSeleccionado = 0;
+        _componenteCantidad = 1;
+    }
+
+    private void QuitarComponente(int productoId)
+    {
+        _componentes.RemoveAll(x => x.ProductoId == productoId);
+    }
+
+    private async Task Guardar()
+    {
+        _guardando = true;
+        _errorFormulario = null;
+
+        try {
+            var componentes = _categoria == 3 ? _componentes : [];
+
+            (bool ok, string? error) resultado;
+
+            if (_editando is null) {
+                resultado = await CandyService.CrearAsync(
+                    new CrearProductoCandyRequest(
+                        _nombre,
+                        _descripcion,
+                        _precio,
+                        _categoria,
+                        componentes));
+            } else {
+                resultado = await CandyService.ActualizarAsync(
+                    new ActualizarProductoCandyRequest(
+                        _editando.Id,
+                        _nombre,
+                        _descripcion,
+                        _precio,
+                        _categoria,
+                        componentes));
+            }
+
+            if (!resultado.ok) {
+                _errorFormulario = ObtenerMensajeError(resultado.error);
+                return;
+            }
+
+            LimpiarFormulario();
+
+            await CargarProductos();
+        } finally {
+            _guardando = false;
+        }
+    }
+
+    private async Task CambiarEstado(ProductoCandyDto producto)
+    {
+        var (ok, error) = await CandyService.CambiarEstadoAsync(
+            producto.Id,
+            !producto.Activo);
+
+        if (!ok) {
+            _error = ObtenerMensajeError(error);
+            return;
+        }
+
+        await CargarProductos();
+    }
+
+    private async Task Eliminar(ProductoCandyDto producto)
+    {
+        var (ok, error) = await CandyService.EliminarAsync(producto.Id);
+
+        if (!ok) {
+            _error = ObtenerMensajeError(error);
+            return;
+        }
+
+        if (_editando?.Id == producto.Id)
+            LimpiarFormulario();
+
+        await CargarProductos();
+    }
+
+    private decimal? NombreAPrecio(int productoId) =>
+        _productos.FirstOrDefault(x => x.Id == productoId)?.Precio;
+
+    private string NombreDe(int productoId) =>
+        _productos.FirstOrDefault(x => x.Id == productoId)?.Nombre ?? "Producto";
+
+    private static string NombreCategoria(int categoria) => categoria switch
+    {
+        1 => "Pochoclo",
+        2 => "Gaseosa",
+        3 => "Combo",
+        4 => "Extra",
+        _ => "—"
+    };
+
+    private static int ParsearEntero(object? valor) =>
+        int.TryParse(valor?.ToString(), out var resultado) ? resultado : 0;
+
+    private static decimal ParsearDecimal(object? valor) =>
+        decimal.TryParse(valor?.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture, out var resultado)
+            ? resultado
+            : 0m;
+
+    private static string ObtenerMensajeError(string? respuesta)
+    {
+        if (string.IsNullOrWhiteSpace(respuesta))
+            return "No se pudo guardar el producto.";
+
+        try {
+            var problema = System.Text.Json.JsonSerializer.Deserialize<
+                ApiProblemDetails>(respuesta);
+
+            if (problema?.Errors is not null) {
+                var mensajes = problema.Errors
+                    .SelectMany(x => x.Value)
+                    .Where(x => !string.IsNullOrWhiteSpace(x));
+
+                if (mensajes.Any())
+                    return string.Join(" ", mensajes);
+            }
+
+            return problema?.Detail ??
+                problema?.Title ??
+                "No se pudo guardar el producto.";
+        } catch {
+            return "No se pudo guardar el producto.";
+        }
+    }
+
+    private sealed record ApiProblemDetails(
+        string? Title,
+        string? Detail,
+        Dictionary<string, string[]>? Errors);
+}

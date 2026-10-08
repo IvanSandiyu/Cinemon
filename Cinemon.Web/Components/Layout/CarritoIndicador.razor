@@ -1,0 +1,45 @@
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@implements IDisposable
+
+@using Cinemon.Web.Services
+@inject CarritoService Carrito
+@inject NavigationManager Navigation
+
+<a href="/carrito"
+   class="carrito-indicador"
+   title="Ver carrito"
+   aria-label="Ver carrito">
+
+    <span class="material-icons">shopping_bag</span>
+
+    @if (_cantidad > 0) {
+        <span class="carrito-badge">@_cantidad</span>
+    }
+
+</a>
+
+@code {
+
+    private int _cantidad;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Carrito.Cambio += Actualizar;
+
+        await Carrito.CargarAsync();
+
+        _cantidad = Carrito.CantidadTotal;
+    }
+
+    private void Actualizar()
+    {
+        _cantidad = Carrito.CantidadTotal;
+
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Carrito.Cambio -= Actualizar;
+    }
+}

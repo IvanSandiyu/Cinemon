@@ -1,5 +1,6 @@
 using Cinemon.Api.Endpoints;
 using Cinemon.Api.Endpoints.Butacas;
+using Cinemon.Api.Endpoints.Candy;
 using Cinemon.Api.Endpoints.Funciones;
 using Cinemon.Api.Endpoints.Generos;
 using Cinemon.Api.Endpoints.Peliculas;
@@ -127,6 +128,8 @@ app.MapTmdbEndpoints();
 app.MapGeneroEndpoints();
 app.MapPrecioEndpoints();
 app.MapPromocionEndpoints();
+app.MapProductoCandyEndpoints();
+app.MapPedidoCandyEndpoints();
 
 using (var scope = app.Services.CreateScope()) {
     var context = scope.ServiceProvider

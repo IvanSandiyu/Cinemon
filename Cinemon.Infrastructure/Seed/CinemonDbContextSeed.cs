@@ -1,4 +1,5 @@
 ﻿using Cinemon.Domain.Entidades.Butacas;
+using Cinemon.Domain.Entidades.Candy;
 using Cinemon.Domain.Entidades.Generos;
 using Cinemon.Domain.Entidades.Precios;
 using Cinemon.Domain.Entidades.Promociones;
@@ -22,6 +23,7 @@ namespace Cinemon.Infrastructure.Seed
             await SeedGenerosAsync(context);
             await SeedPreciosAsync(context);
             await SeedPromocionesAsync(context);
+            await SeedCandyAsync(context);
 
             if (await context.Salas.AnyAsync())
                 return;
@@ -87,6 +89,85 @@ namespace Cinemon.Infrastructure.Seed
                             numero));
                 }
             }
+        }
+
+        private static async Task SeedCandyAsync(CinemonDbContext context)
+        {
+            if (await context.ProductosCandy.AnyAsync())
+                return;
+
+            var simples = new List<ProductoCandy>
+        {
+            new("Pochoclo Individual", "Porción chica de 45 g, recién reventada.", 4500m, CategoriaCandy.Pochoclo),
+            new("Pochoclo Grande", "Porción grande de 80 g, para pasar el rato.", 6500m, CategoriaCandy.Pochoclo),
+            new("Balde de Pochoclo Familiar", "Balde de 160 g con tapa, ideal para compartir.", 9500m, CategoriaCandy.Pochoclo),
+            new("Gaseosa Chica", "Botella de 355 ml.", 3000m, CategoriaCandy.Gaseosa),
+            new("Gaseosa Mediana", "Botella de 555 ml.", 4200m, CategoriaCandy.Gaseosa),
+            new("Gaseosa Grande", "Botella de 710 ml.", 5500m, CategoriaCandy.Gaseosa),
+            new("Nachos con Queso", "Nachos crocantes con cheddar cremoso.", 5500m, CategoriaCandy.Extra),
+            new("Agua Mineral", "Botella de 500 ml sin gas.", 2500m, CategoriaCandy.Extra)
+        };
+
+            context.ProductosCandy.AddRange(simples);
+
+            await context.SaveChangesAsync();
+
+            var productosPorNombre = simples.ToDictionary(x => x.Nombre);
+
+            var combos = new List<ProductoCandy>
+        {
+            CrearCombo(
+                "Combo Clásico",
+                "Pochoclo grande con gaseosa mediana.",
+                9200m,
+                productosPorNombre,
+                ("Pochoclo Grande", 1),
+                ("Gaseosa Mediana", 1)),
+            CrearCombo(
+                "Combo Pareja",
+                "Dos pochoclos grandes con dos gaseosas medianas.",
+                18500m,
+                productosPorNombre,
+                ("Pochoclo Grande", 2),
+                ("Gaseosa Mediana", 2)),
+            CrearCombo(
+                "Combo Familiar",
+                "Balde de pochoclo familiar con cuatro gaseosas chicas.",
+                18900m,
+                productosPorNombre,
+                ("Balde de Pochoclo Familiar", 1),
+                ("Gaseosa Chica", 4))
+        };
+
+            context.ProductosCandy.AddRange(combos);
+
+            await context.SaveChangesAsync();
+        }
+
+        private static ProductoCandy CrearCombo(
+            string nombre,
+            string? descripcion,
+            decimal precio,
+            IReadOnlyDictionary<string, ProductoCandy> productos,
+            params (string Producto, int Cantidad)[] componentes)
+        {
+            var items = componentes
+                .Select(x => new ProductoComboItem(productos[x.Producto].Id, x.Cantidad))
+                .ToList();
+
+            var combo = new ProductoCandy(
+                nombre,
+                descripcion,
+                precio,
+                CategoriaCandy.Combo,
+                items);
+
+            var sumaComponentes = componentes
+                .Sum(x => productos[x.Producto].Precio * x.Cantidad);
+
+            combo.ValidarPrecioCombo(sumaComponentes);
+
+            return combo;
         }
 
         private static async Task SeedPreciosAsync(CinemonDbContext context)

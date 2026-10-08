@@ -25,6 +25,8 @@ builder.Services.AddScoped<GeneroApiService>();
 builder.Services.AddScoped<PrecioApiService>();
 builder.Services.AddScoped<PromocionApiService>();
 builder.Services.AddScoped<FavoritosService>();
+builder.Services.AddScoped<CandyApiService>();
+builder.Services.AddScoped<CarritoService>();
 
 
 builder.Services.AddRadzenComponents();
