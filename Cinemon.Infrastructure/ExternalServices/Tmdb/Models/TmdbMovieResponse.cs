@@ -23,5 +23,6 @@ namespace Cinemon.Infrastructure.ExternalServices.Tmdb.Models
 
      [property: JsonPropertyName("runtime")]int? Runtime,
     [property: JsonPropertyName("genres")]IReadOnlyCollection<TmdbGeneroResponse>? Generos,
-     [property: JsonPropertyName("release_dates")]TmdbReleaseDatesResponse? ReleaseDates);
+     [property: JsonPropertyName("release_dates")]TmdbReleaseDatesResponse? ReleaseDates,
+     [property: JsonPropertyName("videos")]TmdbVideosResponse? Videos);
 }

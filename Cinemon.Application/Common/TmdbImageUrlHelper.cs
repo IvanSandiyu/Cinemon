@@ -25,5 +25,16 @@ namespace Cinemon.Application.Common
 
             return $"{BaseUrl}original{backdropPath}";
         }
+
+        public static string ObtenerTrailerUrl(string? trailerUrl, string? tmdbTrailerKey)
+        {
+            if (!string.IsNullOrWhiteSpace(trailerUrl))
+                return trailerUrl;
+
+            if (!string.IsNullOrWhiteSpace(tmdbTrailerKey))
+                return $"https://www.youtube.com/watch?v={tmdbTrailerKey}";
+
+            return string.Empty;
+        }
     }
 }

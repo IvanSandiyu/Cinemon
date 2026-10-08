@@ -25,6 +25,8 @@ namespace Cinemon.Domain.Entidades.Peliculas
 
         public string? TmdbBackdropPath { get; private set; }
 
+        public string? TmdbTrailerKey { get; private set; }
+
         //Creamos la pelicula y automaticamente Activo es false ya que no nos interesa que se pueda ver todavia
         //Creamos aca y no en application pq es mas sencillo y automaticamente esta en "stand by"
         public Pelicula(
@@ -74,11 +76,12 @@ namespace Cinemon.Domain.Entidades.Peliculas
             TrailerUrl = trailerUrl;
         }
         //Vincula posters
-        public void AsignarTmdb(int tmdbId,string? posterPath,string? backdropPath)
+        public void AsignarTmdb(int tmdbId,string? posterPath,string? backdropPath,string? trailerKey)
         {
             TmdbId = tmdbId;
             TmdbPosterPath = posterPath;
             TmdbBackdropPath = backdropPath;
+            TmdbTrailerKey = trailerKey;
         }
         //Vincula sipnosis,duracion
         public void ActualizarDatosDesdeTmdb(string sinopsis,int? duracion)

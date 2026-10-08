@@ -38,6 +38,7 @@ namespace Cinemon.Infrastructure.ExternalServices.Tmdb
                     ParseReleaseDate(movie.ReleaseDate),
                     null,
                     null,
+                    null,
                     []))
                 .ToList();
         }
@@ -55,7 +56,7 @@ namespace Cinemon.Infrastructure.ExternalServices.Tmdb
         public async Task<TmdbMovieDto?> ObtenerPeliculaAsync(int tmdbId, CancellationToken cancellationToken)
         {
             var movie = await _httpClient.GetFromJsonAsync<TmdbMovieResponse>(
-                $"movie/{tmdbId}?language=es-AR&append_to_response=release_dates",cancellationToken);
+                $"movie/{tmdbId}?language=es-AR&append_to_response=release_dates,videos",cancellationToken);
 
             if (movie is null)
                 return null;
@@ -73,7 +74,58 @@ namespace Cinemon.Infrastructure.ExternalServices.Tmdb
                 ParseReleaseDate(movie.ReleaseDate),
                 movie.Runtime,
                 ExtractCertificacion(movie.ReleaseDates),
+                ExtraerTrailerId(movie.Videos),
                 generos);
+        }
+
+        private static string? ExtraerTrailerId(TmdbVideosResponse? videos)
+        {
+            var youtube = videos?.Results?
+                .Where(video => string.Equals(
+                    video.Site,
+                    "YouTube",
+                    StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            if (youtube is null || youtube.Count == 0)
+                return null;
+
+            return youtube
+                .OrderBy(video => PrioridadIdioma(
+                    video.Language,
+                    video.Country))
+                .ThenByDescending(video => string.Equals(
+                    video.Type,
+                    "Trailer",
+                    StringComparison.OrdinalIgnoreCase))
+                .ThenByDescending(video => video.Official)
+                .ThenByDescending(video => video.PublishedAt ?? string.Empty)
+                .Select(video => video.Key)
+                .FirstOrDefault();
+        }
+
+        private static int PrioridadIdioma(string? idioma, string? pais)
+        {
+            // Preferimos el trailer en latino (español), luego en inglés y por último el resto.
+            var esLatino = string.Equals(
+                    idioma,
+                    "es",
+                    StringComparison.OrdinalIgnoreCase) &&
+                (pais is null ||
+                 string.Equals(pais, "MX", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(pais, "AR", StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(pais, "US", StringComparison.OrdinalIgnoreCase));
+
+            if (esLatino)
+                return 0;
+
+            if (string.Equals(idioma, "es", StringComparison.OrdinalIgnoreCase))
+                return 1;
+
+            if (string.Equals(idioma, "en", StringComparison.OrdinalIgnoreCase))
+                return 2;
+
+            return 3;
         }
 
         private static string? ExtractCertificacion(TmdbReleaseDatesResponse? releaseDates)

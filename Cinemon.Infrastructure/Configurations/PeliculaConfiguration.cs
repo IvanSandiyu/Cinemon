@@ -50,6 +50,10 @@ namespace Cinemon.Infrastructure.Configurations
             builder.Property(x => x.TmdbBackdropPath)
                 .HasMaxLength(500)
                 .IsRequired(false);
+
+            builder.Property(x => x.TmdbTrailerKey)
+                .HasMaxLength(100)
+                .IsRequired(false);
         }
     }
 }

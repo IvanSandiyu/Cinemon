@@ -15,5 +15,6 @@ namespace Cinemon.Application.DTOs.Tmdb
     DateTime? ReleaseDate,
     int? Runtime,
     string? Certificacion,
+    string? TrailerId,
     IReadOnlyCollection<string> Generos);
 }

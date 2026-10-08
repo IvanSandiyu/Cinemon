@@ -55,7 +55,9 @@
                             <button type="button"
                                     class="cartelera-btn-play"
                                     title="Ver trailer de @pelicula.Titulo"
-                                    aria-label="Ver trailer">
+                                    aria-label="Ver trailer de @pelicula.Titulo"
+                                    @onclick="() => AbrirTrailer(pelicula.TrailerUrl)"
+                                    @onclick:stopPropagation="true">
                                 <RadzenIcon Icon="play_arrow" />
                             </button>
 
@@ -93,6 +95,32 @@
             }
 
         </div>
+
+        @if (mostrarTrailer) {
+            <div class="trailer-overlay"
+                 @onclick="CerrarTrailer"
+                 @onkeydown="CerrarConTecla"
+                 tabindex="0"
+                 @ref="_overlayRef">
+                <div class="trailer-modal" @onclick:stopPropagation="true">
+
+                    <button class="trailer-close"
+                            @onclick="CerrarTrailer"
+                            aria-label="Cerrar tráiler">
+                        &times;
+                    </button>
+
+                    <div class="trailer-player">
+                        <iframe src="@UrlTrailerEmbed"
+                                title="Tráiler de la película"
+                                allow="autoplay; encrypted-media; picture-in-picture"
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+
+                </div>
+            </div>
+        }
     }
 
 </div>
@@ -178,4 +206,72 @@
     private void NavegarAPelicula(int id) => Navigation.NavigateTo($"/peliculas/{id}");
 
     [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    private bool mostrarTrailer;
+    private string? UrlTrailerEmbed;
+    private ElementReference _overlayRef;
+    private bool _pedirFocoOverlay;
+
+    private void AbrirTrailer(string? trailer)
+    {
+        if (string.IsNullOrWhiteSpace(trailer))
+            return;
+
+        var videoId = ObtenerVideoId(trailer);
+
+        if (string.IsNullOrWhiteSpace(videoId))
+            return;
+
+        UrlTrailerEmbed =
+            $"https://www.youtube-nocookie.com/embed/{videoId}?autoplay=1";
+        mostrarTrailer = true;
+        _pedirFocoOverlay = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_pedirFocoOverlay) {
+            _pedirFocoOverlay = false;
+            await _overlayRef.FocusAsync(false);
+        }
+    }
+
+    private void CerrarConTecla(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+            CerrarTrailer();
+    }
+
+    private static string? ObtenerVideoId(string url)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
+            return null;
+
+        if (uri.Host.Equals("youtu.be", StringComparison.OrdinalIgnoreCase))
+            return uri.AbsolutePath.Trim('/');
+
+        if (uri.Host.Equals("www.youtube.com", StringComparison.OrdinalIgnoreCase) ||
+            uri.Host.Equals("youtube.com", StringComparison.OrdinalIgnoreCase) ||
+            uri.Host.Equals("www.youtube-nocookie.com", StringComparison.OrdinalIgnoreCase)) {
+            if (uri.AbsolutePath == "/watch")
+                return Microsoft.AspNetCore.WebUtilities
+                    .QueryHelpers.ParseQuery(uri.Query)["v"].ToString();
+
+            if (uri.AbsolutePath.StartsWith("/embed/") ||
+                uri.AbsolutePath.StartsWith("/shorts/")) {
+                return uri.AbsolutePath
+                    .Split('/', StringSplitOptions.RemoveEmptyEntries)
+                    .LastOrDefault();
+            }
+        }
+
+        return null;
+    }
+
+    private void CerrarTrailer()
+    {
+        mostrarTrailer = false;
+        UrlTrailerEmbed = null;
+    }
+
 }

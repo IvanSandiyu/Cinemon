@@ -43,8 +43,6 @@
                             <p class="login-muted">Ingresar con:</p>
                             <button type="button" class="btn pw-social">@(new MarkupString("<i class=\"fab fa-facebook-f\"></i>"))</button>
                             <button type="button" class="btn pw-social">@(new MarkupString("<i class=\"fab fa-google\"></i>"))</button>
-                            <button type="button" class="btn pw-social">@(new MarkupString("<i class=\"fab fa-twitter\"></i>"))</button>
-                            <button type="button" class="btn pw-social">@(new MarkupString("<i class=\"fab fa-github\"></i>"))</button>
                         </div>
 
                         <p class="text-center login-or">o:</p>
@@ -99,8 +97,6 @@
                             <p class="login-muted">Ingresar con:</p>
                             <button type="button" class="btn pw-social">@(new MarkupString("<i class=\"fab fa-facebook-f\"></i>"))</button>
                             <button type="button" class="btn pw-social">@(new MarkupString("<i class=\"fab fa-google\"></i>"))</button>
-                            <button type="button" class="btn pw-social">@(new MarkupString("<i class=\"fab fa-twitter\"></i>"))</button>
-                            <button type="button" class="btn pw-social">@(new MarkupString("<i class=\"fab fa-github\"></i>"))</button>
                         </div>
 
                         <p class="text-center login-or">o:</p>
@@ -176,23 +172,11 @@
 
 @code {
 
-
-
-
-
-
-
     private string _tab = "login";
     private bool _procesando;
     private string? _error;
     private string? _info;
     private string? _returnUrl;
-
-
-
-
-
-
 
     private string Email { get; set; } = "";
     private bool Recordarme { get; set; } = true;

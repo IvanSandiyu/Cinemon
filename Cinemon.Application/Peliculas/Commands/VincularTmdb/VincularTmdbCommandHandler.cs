@@ -52,7 +52,8 @@ namespace Cinemon.Application.Peliculas.Commands.VincularTmdb
             pelicula.AsignarTmdb(
                 tmdbMovie.Id,
                 tmdbMovie.PosterPath,
-                tmdbMovie.BackdropPath);
+                tmdbMovie.BackdropPath,
+                tmdbMovie.TrailerId);
 
             pelicula.ActualizarDatosDesdeTmdb(
                 tmdbMovie.Overview,

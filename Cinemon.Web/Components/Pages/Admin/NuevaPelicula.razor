@@ -382,6 +382,11 @@
             if (!string.IsNullOrWhiteSpace(detalle.Certificacion))
                 _clasificacion = NormalizarClasificacion(detalle.Certificacion);
 
+            if (!string.IsNullOrWhiteSpace(detalle.TrailerId) &&
+                string.IsNullOrWhiteSpace(_trailerUrl)) {
+                _trailerUrl = $"https://www.youtube.com/watch?v={detalle.TrailerId}";
+            }
+
             if (_generosSeleccionados.Count == 0 && detalle.Generos.Any()) {
                 var ids = await GeneroService.ObtenerTodosAsync();
 

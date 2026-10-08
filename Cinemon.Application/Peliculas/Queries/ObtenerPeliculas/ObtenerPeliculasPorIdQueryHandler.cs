@@ -31,7 +31,9 @@ namespace Cinemon.Application.Peliculas.Queries.ObtenerPeliculas
                 pelicula.FechaEstreno,
                 ClasificacionEdadHelper.ParaMostrar(pelicula.ClasificacionEdad),
                 pelicula.PosterUrl,
-                pelicula.TrailerUrl,
+                TmdbImageUrlHelper.ObtenerTrailerUrl(
+                    pelicula.TrailerUrl,
+                    pelicula.TmdbTrailerKey),
                 pelicula.Activa,
                 pelicula.Generos.Select(g => g.Genero.Nombre).ToList(), 
                 TmdbImageUrlHelper.BuildPosterUrl(pelicula.TmdbPosterPath),

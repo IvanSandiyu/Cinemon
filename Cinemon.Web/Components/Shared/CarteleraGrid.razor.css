@@ -241,3 +241,71 @@
         padding: 6px 6px;
     }
 }
+
+/* ===== Trailer a pantalla completa ===== */
+.trailer-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.94);
+    outline: none;
+    animation: cinemonFadeIn 0.25s ease both;
+}
+
+.trailer-modal {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: #000;
+}
+
+.trailer-player {
+    width: 100%;
+    height: 100%;
+}
+
+.trailer-player iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.trailer-close {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    z-index: 10001;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: #E7F3F2;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.15s ease, color 0.2s ease;
+}
+
+.trailer-close:hover {
+    background: #7BC6C9;
+    color: #08121A;
+    transform: scale(1.08);
+}
+
+@keyframes cinemonFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}

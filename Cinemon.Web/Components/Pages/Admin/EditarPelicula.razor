@@ -483,6 +483,11 @@
 
             if (!string.IsNullOrWhiteSpace(detalle.Certificacion))
                 _clasificacion = NormalizarClasificacion(detalle.Certificacion);
+
+            if (!string.IsNullOrWhiteSpace(detalle.TrailerId) &&
+                string.IsNullOrWhiteSpace(_trailerUrl)) {
+                _trailerUrl = $"https://www.youtube.com/watch?v={detalle.TrailerId}";
+            }
         } catch (Exception ex) {
             _error = $"TMDB no completó duración o clasificación: {ex.Message}";
         }
