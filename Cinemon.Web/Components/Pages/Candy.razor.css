@@ -1,5 +1,6 @@
 .candy-page {
-    max-width: 1100px;
+    background-color: #FFFFFF;
+   /* max-width: 1100px;*/
     margin: 0 auto;
     padding: 3rem 1.5rem 4rem;
 }
@@ -10,7 +11,8 @@
 
 .cinemon-kicker {
     display: inline-block;
-    color: #7BC6C9;
+    /*color: #12313F;*/
+    color: #12313F;
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 3px;
@@ -19,14 +21,16 @@
 }
 
 .candy-title {
-    color: #E7F3F2;
+    /*color: #E7F3F2;*/
+    color: #12313F;
     font-size: 2rem;
     font-weight: 800;
     margin: 0 0 0.3rem;
 }
 
 .candy-subtitle {
-    color: #8AB8BB;
+    /*color: #8AB8BB;*/
+    color: #12313F;
     font-size: 1rem;
     margin: 0;
     max-width: 46rem;
@@ -43,20 +47,23 @@
     border: 1px solid rgba(123, 198, 201, 0.45);
     border-radius: 12px;
     background: rgba(123, 198, 201, 0.08);
+    color: #12313F;
 }
 
 .candy-carrito-info {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    color: #E7F3F2;
+    /*color: #E7F3F2;*/
+    color: #12313F;
     font-size: 0.9rem;
 }
 
-.candy-carrito-info .material-icons {
-    font-size: 1.15rem;
-    color: #7BC6C9;
-}
+    .candy-carrito-info .material-icons {
+        font-size: 1.15rem;
+        /*color: #7BC6C9;*/
+        color: #12313F;
+    }
 
 .candy-carrito-total {
     color: #7BC6C9;
@@ -121,7 +128,8 @@
     border: 1px solid rgba(40, 180, 110, 0.4);
     border-radius: 10px;
     background: rgba(40, 180, 110, 0.12);
-    color: #62D99C;
+    /*color: #62D99C;*/
+    color: green;
     font-size: 0.88rem;
 }
 
@@ -154,7 +162,8 @@
     padding: 1.1rem;
     border: 1px solid rgba(30, 111, 125, 0.45);
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.025);
+    /*background: rgba(255, 255, 255, 0.025);*/
+    background-color: #12313F;
     transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 

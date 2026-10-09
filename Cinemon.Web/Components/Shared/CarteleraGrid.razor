@@ -39,7 +39,9 @@
 
             @foreach (var (pelicula, index) in PelículasVisibles.Select((p, i) => (p, i)))
             {
-                <div class="col-6 col-md-4">
+                var posterUrl = pelicula.TmdbPosterUrl ?? pelicula.PosterUrl;
+
+                <div class="col-6 col-md-3">
                     <div class="cartelera-tarjeta reveal"
                          style="@($"--reveal-delay: {Math.Min((index % 6) * 50, 200)}ms;")">
 
@@ -48,7 +50,7 @@
                              title="Ver funciones de @pelicula.Titulo">
 
                             <img class="cartelera-poster-img"
-                                 src="@(pelicula.TmdbPosterUrl ?? pelicula.PosterUrl)"
+                                 src="@posterUrl"
                                  alt="@pelicula.Titulo"
                                  loading="lazy" />
 

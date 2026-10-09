@@ -27,6 +27,8 @@ namespace Cinemon.Domain.Entidades.Peliculas
 
         public string? TmdbTrailerKey { get; private set; }
 
+        public ICollection<PeliculaPoster> Posters { get; private set; } = [];
+
         //Creamos la pelicula y automaticamente Activo es false ya que no nos interesa que se pueda ver todavia
         //Creamos aca y no en application pq es mas sencillo y automaticamente esta en "stand by"
         public Pelicula(
@@ -82,6 +84,18 @@ namespace Cinemon.Domain.Entidades.Peliculas
             TmdbPosterPath = posterPath;
             TmdbBackdropPath = backdropPath;
             TmdbTrailerKey = trailerKey;
+        }
+        //Guarda todos los posters que entrega TMDB (sin duplicados)
+        public void ReemplazarPosters(IEnumerable<string> rutas)
+        {
+            var unicas = rutas
+                .Where(ruta => !string.IsNullOrWhiteSpace(ruta))
+                .Distinct()
+                .ToList();
+
+            Posters = unicas
+                .Select(ruta => new PeliculaPoster(Id, ruta))
+                .ToList();
         }
         //Vincula sipnosis,duracion
         public void ActualizarDatosDesdeTmdb(string sinopsis,int? duracion)

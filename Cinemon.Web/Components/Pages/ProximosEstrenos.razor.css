@@ -2,7 +2,9 @@
 .prenest-seccion {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem 1.5rem 3rem;
+    background-color: #FFFFFF;
+    border-radius: 18px;
+    padding: 22px 18px 26px;
 }
 
 .prenest-head {
@@ -11,18 +13,18 @@
 }
 
 .prenest-kicker {
-    color: #E7F3F2;
+    color: #1E6F7D;
     text-transform: uppercase;
-    font-weight: 500;
+    font-weight: 700;
     letter-spacing: 3px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     margin: 0;
 }
 
 .prenest-subtitulo {
     margin: 0.6rem auto 0;
     max-width: 56ch;
-    color: #8AB8BB;
+    color: #5A6B74;
     font-size: 0.9rem;
 }
 
@@ -61,11 +63,11 @@
 
 @media (max-width: 576px) {
     .prenest-seccion {
-        padding: 1.25rem 1rem 2.5rem;
+        padding: 16px 12px 20px;
     }
 
     .prenest-kicker {
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         letter-spacing: 2px;
     }
 }

@@ -39,6 +39,7 @@ namespace Cinemon.Infrastructure.ExternalServices.Tmdb
                     null,
                     null,
                     null,
+                    [],
                     []))
                 .ToList();
         }
@@ -61,6 +62,12 @@ namespace Cinemon.Infrastructure.ExternalServices.Tmdb
             if (movie is null)
                 return null;
 
+            // Los posters se piden aparte, sin language, para recibir TODOS
+            // (el bloque "images" del append se filtra por idioma y viene vacío).
+            var images = await _httpClient.GetFromJsonAsync<TmdbImagesResponse>(
+                $"movie/{tmdbId}/images",
+                cancellationToken);
+
             var generos = movie.Generos
                 ?.Select(x => x.Nombre)
                 .ToList() ?? [];
@@ -75,7 +82,20 @@ namespace Cinemon.Infrastructure.ExternalServices.Tmdb
                 movie.Runtime,
                 ExtractCertificacion(movie.ReleaseDates),
                 ExtraerTrailerId(movie.Videos),
-                generos);
+                generos,
+                ExtraerPosters(images));
+        }
+
+        private static IReadOnlyCollection<string> ExtraerPosters(TmdbImagesResponse? images)
+        {
+            if (images?.Posters is null || images.Posters.Count == 0)
+                return [];
+
+            return images.Posters
+                .Where(poster => !string.IsNullOrWhiteSpace(poster.FilePath))
+                .Select(poster => poster.FilePath)
+                .Distinct()
+                .ToList();
         }
 
         private static string? ExtraerTrailerId(TmdbVideosResponse? videos)

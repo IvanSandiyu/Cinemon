@@ -18,6 +18,7 @@ namespace Cinemon.Application.Peliculas.Queries.ObtenerPeliculas
     bool Activa,
     IReadOnlyCollection<string> Generos,
     string? TmdbPosterUrl,
-    string? TmdbBackdropUrl);
+    string? TmdbBackdropUrl,
+    IReadOnlyCollection<string> TmdbPosters);
 
 }

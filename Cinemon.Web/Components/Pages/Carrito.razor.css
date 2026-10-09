@@ -1,3 +1,8 @@
+.pagina-fondo {
+    width: 100%;
+    background-color: white;
+}
+
 .carrito-page {
     max-width: 1000px;
     margin: 0 auto;

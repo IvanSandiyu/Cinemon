@@ -57,12 +57,12 @@
     margin-inline: auto;
 }
 
-/* ===== Tarjeta cuadrada ===== */
+/* ===== Tarjeta póster 2:3 (póster completo, sin franjas) ===== */
 .cartelera-tarjeta {
     position: relative;
     width: 100%;
     margin: 0 auto;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 2 / 3;
     border-radius: 12px;
     overflow: hidden;
     background: #08121A;
@@ -87,12 +87,10 @@
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.3, 1),
-                filter 0.4s ease;
+    transition: filter 0.4s ease;
 }
 
 .cartelera-tarjeta:hover .cartelera-poster-img {
-    transform: scale(1.05);
     filter: brightness(0.92);
 }
 

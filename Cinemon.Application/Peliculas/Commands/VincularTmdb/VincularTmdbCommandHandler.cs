@@ -55,8 +55,10 @@ namespace Cinemon.Application.Peliculas.Commands.VincularTmdb
                 tmdbMovie.BackdropPath,
                 tmdbMovie.TrailerId);
 
+            pelicula.ReemplazarPosters(tmdbMovie.Posters);
+
             pelicula.ActualizarDatosDesdeTmdb(
-                tmdbMovie.Overview,
+                tmdbMovie.Overview ?? string.Empty,
                 tmdbMovie.Runtime);
 
             await _peliculaRepository.UpdateAsync(

@@ -74,7 +74,13 @@ namespace Cinemon.Infrastructure.Repositories
                     cancellationToken);
 
             try {
+                var rutasPosters = pelicula.Posters
+                    .Select(x => x.Ruta)
+                    .ToList();
+
                 pelicula.Generos.Clear();
+
+                pelicula.Posters.Clear();
 
                 _context.Peliculas.Update(pelicula);
 
@@ -113,6 +119,32 @@ namespace Cinemon.Infrastructure.Repositories
                 await _context.SaveChangesAsync(
                     cancellationToken);
 
+                var postersExistentes = await _context
+                    .Set<PeliculaPoster>()
+                    .Where(x => x.PeliculaId == pelicula.Id)
+                    .ToListAsync(cancellationToken);
+
+                var rutasExistentes = postersExistentes
+                    .Select(x => x.Ruta)
+                    .ToHashSet();
+
+                var rutasDeseadas = rutasPosters.ToHashSet();
+
+                _context.Set<PeliculaPoster>()
+                    .RemoveRange(postersExistentes
+                        .Where(x => !rutasDeseadas.Contains(x.Ruta)));
+
+                await _context.Set<PeliculaPoster>()
+                    .AddRangeAsync(rutasPosters
+                        .Where(ruta => !rutasExistentes.Contains(ruta))
+                        .Select(ruta => new PeliculaPoster(
+                            pelicula.Id,
+                            ruta)),
+                        cancellationToken);
+
+                await _context.SaveChangesAsync(
+                    cancellationToken);
+
                 await transaction.CommitAsync(
                     cancellationToken);
             } catch {
@@ -133,6 +165,7 @@ namespace Cinemon.Infrastructure.Repositories
                 .AsNoTracking()
                 .Include(p => p.Generos)
                 .ThenInclude(g => g.Genero)
+                .Include(p => p.Posters)
                 .ToListAsync(cancellationToken);
         }
 
@@ -142,6 +175,7 @@ namespace Cinemon.Infrastructure.Repositories
                 .AsNoTracking()
                 .Include(p => p.Generos)
                 .ThenInclude(g => g.Genero)
+                .Include(p => p.Posters)
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 
