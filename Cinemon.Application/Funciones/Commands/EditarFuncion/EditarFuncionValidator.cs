@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Cinemon.Application.Common;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace Cinemon.Application.Funciones.Commands.EditarFuncion
 {
     public sealed class EditarFuncionValidator: AbstractValidator<EditarFuncionCommand>
     {
-        public EditarFuncionValidator()
+        public EditarFuncionValidator(TimeProvider reloj)
         {
             RuleFor(x => x.Id)
                 .GreaterThan(0);
@@ -21,7 +22,7 @@ namespace Cinemon.Application.Funciones.Commands.EditarFuncion
                 .GreaterThan(0);
 
             RuleFor(x => x.FechaHoraInicio)
-                .GreaterThan(DateTime.UtcNow)
+                .Must(f => f > reloj.Ahora())
                 .WithMessage("La fecha de inicio debe ser futura.");
 
             RuleFor(x => x.Precio)

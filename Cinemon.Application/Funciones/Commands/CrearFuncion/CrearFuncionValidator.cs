@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Cinemon.Application.Common;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace Cinemon.Application.Funciones.Commands.CrearFuncion
 {
     public sealed class CrearFuncionValidator: AbstractValidator<CrearFuncionCommand>
     {
-        public CrearFuncionValidator()
+        public CrearFuncionValidator(TimeProvider reloj)
         {
             RuleFor(x => x.PeliculaId)
                 .GreaterThan(0);
@@ -18,7 +19,7 @@ namespace Cinemon.Application.Funciones.Commands.CrearFuncion
                 .GreaterThan(0);
 
             RuleFor(x => x.FechaHoraInicio)
-                .GreaterThan(DateTime.UtcNow);
+                .Must(f=>f > reloj.Ahora());
 
             RuleFor(x => x.Precio)
                 .GreaterThan(0);

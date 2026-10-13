@@ -6,6 +6,7 @@
 
 @inject UsuarioApiService UsuarioService
 @inject ReservaApiService ReservaService
+@inject NavigationManager NavigationManager
 
 <PageTitle>Usuarios | Admin | Cinemon</PageTitle>
 
@@ -25,7 +26,14 @@
                 Cuentas registradas en Cinemon.
             </p>
         </div>
+            <RadzenButton Text="Volver"
+                          Icon="arrow_back"
+                          ButtonStyle="ButtonStyle.Light"
+                          Variant="Variant.Outlined"
+                          Click="@(() => NavigationManager.NavigateTo("/admin"))"
+                          Style="border-radius: 8px; font-weight: 400;" />
 
+            
     </div>
 
     @if (_cargando) {

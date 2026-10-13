@@ -39,6 +39,7 @@ builder.Services.AddProblemDetails();
 
 // Application
 builder.Services.AddApplication();
+builder.Services.AddSingleton(TimeProvider.System);
 
 // Infrastructure
 builder.Services.AddInfrastructure(

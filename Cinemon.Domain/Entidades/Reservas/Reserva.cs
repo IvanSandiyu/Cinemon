@@ -1,5 +1,6 @@
 ﻿using Cinemon.Domain.Entidades.Butacas;
 using Cinemon.Domain.Enums;
+using Cinemon.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +35,9 @@ namespace Cinemon.Domain.Entidades.Reservas
 
         public void Cancelar()
         {
+            if (EstadoReserva == EstadoReserva.Cancelada)
+                throw new BusinessRuleException("La reserva ya está cancelada.");
+
             EstadoReserva = EstadoReserva.Cancelada;
         }
     }

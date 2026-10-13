@@ -26,13 +26,26 @@
             </p>
         </div>
 
-        <RadzenButton Text="Nueva película"
-                      Icon="add"
-                      Click="@NuevaPelicula"
-                     
-                      class="admin-primary-button" />
+            <!-- Contenedor para apilar los botones verticalmente a la derecha -->
+            <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
+                <RadzenButton Text="Nueva película"
+                              Icon="add_circle"
+                              ButtonStyle="ButtonStyle.Light"
+                              Variant="Variant.Outlined"
+                              Click="@NuevaPelicula"
+                              class="admin-primary-button"
+                              Style="border-radius: 8px; font-weight: 400;" />
+           
 
+                <RadzenButton Text="Volver"
+                              Icon="arrow_back"
+                              ButtonStyle="ButtonStyle.Light"
+                              Variant="Variant.Outlined"
+                              Click="@(() => Navigation.NavigateTo("/admin"))"
+                              Style="border-radius: 8px; font-weight: 400;" />
+            </div>
     </div>
+       
 
     @if (_cargando) {
         <div class="d-flex justify-content-center py-5">

@@ -10,6 +10,7 @@
 @inject FuncionApiService FuncionService
 @inject PeliculaApiService PeliculaService
 @inject ReservaApiService ReservaService
+@inject NavigationManager Navigation
 
 <PageTitle>Salas | Admin | Cinemon</PageTitle>
 
@@ -29,6 +30,17 @@
                 Inventario de salas, su capacidad y la actividad de cada una.
             </p>
         </div>
+            <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
+
+
+                <RadzenButton Text="Volver"
+                              Icon="arrow_back"
+                              ButtonStyle="ButtonStyle.Light"
+                              Variant="Variant.Outlined"
+                              Click="@(() => Navigation.NavigateTo("/admin"))"
+                              Style="border-radius: 8px; font-weight: 400;" />
+
+            </div>
 
     </div>
 

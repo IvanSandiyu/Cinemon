@@ -1,4 +1,5 @@
-﻿using Cinemon.Domain.Entidades.Usuarios;
+﻿using Cinemon.Application.Usuarios.DTOs;
+using Cinemon.Domain.Entidades.Usuarios;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -8,5 +9,5 @@ using System.Threading.Tasks;
 
 namespace Cinemon.Application.Usuarios.ObtenerUsuarios.Queries
 {
-    public sealed record ObtenerUsuarioPorIdQuery(int Id) : IRequest<Usuario?>;
+    public sealed record ObtenerUsuarioPorIdQuery(int Id) : IRequest<UsuarioDto?>;
 }

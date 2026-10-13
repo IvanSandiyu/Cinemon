@@ -81,7 +81,7 @@ namespace Cinemon.Api.Endpoints.Usuarios
         {
             var response = await sender.Send(command,cancellationToken);
 
-            return Results.Ok(response);
+            return response is null ? Results.NotFound() : Results.Ok(response);
         }
 
         private static async Task<IResult> CrearUsuarioAdmin(CrearUsuarioAdminCommand command,ISender sender,CancellationToken cancellationToken)

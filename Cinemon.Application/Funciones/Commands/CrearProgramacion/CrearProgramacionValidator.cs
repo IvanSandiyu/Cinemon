@@ -1,3 +1,4 @@
+using Cinemon.Application.Common;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace Cinemon.Application.Funciones.Commands.CrearProgramacion
 {
     public sealed class CrearProgramacionValidator: AbstractValidator<CrearProgramacionCommand>
     {
-        public CrearProgramacionValidator()
+        public CrearProgramacionValidator(TimeProvider reloj)
         {
             RuleFor(x => x.PeliculaId)
                 .GreaterThan(0);
@@ -18,7 +19,7 @@ namespace Cinemon.Application.Funciones.Commands.CrearProgramacion
                 .GreaterThan(0);
 
             RuleFor(x => x.FechaInicio)
-                .GreaterThan(DateTime.UtcNow)
+                .Must(f => f > reloj.Ahora())
                 .WithMessage("La fecha y hora de inicio debe estar en el futuro.");
 
             RuleFor(x => x.CantidadSemanas)

@@ -1,10 +1,9 @@
 /* ===== Próximos estrenos (página pública) ===== */
 .prenest-seccion {
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%;
+    margin: 0;
     background-color: #FFFFFF;
-    border-radius: 18px;
-    padding: 22px 18px 26px;
+    padding: 22px clamp(18px, 3vw, 32px) 26px;
 }
 
 .prenest-head {
@@ -63,7 +62,7 @@
 
 @media (max-width: 576px) {
     .prenest-seccion {
-        padding: 16px 12px 20px;
+        padding: 16px clamp(12px, 4vw, 18px) 20px;
     }
 
     .prenest-kicker {

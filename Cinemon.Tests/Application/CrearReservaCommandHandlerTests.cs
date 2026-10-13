@@ -43,7 +43,7 @@ namespace Cinemon.Tests.Application
         public void Dispose() => _db.Dispose();
 
         private CrearReservaCommandHandler CrearHandler(int userId) =>
-            new(_usuarios,_funciones,_butacas,_reservas,_promociones,new FakeCurrentUserService(userId));
+            new(_usuarios, _funciones, _butacas, _reservas, _promociones, new FakeCurrentUserService(userId), TimeProvider.System);
 
         // --------------------------------------------------------------
         // Happy path

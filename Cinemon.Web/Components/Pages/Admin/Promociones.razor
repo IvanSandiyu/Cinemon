@@ -6,6 +6,7 @@
 @using Cinemon.Web.Services
 
 @inject PromocionApiService PromocionService
+@inject NavigationManager Navigation
 
 <PageTitle>Promociones | Admin | Cinemon</PageTitle>
 
@@ -25,6 +26,17 @@
                 Si varias promociones aplican el mismo día, gana la que deja el total más bajo.
             </p>
         </div>
+            <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
+
+
+                <RadzenButton Text="Volver"
+                              Icon="arrow_back"
+                              ButtonStyle="ButtonStyle.Light"
+                              Variant="Variant.Outlined"
+                              Click="@(() => Navigation.NavigateTo("/admin"))"
+                              Style="border-radius: 8px; font-weight: 400;" />
+
+            </div>
     </div>
 
     @if (_cargando) {

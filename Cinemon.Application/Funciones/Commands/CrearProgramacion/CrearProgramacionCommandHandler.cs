@@ -1,8 +1,10 @@
 using Cinemon.Application.Abstractions;
+using Cinemon.Application.Common;
 using Cinemon.Domain.Entidades.Funcion;
 using Cinemon.Domain.Enums;
 using Cinemon.Domain.Exceptions;
 using MediatR;
+using System;
 
 namespace Cinemon.Application.Funciones.Commands.CrearProgramacion
 {
@@ -11,6 +13,7 @@ namespace Cinemon.Application.Funciones.Commands.CrearProgramacion
         private readonly IPeliculaRepository _peliculaRepository;
         private readonly ISalaRepository _salaRepository;
         private readonly IFuncionRepository _funcionRepository;
+        private readonly TimeProvider _timeProvider;
 
         public CrearProgramacionCommandHandler(IPeliculaRepository peliculaRepository,ISalaRepository salaRepository,
             IFuncionRepository funcionRepository)
@@ -68,7 +71,7 @@ namespace Cinemon.Application.Funciones.Commands.CrearProgramacion
             foreach (var fechaHoraInicio in fechas) {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                if (fechaHoraInicio <= DateTime.UtcNow) {
+                if (fechaHoraInicio <= _timeProvider.Ahora()) {
                     omitidas.Add(fechaHoraInicio);
                     continue;
                 }

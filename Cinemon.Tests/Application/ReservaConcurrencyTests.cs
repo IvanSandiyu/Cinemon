@@ -99,7 +99,8 @@ namespace Cinemon.Tests.Application
                 new ButacaRepository(contexto),
                 new ReservaRepository(contexto),
                 new PromocionRepository(contexto),
-                new FakeCurrentUserService(userId));
+                new FakeCurrentUserService(userId),
+                TimeProvider.System); // Se agrega el argumento requerido 'timeProvider'
         }
 
         /// <summary>

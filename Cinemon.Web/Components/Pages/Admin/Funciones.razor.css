@@ -169,7 +169,8 @@
 }
 
 .admin-table .col-state {
-    text-align: right;
+    text-align: center;
+    width: 1%;
 }
 
 /* ===== Estado ===== */
@@ -180,6 +181,7 @@
     font-size: 0.68rem;
     font-weight: 600;
     white-space: nowrap;
+    text-align: center;
 }
 
 .admin-state.programada {
@@ -201,8 +203,10 @@
 .admin-state-cell {
     display: inline-flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: center;
     gap: 0.5rem;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .admin-row-action {

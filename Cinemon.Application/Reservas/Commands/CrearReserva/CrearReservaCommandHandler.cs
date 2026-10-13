@@ -1,4 +1,5 @@
 ﻿using Cinemon.Application.Abstractions;
+using Cinemon.Application.Common;
 using Cinemon.Application.Interfaces;
 using Cinemon.Domain.Entidades.Butacas;
 using Cinemon.Domain.Entidades.Reservas;
@@ -22,6 +23,7 @@ namespace Cinemon.Application.Reservas.Commands.CrearReserva
         private readonly IReservaRepository _reservaRepository;
         private readonly IPromocionRepository _promocionRepository;
         private readonly ICurrentUserService _currentUserService;
+        private readonly TimeProvider _timeProvider;
 
         public CrearReservaCommandHandler(
             IUsuarioRepository usuarioRepository,
@@ -29,7 +31,8 @@ namespace Cinemon.Application.Reservas.Commands.CrearReserva
             IButacaRepository butacaRepository,
             IReservaRepository reservaRepository,
             IPromocionRepository promocionRepository,
-            ICurrentUserService currentUserService)
+            ICurrentUserService currentUserService,
+            TimeProvider timeProvider)
         {
             _usuarioRepository = usuarioRepository;
             _funcionRepository = funcionRepository;
@@ -37,6 +40,7 @@ namespace Cinemon.Application.Reservas.Commands.CrearReserva
             _reservaRepository = reservaRepository;
             _promocionRepository = promocionRepository;
             _currentUserService = currentUserService;
+            _timeProvider = timeProvider;
         }
 
         public async Task<int> Handle(CrearReservaCommand request, CancellationToken cancellationToken)
@@ -60,6 +64,9 @@ namespace Cinemon.Application.Reservas.Commands.CrearReserva
 
             if (funcion.EstadoFuncion != EstadoFuncion.Programada)
                 throw new BusinessRuleException("La función no está disponible para realizar reservas.");
+
+            if (funcion.FechaHoraInicio <= _timeProvider.Ahora())
+                throw new BusinessRuleException("La función ya comenzó.");
 
             var butacas = await _butacaRepository.ObtenerPorIdsAsync(
                 request.ButacasIds,
