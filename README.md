@@ -27,10 +27,11 @@ Sistema de reserva de entradas de cine que combina un backend con arquitectura l
 4. [Arquitectura y estructura del proyecto](#-arquitectura-y-estructura-del-proyecto)
 5. [Capturas](#-capturas)
 6. [Actualización de interfaz](#-actualización-de-interfaz)
-7. [Cómo correrlo localmente](#-cómo-correrlo-localmente)
-8. [Decisiones de seguridad](#-decisiones-de-seguridad-implementadas)
-9. [Roadmap](#-posibles-mejoras-a-futuro)
-10. [Licencia y contacto](#-licencia-y-contacto)
+7. [Cambios recientes](#-cambios-recientes)
+8. [Cómo correrlo localmente](#-cómo-correrlo-localmente)
+9. [Decisiones de seguridad](#-decisiones-de-seguridad-implementadas)
+10. [Roadmap](#-posibles-mejoras-a-futuro)
+11. [Licencia y contacto](#-licencia-y-contacto)
 
 ## 💡 Motivación y decisiones de diseño
 
@@ -76,6 +77,7 @@ También probé que el frontend muestre las butacas ya ocupadas (vía un DTO con
 - 🏷️ **Promociones automáticas**: al seleccionar butacas ya se muestra el total real, cuántas entradas se pagan, el ahorro y el total final, con la promoción que resulte más conveniente para esa fecha.
 - ✅ **Reserva de entradas** y pantalla de confirmación con el detalle.
 - 📖 **Historial de reservas** ("Mis compras") con opción de cancelar y liberar las butacas.
+- 🍿 **Candy y carrito** (`/candy`): catálogo de pochoclos, gaseosas, extras y combos con su imagen; se agregan a un carrito y se confirman como pedido, con pantalla de confirmación e historial en "Mis compras".
 - 👤 **Mi cuenta** con datos personales y cierre de sesión.
 
 **Para el administrador (Rol Admin)**
@@ -84,8 +86,9 @@ También probé que el frontend muestre las butacas ya ocupadas (vía un DTO con
 - 🕒 **Gestión de funciones**: crear, editar, finalizar y cancelar; evita solapadas en la misma sala y 3D en salas IMAX. Al crear una función solo se listan **películas activas**, y el precio se elige de un catálogo precargado.
 - 📆 **Programación semanal**: generar en una sola operación todas las ocurrencias de una función para varios días de la semana, en la **misma sala** y durante 1, 2, 4 u 8 semanas. Las fechas que chocan con otra función de la sala se omiten y se informan al admin en lugar de romper todo.
 - 💵 **Catálogo de precios editable** (`/admin/precios`): precio por formato y tipo de sala (2D, 3D, 4D e IMAX) con guardado inmediato. Alimenta automáticamente el precio de las nuevas funciones.
-- 🎁 **Gestión de promociones** (`/admin/promociones`): alta, edición, activación y borrado de promociones configurables, indicando en la tabla cuáles están vigentes y cuáles applies.
+- 🎁 **Gestión de promociones** (`/admin/promociones`): alta, edición, activación y borrado de promociones configurables, indicando en la tabla cuáles están vigentes y cuáles aplican.
 - 🏷️ **Gestión de salas** (con butacas generadas por tamaño: estándar e IMAX).
+- 🍿 **Gestión de Candy** (`/admin/candy`): alta, edición, activación y borrado de productos (pochoclos, gaseosas, extras y combos), cada uno con su imagen.
 - 📋 **Panel de reservas**: filtros por sala, función y estado, búsqueda por cliente o película.
 - 👥 **Panel de usuarios**: búsqueda, filtros por rol/estado y detalle de sus reservas.
 - 🔑 **Registro de administradores** (solo un admin existente puede crear otro).
@@ -123,7 +126,7 @@ También probé que el frontend muestre las butacas ya ocupadas (vía un DTO con
 
 ### Testing / Herramientas
 - **xUnit 2.6.6** en el proyecto `Cinemon.Tests` (net8.0), con `Microsoft.NET.Test.Sdk`, Coverlet y EF Core SQLite. Los tests usan **SQLite real** (archivo temporal) y no el provider `InMemory` a propósito: `InMemory` ignora índices únicos y bloqueos entre escrituras, que es justamente lo que hay que verificar en la reserva de butacas.
-- **Qué se cubre (91 casos)**: reglas de dominio de promociones (NxM, porcentaje, vigencia, días, activación) y elección del mejor descuento; flujo completo de `CrearReserva` (validaciones, precio de catálogo, promoción aplicable, cancelación); concurrencia de reservas; y handlers de `CrearFuncion` / `CrearProgramacion`.
+- **Qué se cubre (130 casos)**: reglas de dominio de promociones (NxM, porcentaje, vigencia, días, activación) y elección del mejor descuento; flujo completo de `CrearReserva` (validaciones, precio de catálogo, promoción aplicable, cancelación); concurrencia de reservas; handlers de `CrearFuncion` / `CrearProgramacion`; productos y pedidos de Candy; y la vinculación de pósters de TMDB.
 - **Concurrencia de verdad**: los tests lanzan N reservas simultáneas sobre la misma butaca y verifican que **gana exactamente una** y que la transacción perdedora no deja butacas sueltas. Para soltar las tareas al mismo tiempo se usa una compuerta asíncrona (`TaskCompletionSource`) en lugar de `Barrier.SignalAndWait()`, que bloquea el hilo y hace deadlock con el sincronizador de xUnit.
 - **Swagger** como documentación interactiva de la API.
 - **`dotnet user-secrets`** para los secretos locales (no hay claves en el repo).
@@ -278,8 +281,6 @@ Cinemon.sln
 ### Usuarios
 ![Usuarios](docs/screenshots/ver_usuarios.png)
 
-### Salas — todavía no se ha implementado nada
-
 ### Cartelera nueva
 ![Cartelera nueva](docs/screenshots/en_cartelera.png)
 
@@ -298,8 +299,6 @@ Cinemon.sln
 ### Próximos estrenos
 ![Próximos estrenos](docs/screenshots/prox_estrenos.png)
 
-### Candy — todavía no se ha implementado nada
-
 ## 🆕 Actualización de interfaz
 
 Después de la primera versión del panel y del flujo de reserva se renovaron varias pantallas. La galería anterior se conserva como registro de la interfaz original; esta es la versión actual.
@@ -310,6 +309,7 @@ Después de la primera versión del panel y del flujo de reserva se renovaron va
 - 🎞️ Cartelera rediseñada y detalle de película con la información sobre fondo claro.
 - 🏷️ Total con la promoción aplicada calculado por el servidor durante la selección de butacas: cuántas entradas se pagan, cuánto se ahorra y el total final.
 - 🎟️ Selección de función con precio, formato e idioma por función.
+- 🍿 Nueva página de Candy (`/candy`) con catálogo, carrito y confirmación del pedido, integrada al flujo de compra.
 
 **Para el administrador**
 
@@ -318,6 +318,7 @@ Después de la primera versión del panel y del flujo de reserva se renovaron va
 - 🎁 Nueva pantalla de promociones (`/admin/promociones`) para crear, editar, activar y eliminar promociones por tipo, días y vigencia.
 - 🎬 El alta de funciones ahora lista solo películas activas y toma el precio del catálogo en lugar de escribirlo a mano.
 - 🏷️ Gestión de salas con su butacaera.
+- 🍿 Nueva pantalla de gestión de Candy (`/admin/candy`) con imagen por producto.
 - 📊 Panel de administración con acceso directo a las nuevas secciones.
 
 ### Inicio
@@ -340,6 +341,33 @@ Después de la primera versión del panel y del flujo de reserva se renovaron va
 
 ### Panel de administración
 ![Panel admin nuevo](docs/screenshots/panel_nuevo.png)
+
+### Panel de administración (versión actual)
+![Admin nuevo](docs/screenshots/Admin_nuevo.png)
+
+### Promociones (admin)
+![Promociones](docs/screenshots/Promociones.png)
+
+### Gestión de Candy (admin)
+![Candy admin](docs/screenshots/Candy_admin.png)
+
+### Candy
+![Candy](docs/screenshots/Candy.png)
+
+### Agregando productos de Candy al carrito
+![Agregando Candy](docs/screenshots/Agregando_Candy.png)
+
+### Finalizando la compra del carrito
+![Finalizando carrito](docs/screenshots/Finalizando_Carrito.png)
+
+### Pedido de Candy confirmado
+![Candy confirmado](docs/screenshots/Candy_Confirmado.png)
+
+### Mis compras con Candy
+![Mis compras Candy](docs/screenshots/Mis_Compras_candy.png)
+
+### Carrito vacío
+![Carrito vacío](docs/Candy/Carrito_vacio.png)
 
 ## 🆕 Cambios recientes
 
@@ -432,7 +460,7 @@ Sin entrar en detalles explotables, el sistema parte de una base sólida en mate
 
 ## 🗺️ Posibles mejoras a futuro
 
-- ~~**Tests automatizados** (xUnit)~~ ✅ hecho: suite `Cinemon.Tests` con 91 casos (dominio, handlers y concurrencia de reservas con SQLite real).
+- ~~**Tests automatizados** (xUnit)~~ ✅ hecho: suite `Cinemon.Tests` con 130 casos (dominio, handlers y concurrencia de reservas con SQLite real).
 - ~~**Promociones configurables**~~ ✅ hecho: promociones como datos (`vigencia`, `días`, `porcentaje` o `NxM`) con CRUD en `/admin/promociones` y motor que elige el mejor descuento.
 - **Acotar el rango de las promociones**: hoy la vigencia se define por día (`FechaDesde` / `FechaHasta`) y no por franja horaria, así que una promoción 2x1 aplica a todas las funciones de ese día.
 - **Reglas de acumulación**: si en el futuro se quiere permitir más de una promoción por vez (por ejemplo 2x1 + descuento por membresía), el motor hoy elige una sola.
