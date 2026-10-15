@@ -32,7 +32,8 @@ namespace Cinemon.Application.Candy.Productos.Commands.CrearProductoCandy
                 request.Descripcion,
                 request.Precio,
                 request.Categoria,
-                componentes.Items);
+                componentes.Items,
+                request.ImagenUrl);
 
             producto.ValidarPrecioCombo(componentes.Suma);
 

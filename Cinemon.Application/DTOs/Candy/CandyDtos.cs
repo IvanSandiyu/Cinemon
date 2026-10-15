@@ -17,6 +17,7 @@ namespace Cinemon.Application.DTOs.Candy
         decimal Precio,
         int Categoria,
         bool Activo,
+        string? ImagenUrl,
         IReadOnlyCollection<ComponenteComboDto> Componentes);
 
     public sealed record ComponenteComboRequest(
@@ -28,6 +29,7 @@ namespace Cinemon.Application.DTOs.Candy
         string? Descripcion,
         decimal Precio,
         CategoriaCandy Categoria,
+        string? ImagenUrl,
         IReadOnlyCollection<ComponenteComboRequest> Componentes);
 
     public sealed record ActualizarProductoCandyRequest(
@@ -35,6 +37,7 @@ namespace Cinemon.Application.DTOs.Candy
         string? Descripcion,
         decimal Precio,
         CategoriaCandy Categoria,
+        string? ImagenUrl,
         IReadOnlyCollection<ComponenteComboRequest> Componentes);
 
     public sealed record PedidoCandyItemDto(

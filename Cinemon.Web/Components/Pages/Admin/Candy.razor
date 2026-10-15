@@ -65,6 +65,19 @@
                               @onchange="e => _descripcion = e.Value?.ToString() ?? string.Empty"></textarea>
                 </div>
 
+                <div class="admin-form-field">
+                    <label>Imagen (URL)</label>
+
+                    <input type="text"
+                           placeholder="Ej: img/candy/Combo_Clasico.png"
+                           value="@_imagenUrl"
+                           @onchange="e => _imagenUrl = e.Value?.ToString() ?? string.Empty" />
+
+                    <span class="admin-field-hint">
+                        Ruta relativa o URL de la imagen del producto. Opcional.
+                    </span>
+                </div>
+
                 <div class="admin-form-row">
 
                     <div class="admin-form-field">
@@ -304,6 +317,7 @@
     private string _descripcion = string.Empty;
     private decimal _precio = 1m;
     private int _categoria = 1;
+    private string _imagenUrl = string.Empty;
 
     private List<ComponenteComboRequest> _componentes = [];
     private int _componenteSeleccionado;
@@ -354,6 +368,7 @@
         _descripcion = producto.Descripcion ?? string.Empty;
         _precio = producto.Precio;
         _categoria = producto.Categoria;
+        _imagenUrl = producto.ImagenUrl ?? string.Empty;
 
         _componentes = producto.Componentes
             .Select(x => new ComponenteComboRequest(x.ProductoId, x.Cantidad))
@@ -372,6 +387,7 @@
         _descripcion = string.Empty;
         _precio = 1m;
         _categoria = 1;
+        _imagenUrl = string.Empty;
         _componentes = [];
         _componenteSeleccionado = 0;
         _componenteCantidad = 1;
@@ -416,6 +432,8 @@
         try {
             var componentes = _categoria == 3 ? _componentes : [];
 
+            var imagenUrl = string.IsNullOrWhiteSpace(_imagenUrl) ? null : _imagenUrl.Trim();
+
             (bool ok, string? error) resultado;
 
             if (_editando is null) {
@@ -425,6 +443,7 @@
                         _descripcion,
                         _precio,
                         _categoria,
+                        imagenUrl,
                         componentes));
             } else {
                 resultado = await CandyService.ActualizarAsync(
@@ -434,6 +453,7 @@
                         _descripcion,
                         _precio,
                         _categoria,
+                        imagenUrl,
                         componentes));
             }
 

@@ -70,7 +70,8 @@ namespace Cinemon.Api.Endpoints.Candy
                     request.Descripcion,
                     request.Precio,
                     request.Categoria,
-                    request.Componentes),
+                    request.Componentes,
+                    request.ImagenUrl),
                 cancellationToken);
 
             return Results.Created($"/api/productos-candy/{id}", new { id });
@@ -89,7 +90,8 @@ namespace Cinemon.Api.Endpoints.Candy
                     request.Descripcion,
                     request.Precio,
                     request.Categoria,
-                    request.Componentes),
+                    request.Componentes,
+                    request.ImagenUrl),
                 cancellationToken);
 
             return Results.NoContent();

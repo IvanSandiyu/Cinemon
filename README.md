@@ -115,7 +115,7 @@ También probé que el frontend muestre las butacas ya ocupadas (vía un DTO con
 
 ### Base de datos — `Cinemon.Infrastructure`
 - **SQL Server** con **Entity Framework Core 8.0.28** (`Microsoft.EntityFrameworkCore.SqlServer`).
-- Migraciones EF (`InitialMigration` → `AddPeliculaGenero` → `AddUsuarioPasswordHash` → `AddTmdbId` → `AddTmdbPosterAndBackdropPaths` → `AddPrecios`).
+- Migraciones EF (`InitialMigration` → `AddPeliculaGenero` → `AddUsuarioPasswordHash` → `AddTmdbId` → `AddTmdbPosterAndBackdropPaths` → `AddPrecios` → `AddPromociones` → `AddCandy` → `AddTmdbTrailerKey` → `AddPeliculaPosters` → `AddProductoCandyImagen`).
 - Seed inicial: 5 géneros, 4 salas (2 estándar + 1 estándar grande + 1 IMAX) y sus butacas (80, 120, 150 y 220), más el catálogo de precios por formato y tipo de sala (2D estándar, 3D estándar, 4D estándar e IMAX). El seed de precios es idempotente, así que no pisa ajustes hechos por el admin.
 
 ### Integraciones externas
@@ -340,6 +340,15 @@ Después de la primera versión del panel y del flujo de reserva se renovaron va
 
 ### Panel de administración
 ![Panel admin nuevo](docs/screenshots/panel_nuevo.png)
+
+## 🆕 Cambios recientes
+
+Últimas mejoras incorporadas al proyecto:
+
+- **Afiches de TMDB persistidos en la base**: cada película ahora guarda sus pósters de TMDB (entidad `PeliculaPoster`). Se obtienen del endpoint `/movie/{id}/images` **sin filtro de idioma** (con `language=es-AR` el bloque de imágenes viene vacío), y al vincular/actualizar una película desde TMDB se reemplazan los pósters existentes. Migración `AddPeliculaPosters`.
+- **Imágenes de Candy guardadas en la base de datos**: `ProductosCandy` sumó la columna `ImagenUrl` (ruta relativa a `wwwroot`, p. ej. `img/candy/Combo_Clasico.png`). El alta/edición desde `/admin/candy` incluye el campo de imagen y la página pública `/candy` la muestra (con un mapeo por nombre como respaldo). Se agregó además el combo **Combo Balde Pareja** (balde familiar + 2 gaseosas medianas, $15.900). Migración `AddProductoCandyImagen`, que incluye el backfill de imágenes y el alta del combo nuevo en bases existentes (seguro en bases nuevas: el seed lo crea después).
+- **Panel blanco a ancho completo** en `/candy` y `/proximos-estrenos`, en línea con el estilo claro de la cartelera.
+- **Ajuste de UI en `/admin/funciones`**: la columna **Estado** (badge + acciones de fila) quedó centrada.
 
 ## 🚀 Cómo correrlo localmente
 

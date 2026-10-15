@@ -33,6 +33,7 @@ namespace Cinemon.Application.Candy.Productos.Queries.ObtenerProductosCandy
                 x.Precio,
                 (int)x.Categoria,
                 x.Activo,
+                x.ImagenUrl,
                 x.Componentes
                     .OrderBy(c => c.Componente!.Nombre)
                     .Select(c => new ComponenteComboDto(

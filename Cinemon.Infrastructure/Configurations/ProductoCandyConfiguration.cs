@@ -19,6 +19,9 @@ namespace Cinemon.Infrastructure.Configurations
             builder.Property(x => x.Descripcion)
                 .HasMaxLength(500);
 
+            builder.Property(x => x.ImagenUrl)
+                .HasMaxLength(500);
+
             builder.Property(x => x.Precio)
                 .IsRequired()
                 .HasPrecision(10, 2);

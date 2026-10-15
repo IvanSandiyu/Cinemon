@@ -11,5 +11,6 @@ namespace Cinemon.Application.Candy.Productos.Commands.ActualizarProductoCandy
         string? Descripcion,
         decimal Precio,
         CategoriaCandy Categoria,
-        IReadOnlyCollection<ComponenteComboRequest>? Componentes) : IRequest<Unit>;
+        IReadOnlyCollection<ComponenteComboRequest>? Componentes,
+        string? ImagenUrl = null) : IRequest<Unit>;
 }

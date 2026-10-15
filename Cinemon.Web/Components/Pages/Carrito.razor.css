@@ -24,7 +24,8 @@
 }
 
 .carrito-title {
-    color: #E7F3F2;
+    /*color: #7BC6C9;*/
+    color: #243942;
     font-size: 2rem;
     font-weight: 800;
     margin: 0 0 0.3rem;
@@ -45,7 +46,8 @@
     padding: 4rem 1rem;
     border: 1px dashed rgba(30, 111, 125, 0.7);
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.02);
+    /*background: rgba(79, 128, 131, 0.8);*/
+    background-color: #F1F7F8;
     text-align: center;
 }
 
@@ -54,12 +56,13 @@
     color: #1E6F7D;
 }
 
-.carrito-vacio h3 {
-    color: #E7F3F2;
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin: 0;
-}
+    .carrito-vacio h3 {
+        /*color: #E7F3F2;*/
+        color: #243942;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0;
+    }
 
 .carrito-vacio p {
     color: #8AB8BB;

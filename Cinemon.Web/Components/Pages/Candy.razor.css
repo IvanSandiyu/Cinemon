@@ -55,10 +55,10 @@
     font-size: 0.9rem;
 }
 
-.candy-carrito-info .material-icons {
-    font-size: 1.15rem;
-    color: #1E6F7D;
-}
+    .candy-carrito-info .material-icons {
+        font-size: 1.15rem;
+        color: #1E6F7D;
+    }
 
 .candy-carrito-total {
     color: #1E6F7D;
@@ -77,10 +77,10 @@
     transition: background-color 0.2s ease;
 }
 
-.candy-carrito-ir:hover {
-    background: #7BC6C9;
-    color: #08121A;
-}
+    .candy-carrito-ir:hover {
+        background: #7BC6C9;
+        color: #08121A;
+    }
 
 /* ===== Filtros ===== */
 .candy-filtros {
@@ -102,17 +102,17 @@
     transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.candy-filtro:hover {
-    color: #0F2D3A;
-    border-color: rgba(30, 111, 125, 0.5);
-}
+    .candy-filtro:hover {
+        color: #0F2D3A;
+        border-color: rgba(30, 111, 125, 0.5);
+    }
 
-.candy-filtro.activo {
-    background: linear-gradient(135deg, #0F2D3A, #1E6F7D);
-    border-color: transparent;
-    color: #FFFFFF;
-    box-shadow: 0 4px 12px rgba(30, 111, 125, 0.35);
-}
+    .candy-filtro.activo {
+        background: linear-gradient(135deg, #0F2D3A, #1E6F7D);
+        border-color: transparent;
+        color: #FFFFFF;
+        box-shadow: 0 4px 12px rgba(30, 111, 125, 0.35);
+    }
 
 /* ===== Aviso de producto agregado ===== */
 .candy-toast {
@@ -128,20 +128,20 @@
     font-size: 0.88rem;
 }
 
-.candy-toast .material-icons {
-    font-size: 1.1rem;
-}
+    .candy-toast .material-icons {
+        font-size: 1.1rem;
+    }
 
-.candy-toast a {
-    margin-left: auto;
-    color: #1E6F7D;
-    font-weight: 700;
-    text-decoration: none;
-}
+    .candy-toast a {
+        margin-left: auto;
+        color: #1E6F7D;
+        font-weight: 700;
+        text-decoration: none;
+    }
 
-.candy-toast a:hover {
-    color: #0F2D3A;
-}
+        .candy-toast a:hover {
+            color: #0F2D3A;
+        }
 
 /* ===== Grid de productos ===== */
 .candy-grid {
@@ -158,15 +158,75 @@
     border: 1px solid #DEE8EB;
     border-radius: 16px;
     background: #FFFFFF;
+    overflow: hidden; /* recorta la imagen con el borde redondeado */
     transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.candy-tarjeta:hover {
-    transform: translateY(-3px);
-    border-color: rgba(30, 111, 125, 0.45);
-    box-shadow: 0 10px 24px rgba(8, 18, 26, 0.1);
+    .candy-tarjeta:hover {
+        transform: translateY(-3px);
+        border-color: rgba(30, 111, 125, 0.45);
+        box-shadow: 0 10px 24px rgba(8, 18, 26, 0.1);
+    }
+
+/* ===== Imagen del producto ===== */
+.candy-imagen {
+    /* sangra hasta los bordes de la tarjeta (anula el padding de 1.1rem) */
+    margin: -1.1rem -1.1rem 0.4rem;
+    aspect-ratio: 4 / 3;
+    border-radius: 0;
+    overflow: hidden;
+    background: #0F2D3A; /* tono oscuro por si la imagen tarda en cargar */
 }
 
+    .candy-imagen img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* llena toda la caja, sin franjas */
+        object-position: center 40%;
+        display: block;
+        transition: transform 0.3s ease;
+    }
+
+.candy-tarjeta:hover .candy-imagen img {
+    transform: scale(1.05);
+}
+
+/* Placeholder para productos sin foto */
+.candy-imagen-vacia {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #EAF5F6;
+    color: #1E6F7D;
+}
+
+    .candy-imagen-vacia .material-icons {
+        font-size: 3.2rem;
+        opacity: 0.85;
+    }
+
+    .candy-imagen-vacia svg {
+        width: 56px;
+        height: 56px;
+        opacity: 0.85;
+    }
+
+    .candy-imagen-vacia.candy-ico-combo {
+        background: #FFF4DC;
+        color: #B7791F;
+    }
+
+    .candy-imagen-vacia.candy-ico-gaseosa {
+        background: #EAF1FF;
+        color: #2563EB;
+    }
+
+    .candy-imagen-vacia.candy-ico-extra {
+        background: #F2EAFE;
+        color: #7C3AED;
+    }
+
+/* ===== Cabecera de la tarjeta ===== */
 .candy-tarjeta-head {
     display: flex;
     align-items: center;
@@ -184,9 +244,9 @@
     color: #1E6F7D;
 }
 
-.candy-ico .material-icons {
-    font-size: 1.15rem;
-}
+    .candy-ico .material-icons {
+        font-size: 1.15rem;
+    }
 
 .candy-ico-combo {
     background: #FFF4DC;
@@ -239,18 +299,18 @@
     gap: 0.3rem;
 }
 
-.candy-componentes li {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    color: #33444D;
-    font-size: 0.78rem;
-}
+    .candy-componentes li {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: #33444D;
+        font-size: 0.78rem;
+    }
 
-.candy-componentes .material-icons {
-    font-size: 0.95rem;
-    color: #1E6F7D;
-}
+    .candy-componentes .material-icons {
+        font-size: 0.95rem;
+        color: #1E6F7D;
+    }
 
 /* ===== Pie: precio + acción ===== */
 .candy-pie {
@@ -284,18 +344,18 @@
     transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
-.candy-agregar .material-icons {
-    font-size: 1rem;
-}
+    .candy-agregar .material-icons {
+        font-size: 1rem;
+    }
 
-.candy-agregar:hover {
-    background: #7BC6C9;
-    color: #08121A;
-}
+    .candy-agregar:hover {
+        background: #7BC6C9;
+        color: #08121A;
+    }
 
-.candy-agregar:active {
-    transform: scale(0.97);
-}
+    .candy-agregar:active {
+        transform: scale(0.97);
+    }
 
 /* ===== Vacío ===== */
 .candy-vacio {
@@ -310,23 +370,23 @@
     text-align: center;
 }
 
-.candy-vacio .material-icons {
-    font-size: 2.4rem;
-    color: #1E6F7D;
-}
+    .candy-vacio .material-icons {
+        font-size: 2.4rem;
+        color: #1E6F7D;
+    }
 
-.candy-vacio h3 {
-    color: #0F2D3A;
-    font-size: 1.05rem;
-    font-weight: 700;
-    margin: 0;
-}
+    .candy-vacio h3 {
+        color: #0F2D3A;
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin: 0;
+    }
 
-.candy-vacio p {
-    color: #5A6B74;
-    font-size: 0.88rem;
-    margin: 0;
-}
+    .candy-vacio p {
+        color: #5A6B74;
+        font-size: 0.88rem;
+        margin: 0;
+    }
 
 @media (max-width: 576px) {
     .candy-page {

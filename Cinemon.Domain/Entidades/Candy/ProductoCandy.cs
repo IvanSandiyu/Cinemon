@@ -22,6 +22,8 @@ namespace Cinemon.Domain.Entidades.Candy
 
         public DateTime FechaCreacion { get; private set; }
 
+        public string? ImagenUrl { get; private set; }
+
         public ICollection<ProductoComboItem> Componentes { get; private set; } = [];
 
         private ProductoCandy()
@@ -33,9 +35,10 @@ namespace Cinemon.Domain.Entidades.Candy
             string? descripcion,
             decimal precio,
             CategoriaCandy categoria,
-            IEnumerable<ProductoComboItem>? componentes = null)
+            IEnumerable<ProductoComboItem>? componentes = null,
+            string? imagenUrl = null)
         {
-            Setear(nombre, descripcion, precio, categoria);
+            Setear(nombre, descripcion, precio, categoria, imagenUrl);
             ArmarComponentes(categoria, componentes);
 
             Activo = true;
@@ -47,9 +50,10 @@ namespace Cinemon.Domain.Entidades.Candy
             string? descripcion,
             decimal precio,
             CategoriaCandy categoria,
-            IEnumerable<ProductoComboItem>? componentes = null)
+            IEnumerable<ProductoComboItem>? componentes = null,
+            string? imagenUrl = null)
         {
-            Setear(nombre, descripcion, precio, categoria);
+            Setear(nombre, descripcion, precio, categoria, imagenUrl);
             ArmarComponentes(categoria, componentes);
         }
 
@@ -79,7 +83,8 @@ namespace Cinemon.Domain.Entidades.Candy
             string nombre,
             string? descripcion,
             decimal precio,
-            CategoriaCandy categoria)
+            CategoriaCandy categoria,
+            string? imagenUrl)
         {
             if (string.IsNullOrWhiteSpace(nombre))
                 throw new BusinessRuleException("El producto debe tener un nombre.");
@@ -96,10 +101,14 @@ namespace Cinemon.Domain.Entidades.Candy
             if (descripcion is not null && descripcion.Trim().Length > 500)
                 throw new BusinessRuleException("La descripción no puede superar los 500 caracteres.");
 
+            if (imagenUrl is not null && imagenUrl.Trim().Length > 500)
+                throw new BusinessRuleException("La imagen del producto no puede superar los 500 caracteres.");
+
             Nombre = nombre.Trim();
             Descripcion = descripcion?.Trim();
             Precio = precio;
             Categoria = categoria;
+            ImagenUrl = string.IsNullOrWhiteSpace(imagenUrl) ? null : imagenUrl.Trim();
         }
 
         private void ArmarComponentes(

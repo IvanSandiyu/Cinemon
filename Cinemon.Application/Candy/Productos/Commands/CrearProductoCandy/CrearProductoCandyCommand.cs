@@ -10,5 +10,6 @@ namespace Cinemon.Application.Candy.Productos.Commands.CrearProductoCandy
         string? Descripcion,
         decimal Precio,
         CategoriaCandy Categoria,
-        IReadOnlyCollection<ComponenteComboRequest>? Componentes) : IRequest<int>;
+        IReadOnlyCollection<ComponenteComboRequest>? Componentes,
+        string? ImagenUrl = null) : IRequest<int>;
 }

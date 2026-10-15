@@ -98,14 +98,14 @@ namespace Cinemon.Infrastructure.Seed
 
             var simples = new List<ProductoCandy>
         {
-            new("Pochoclo Individual", "Porción chica de 45 g, recién reventada.", 4500m, CategoriaCandy.Pochoclo),
-            new("Pochoclo Grande", "Porción grande de 80 g, para pasar el rato.", 6500m, CategoriaCandy.Pochoclo),
-            new("Balde de Pochoclo Familiar", "Balde de 160 g con tapa, ideal para compartir.", 9500m, CategoriaCandy.Pochoclo),
-            new("Gaseosa Chica", "Botella de 355 ml.", 3000m, CategoriaCandy.Gaseosa),
-            new("Gaseosa Mediana", "Botella de 555 ml.", 4200m, CategoriaCandy.Gaseosa),
-            new("Gaseosa Grande", "Botella de 710 ml.", 5500m, CategoriaCandy.Gaseosa),
-            new("Nachos con Queso", "Nachos crocantes con cheddar cremoso.", 5500m, CategoriaCandy.Extra),
-            new("Agua Mineral", "Botella de 500 ml sin gas.", 2500m, CategoriaCandy.Extra)
+            new("Pochoclo Individual", "Porción chica de 45 g, recién reventada.", 4500m, CategoriaCandy.Pochoclo, imagenUrl: "img/candy/Pochoclo_Individual.png"),
+            new("Pochoclo Grande", "Porción grande de 80 g, para pasar el rato.", 6500m, CategoriaCandy.Pochoclo, imagenUrl: "img/candy/Pochoclo_Clasico.png"),
+            new("Balde de Pochoclo Familiar", "Balde de 160 g con tapa, ideal para compartir.", 9500m, CategoriaCandy.Pochoclo, imagenUrl: "img/candy/Balde_Familiar.png"),
+            new("Gaseosa Chica", "Botella de 355 ml.", 3000m, CategoriaCandy.Gaseosa, imagenUrl: "img/candy/Vaso_Mediano.png"),
+            new("Gaseosa Mediana", "Botella de 555 ml.", 4200m, CategoriaCandy.Gaseosa, imagenUrl: "img/candy/Vaso_Mediano.png"),
+            new("Gaseosa Grande", "Botella de 710 ml.", 5500m, CategoriaCandy.Gaseosa, imagenUrl: "img/candy/Vaso_Grande.png"),
+            new("Nachos con Queso", "Nachos crocantes con cheddar cremoso.", 5500m, CategoriaCandy.Extra, imagenUrl: "img/candy/NachosConQueso.png"),
+            new("Agua Mineral", "Botella de 500 ml sin gas.", 2500m, CategoriaCandy.Extra, imagenUrl: "img/candy/Agua.jpg")
         };
 
             context.ProductosCandy.AddRange(simples);
@@ -120,6 +120,7 @@ namespace Cinemon.Infrastructure.Seed
                 "Combo Clásico",
                 "Pochoclo grande con gaseosa mediana.",
                 9200m,
+                "img/candy/Combo_Clasico.png",
                 productosPorNombre,
                 ("Pochoclo Grande", 1),
                 ("Gaseosa Mediana", 1)),
@@ -127,6 +128,7 @@ namespace Cinemon.Infrastructure.Seed
                 "Combo Pareja",
                 "Dos pochoclos grandes con dos gaseosas medianas.",
                 18500m,
+                "img/candy/Combo_Pareja.png",
                 productosPorNombre,
                 ("Pochoclo Grande", 2),
                 ("Gaseosa Mediana", 2)),
@@ -134,9 +136,18 @@ namespace Cinemon.Infrastructure.Seed
                 "Combo Familiar",
                 "Balde de pochoclo familiar con cuatro gaseosas chicas.",
                 18900m,
+                "img/candy/Combo_Familiar.png",
                 productosPorNombre,
                 ("Balde de Pochoclo Familiar", 1),
-                ("Gaseosa Chica", 4))
+                ("Gaseosa Chica", 4)),
+            CrearCombo(
+                "Combo Balde Pareja",
+                "Balde de pochoclo familiar con dos gaseosas medianas.",
+                15900m,
+                "img/candy/Combo_Pareja2.png",
+                productosPorNombre,
+                ("Balde de Pochoclo Familiar", 1),
+                ("Gaseosa Mediana", 2))
         };
 
             context.ProductosCandy.AddRange(combos);
@@ -148,6 +159,7 @@ namespace Cinemon.Infrastructure.Seed
             string nombre,
             string? descripcion,
             decimal precio,
+            string imagenUrl,
             IReadOnlyDictionary<string, ProductoCandy> productos,
             params (string Producto, int Cantidad)[] componentes)
         {
@@ -160,7 +172,8 @@ namespace Cinemon.Infrastructure.Seed
                 descripcion,
                 precio,
                 CategoriaCandy.Combo,
-                items);
+                items,
+                imagenUrl);
 
             var sumaComponentes = componentes
                 .Sum(x => productos[x.Producto].Precio * x.Cantidad);

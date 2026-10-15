@@ -23,6 +23,10 @@ namespace Cinemon.Application.Candy.Productos.Commands.ActualizarProductoCandy
                 .MaximumLength(500)
                 .WithMessage("La descripción no puede superar los 500 caracteres.");
 
+            RuleFor(x => x.ImagenUrl)
+                .MaximumLength(500)
+                .WithMessage("La imagen del producto no puede superar los 500 caracteres.");
+
             RuleFor(x => x.Precio)
                 .GreaterThan(0)
                 .WithMessage("El precio del producto debe ser mayor a cero.");
