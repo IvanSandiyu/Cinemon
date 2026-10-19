@@ -45,6 +45,10 @@
 
     </div>
 
+    @if (!string.IsNullOrWhiteSpace(_error)) {
+        <p class="admin-form-error">@_error</p>
+    }
+
     @if (_cargando) {
         <div class="d-flex justify-content-center py-5">
             <RadzenProgressBarCircular Indeterminate="true" />
@@ -158,6 +162,24 @@
                                             <span class="material-icons">edit</span>
                                         </button>
 
+                                        @if (funcion.EstadoFuncion == 1) {
+                                            @if (funcion.FechaHoraInicio <= DateTime.Now) {
+                                                <button type="button"
+                                                        class="admin-row-action"
+                                                        title="Finalizar función"
+                                                        @onclick="() => FinalizarFuncion(funcion)">
+                                                    <span class="material-icons">task_alt</span>
+                                                </button>
+                                            }
+
+                                            <button type="button"
+                                                    class="admin-row-action"
+                                                    title="Cancelar función"
+                                                    @onclick="() => CancelarFuncion(funcion)">
+                                                <span class="material-icons">cancel</span>
+                                            </button>
+                                        }
+
                                     </div>
                                 </td>
                             </tr>
@@ -184,6 +206,7 @@
     private bool _cargando = true;
 
     private string _busqueda = string.Empty;
+    private string? _error;
     private FiltroFunciones _filtro = FiltroFunciones.Todas;
 
     private IEnumerable<FuncionDto> FuncionesFiltradas =>
@@ -293,6 +316,65 @@
     {
         Navigation.NavigateTo($"/admin/funciones/editar/{id}");
     }
+
+    private async Task FinalizarFuncion(FuncionDto funcion)
+    {
+        _error = null;
+
+        var (ok, error) = await FuncionService.FinalizarAsync(funcion.Id);
+
+        if (!ok) {
+            _error = ObtenerMensajeError(error);
+            return;
+        }
+
+        await CargarFunciones();
+    }
+
+    private async Task CancelarFuncion(FuncionDto funcion)
+    {
+        _error = null;
+
+        var (ok, error) = await FuncionService.CancelarAsync(funcion.Id);
+
+        if (!ok) {
+            _error = ObtenerMensajeError(error);
+            return;
+        }
+
+        await CargarFunciones();
+    }
+
+    private static string ObtenerMensajeError(string? respuesta)
+    {
+        if (string.IsNullOrWhiteSpace(respuesta))
+            return "No se pudo actualizar la función.";
+
+        try {
+            var problema = System.Text.Json.JsonSerializer.Deserialize<
+                ApiProblemDetails>(respuesta);
+
+            if (problema?.Errors is not null) {
+                var mensajes = problema.Errors
+                    .SelectMany(x => x.Value)
+                    .Where(x => !string.IsNullOrWhiteSpace(x));
+
+                if (mensajes.Any())
+                    return string.Join(" ", mensajes);
+            }
+
+            return problema?.Detail ??
+                problema?.Title ??
+                "No se pudo actualizar la función.";
+        } catch {
+            return "No se pudo actualizar la función.";
+        }
+    }
+
+    private sealed record ApiProblemDetails(
+        string? Title,
+        string? Detail,
+        Dictionary<string, string[]>? Errors);
 
     private enum FiltroFunciones
     {

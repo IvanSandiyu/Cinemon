@@ -25,6 +25,8 @@ namespace Cinemon.Application.Abstractions
         Task AddAsync(Funcion funcion,CancellationToken cancellationToken);
 
         Task<Pelicula?> ObtenerPeliculaAsync(int peliculaId,CancellationToken cancellationToken);
+
+        Task<int> FinalizarVencidasAsync(DateTime ahora, CancellationToken cancellationToken);
         Task SaveChangesAsync(CancellationToken cancellationToken);
 
         Task UpdateAsync(Funcion funcion, CancellationToken cancellationToken);

@@ -90,6 +90,26 @@ namespace Cinemon.Infrastructure.Repositories
                     cancellationToken);
         }
 
+        public async Task<int> FinalizarVencidasAsync(DateTime ahora, CancellationToken cancellationToken)
+        {
+            // Una función está vencida cuando ya terminó: inicio + duración de la película <= ahora.
+            var vencidas = await (
+                from funcion in _context.Funciones
+                join pelicula in _context.Peliculas
+                    on funcion.PeliculaId equals pelicula.Id
+                where funcion.EstadoFuncion == EstadoFuncion.Programada
+                      && funcion.FechaHoraInicio.AddMinutes(pelicula.Duracion) <= ahora
+                select funcion
+            ).ToListAsync(cancellationToken);
+
+            foreach (var funcion in vencidas)
+                funcion.Finalizar(ahora);
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return vencidas.Count;
+        }
+
         public async Task SaveChangesAsync(CancellationToken cancellationToken)
         {
             await _context.SaveChangesAsync(cancellationToken);

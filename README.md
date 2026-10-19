@@ -180,7 +180,7 @@ Cinemon.sln
 │   ├── Exceptions/                  # BusinessRuleException, ConflictException, ...
 │   └── Interfaces/
 ├── Cinemon.Application/             # Casos de uso (CQRS + validación)
-│   ├── Abstractions/                # I*Repository, IUnitOfWork, ICurrentUserService
+│   ├── Abstractions/                # I*Repository, ICurrentUserService
 │   ├── Behaviors/                   # ValidationBehavior (pipeline / validation)
 │   ├── Commands + Queries por feature:
 │   │   ├── Funciones/  Peliculas/  Precios/  Reservas/  Usuarios/  Butacas/  Tmdb/

@@ -44,10 +44,13 @@ namespace Cinemon.Domain.Entidades.Funcion
             EstadoFuncion = EstadoFuncion.Cancelada;
         }
 
-        public void Finalizar()
+        public void Finalizar(DateTime ahora)
         {
             if (EstadoFuncion != EstadoFuncion.Programada)
                 throw new BusinessRuleException("Solo se pueden finalizar funciones programadas.");
+
+            if (FechaHoraInicio > ahora)
+                throw new BusinessRuleException("No se puede finalizar una función que todavía no comenzó.");
 
             EstadoFuncion = EstadoFuncion.Finalizada;
         }

@@ -16,11 +16,12 @@ namespace Cinemon.Application.Funciones.Commands.CrearProgramacion
         private readonly TimeProvider _timeProvider;
 
         public CrearProgramacionCommandHandler(IPeliculaRepository peliculaRepository,ISalaRepository salaRepository,
-            IFuncionRepository funcionRepository)
+            IFuncionRepository funcionRepository,TimeProvider timeProvider)
         {
             _peliculaRepository = peliculaRepository;
             _salaRepository = salaRepository;
             _funcionRepository = funcionRepository;
+            _timeProvider = timeProvider;
         }
 
         public async Task<CrearProgramacionResult> Handle(CrearProgramacionCommand request,

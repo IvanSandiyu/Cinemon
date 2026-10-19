@@ -23,7 +23,8 @@ namespace Cinemon.Tests.Application
             new(
                 new PeliculaRepository(_db.Context),
                 new SalaRepository(_db.Context),
-                new FuncionRepository(_db.Context));
+                new FuncionRepository(_db.Context),
+                TimeProvider.System);
 
         /// <summary>
         /// Empieza el lunes siguiente al anchor, para que todas las fechas

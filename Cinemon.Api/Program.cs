@@ -76,6 +76,9 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
+// Finaliza automáticamente las funciones vencidas cada pocos minutos.
+builder.Services.AddHostedService<FinalizarFuncionesVencidasService>();
+
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("JWT Key no configurada.");
 

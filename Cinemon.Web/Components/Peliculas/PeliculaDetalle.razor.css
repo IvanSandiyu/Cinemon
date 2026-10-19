@@ -141,7 +141,8 @@
 
 /* Tarjeta de función sobre fondo blanco */
 ::deep .cinemon-funcion-card {
-    background: #FFFFFF;
+    /*background: #FFFFFF;*/
+    background: #218091;
     border: 1px solid #0F2D3A;
     border-radius: 12px;
     padding: 0;

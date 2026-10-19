@@ -1,4 +1,5 @@
 ﻿using Cinemon.Application.Abstractions;
+using Cinemon.Application.Common;
 using Cinemon.Domain.Exceptions;
 using MediatR;
 using System;
@@ -12,10 +13,14 @@ namespace Cinemon.Application.Funciones.Commands.FinalizarFuncion
     public sealed class FinalizarFuncionCommandHandler: IRequestHandler<FinalizarFuncionCommand>
     {
         private readonly IFuncionRepository _funcionRepository;
+        private readonly TimeProvider _timeProvider;
 
-        public FinalizarFuncionCommandHandler(IFuncionRepository funcionRepository)
+        public FinalizarFuncionCommandHandler(
+            IFuncionRepository funcionRepository,
+            TimeProvider timeProvider)
         {
             _funcionRepository = funcionRepository;
+            _timeProvider = timeProvider;
         }
 
         public async Task Handle(FinalizarFuncionCommand request,CancellationToken cancellationToken)
@@ -28,7 +33,7 @@ namespace Cinemon.Application.Funciones.Commands.FinalizarFuncion
                 throw new NotFoundException(
                     "La función no existe.");
 
-            funcion.Finalizar();
+            funcion.Finalizar(_timeProvider.Ahora());
 
             await _funcionRepository.UpdateAsync(
                 funcion,

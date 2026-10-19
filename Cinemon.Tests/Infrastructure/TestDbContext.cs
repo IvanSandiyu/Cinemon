@@ -139,7 +139,7 @@ namespace Cinemon.Tests.Infrastructure
                     break;
 
                 case EstadoFuncion.Finalizada:
-                    funcion.Finalizar();
+                    funcion.Finalizar(fechaHoraInicio);
                     break;
             }
 

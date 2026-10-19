@@ -97,6 +97,40 @@ namespace Cinemon.Web.Services
             return (false, contenido);
         }
 
+        public async Task<(bool Ok, string? Error)> FinalizarAsync(int id)
+        {
+            AdjuntarToken();
+
+            var response = await _httpClient.PatchAsync(
+                $"api/funciones/{id}/finalizar",
+                null);
+
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            var contenido = await response.Content
+                .ReadAsStringAsync();
+
+            return (false, contenido);
+        }
+
+        public async Task<(bool Ok, string? Error)> CancelarAsync(int id)
+        {
+            AdjuntarToken();
+
+            var response = await _httpClient.PatchAsync(
+                $"api/funciones/{id}/cancelar",
+                null);
+
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            var contenido = await response.Content
+                .ReadAsStringAsync();
+
+            return (false, contenido);
+        }
+
         private sealed record FuncionCreadaResponse(int Id);
     }
 }
