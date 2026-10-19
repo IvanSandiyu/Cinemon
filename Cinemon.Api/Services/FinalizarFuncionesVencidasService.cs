@@ -9,7 +9,7 @@ namespace Cinemon.Api.Services
     /// </summary>
     public sealed class FinalizarFuncionesVencidasService : BackgroundService
     {
-        private static readonly TimeSpan Intervalo = TimeSpan.FromHours(6);
+        private static readonly TimeSpan Intervalo = TimeSpan.FromHours(3);
 
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger<FinalizarFuncionesVencidasService> _logger;

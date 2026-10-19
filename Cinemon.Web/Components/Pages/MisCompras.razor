@@ -13,7 +13,7 @@
 
 @if (_verificando) {
     <div class="compras-loading d-flex justify-content-center py-5">
-        <RadzenProgressBarCircular Indeterminate="true" />
+        <LogoLoader />
     </div>
 } else if (_autenticado) {
     <div class="compras-page">
@@ -44,7 +44,7 @@
 
         @if (_cargandoReservas) {
             <div class="d-flex justify-content-center py-5">
-                <RadzenProgressBarCircular Indeterminate="true" />
+                <LogoLoader />
             </div>
         } else if (_reservas.Count == 0) {
             <div class="compras-empty">
@@ -131,7 +131,7 @@
 
             @if (_cargandoPedidos) {
                 <div class="d-flex justify-content-center py-5">
-                    <RadzenProgressBarCircular Indeterminate="true" />
+                    <LogoLoader />
                 </div>
             } else if (_pedidos.Count == 0) {
                 <div class="compras-empty">

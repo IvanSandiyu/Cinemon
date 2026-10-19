@@ -38,7 +38,7 @@
 
     @if (_cargando) {
         <div class="d-flex justify-content-center py-5">
-            <RadzenProgressBarCircular Indeterminate="true" />
+            <LogoLoader />
         </div>
     } else {
         <div class="admin-toolbar">
@@ -152,7 +152,7 @@
 
                                             @if (_cargandoReservas) {
                                                 <div class="d-flex justify-content-center py-4">
-                                                    <RadzenProgressBarCircular Indeterminate="true" />
+                                                    <LogoLoader />
                                                 </div>
                                             } else if (ReservasDelUsuario.Count() == 0) {
                                                 <div class="user-reservas-empty">

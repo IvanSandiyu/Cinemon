@@ -30,7 +30,9 @@
         <div class="search-backdrop" @onclick="CerrarPanel" aria-hidden="true"></div>
 
         @if (_cargando) {
-            <div class="search-estado">Buscando películas...</div>
+            <div class="search-estado">
+                <LogoLoader CssClass="logo-loader--compacto" Texto="Buscando películas..." />
+            </div>
         }
         else if (!string.IsNullOrWhiteSpace(_texto) && _resultados.Count == 0) {
             <div class="search-estado">Sin resultados para "@_texto".</div>

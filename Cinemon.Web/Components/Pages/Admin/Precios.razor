@@ -33,7 +33,7 @@
     </div>
 
     @if (_cargando) {
-        <p class="precios-cargando">Cargando precios...</p>
+        <LogoLoader Texto="Cargando precios..." />
     }
     else if (_error is not null && _precios.Count == 0) {
         <p class="admin-form-error">@_error</p>

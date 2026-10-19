@@ -54,7 +54,7 @@
 
     @if (_cargando) {
         <div class="d-flex justify-content-center py-5">
-            <RadzenProgressBarCircular Indeterminate="true" />
+            <LogoLoader />
         </div>
     } else if (_error is not null) {
         <RadzenAlert AlertStyle="AlertStyle.Danger">@_error</RadzenAlert>

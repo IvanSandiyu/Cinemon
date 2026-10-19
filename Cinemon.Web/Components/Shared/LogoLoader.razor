@@ -1,0 +1,17 @@
+@* Indicador de carga reutilizable con el logo de Cinemon. *@
+
+<div class="logo-loader @CssClass" role="status" aria-live="polite" aria-label="Cargando">
+    <img src="img/logo-marca.png" alt="" class="logo-loader-img" />
+
+    @if (!string.IsNullOrWhiteSpace(Texto)) {
+        <span class="logo-loader-texto">@Texto</span>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string? Texto { get; set; }
+
+    [Parameter]
+    public string? CssClass { get; set; }
+}
