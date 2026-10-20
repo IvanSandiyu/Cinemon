@@ -1,6 +1,14 @@
 (function () {
     'use strict';
 
+    // Desplaza suavemente hacia un contenedor (usado al cambiar de página).
+    window.cinemonScrollIntoView = function (element) {
+        if (!element || typeof element.scrollIntoView !== 'function') return;
+
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        element.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    };
+
     // Respeta la preferencia de "reducir movimiento" del usuario
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 

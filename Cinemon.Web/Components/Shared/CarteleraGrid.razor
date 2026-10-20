@@ -2,8 +2,9 @@
 @using Cinemon.Web.Services
 @inject PeliculaApiService PeliculaService
 @inject FavoritosService Favoritos
+@inject IJSRuntime JS
 
-<div class="cartelera-seccion">
+<div class="cartelera-seccion" @ref="_seccionRef">
 
     <div class="cartelera-filtros">
 
@@ -37,7 +38,7 @@
     {
         <div class="row g-2 cartelera-grid">
 
-            @foreach (var (pelicula, index) in PelículasVisibles.Select((p, i) => (p, i)))
+            @foreach (var (pelicula, index) in PelículasDePagina.Select((p, i) => (p, i)))
             {
                 var posterUrl = pelicula.TmdbPosterUrl ?? pelicula.PosterUrl;
 
@@ -98,6 +99,11 @@
 
         </div>
 
+        <Paginador PaginaActual="_paginaActual"
+                   TotalPaginas="TotalPaginas"
+                   PaginaCambiada="CambiarPagina"
+                   AriaLabel="Paginación de cartelera" />
+
         @if (mostrarTrailer) {
             <div class="trailer-overlay"
                  @onclick="CerrarTrailer"
@@ -147,6 +153,9 @@
     private IReadOnlyCollection<PeliculaDto> _peliculas = [];
     private bool _cargando = true;
     private FiltroCartelera _filtroActual = FiltroCartelera.EnCartelera;
+    private const int TamanoPagina = 9;
+    private int _paginaActual = 1;
+    private ElementReference _seccionRef;
 
     private IReadOnlyCollection<PeliculaDto> PelículasVisibles => _filtroActual switch
     {
@@ -164,6 +173,14 @@
             .ToList(),
         _ => []
     };
+
+    private int TotalPaginas =>
+        Math.Max(1, (int)Math.Ceiling(PelículasVisibles.Count / (double)TamanoPagina));
+
+    private IEnumerable<PeliculaDto> PelículasDePagina =>
+        PelículasVisibles
+            .Skip((_paginaActual - 1) * TamanoPagina)
+            .Take(TamanoPagina);
 
     private string MensajeVacio => _filtroActual switch
     {
@@ -188,6 +205,7 @@
         {
             await Favoritos.CargarAsync();
             _peliculas = await PeliculaService.ObtenerTodasAsync();
+            _paginaActual = 1;
         }
         finally
         {
@@ -198,11 +216,29 @@
     private void CambiarFiltro(FiltroCartelera filtro)
     {
         _filtroActual = filtro;
+        _paginaActual = 1;
     }
 
     private async Task AlternarFavorito(int id)
     {
         await Favoritos.AlternarAsync(id);
+        AjustarPagina();
+    }
+
+    private async Task CambiarPagina(int pagina)
+    {
+        _paginaActual = pagina;
+        AjustarPagina();
+        await JS.InvokeVoidAsync("cinemonScrollIntoView", _seccionRef);
+    }
+
+    private void AjustarPagina()
+    {
+        if (_paginaActual < 1)
+            _paginaActual = 1;
+
+        if (_paginaActual > TotalPaginas)
+            _paginaActual = TotalPaginas;
     }
 
     private void NavegarAPelicula(int id) => Navigation.NavigateTo($"/peliculas/{id}");

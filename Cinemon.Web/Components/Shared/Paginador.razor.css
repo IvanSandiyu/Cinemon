@@ -1,0 +1,59 @@
+.cinemon-paginador {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: .4rem;
+    margin: 1.75rem 0 .5rem;
+}
+
+.cinemon-paginador-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    padding: 0 .6rem;
+    border: 1px solid #1E6F7D;
+    border-radius: 7px;
+    background: #0F2D3A;
+    color: #E7F3F2;
+    font-size: .85rem;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.cinemon-paginador-btn:hover:not(:disabled) {
+    background: #1E6F7D;
+    border-color: #7BC6C9;
+}
+
+.cinemon-paginador-btn.activo {
+    background: #7BC6C9;
+    border-color: #7BC6C9;
+    color: #08121A;
+    font-weight: 700;
+}
+
+.cinemon-paginador-btn:disabled {
+    opacity: .4;
+    cursor: default;
+}
+
+.cinemon-paginador-btn:focus-visible {
+    outline: 2px solid #A5E0E3;
+    outline-offset: 2px;
+}
+
+.cinemon-paginador-btn ::deep .rzi {
+    font-size: 1.1rem;
+    color: inherit;
+}
+
+.cinemon-paginador-puntos {
+    padding: 0 .2rem;
+    color: #8AB8BB;
+    user-select: none;
+}

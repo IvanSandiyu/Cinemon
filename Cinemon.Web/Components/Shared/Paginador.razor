@@ -1,0 +1,84 @@
+@if (TotalPaginas > 1) {
+    <nav class="cinemon-paginador" aria-label="@AriaLabel">
+        <button type="button"
+                class="cinemon-paginador-btn"
+                disabled="@(PaginaActual <= 1)"
+                aria-label="Página anterior"
+                @onclick="() => Ir(PaginaActual - 1)">
+            <RadzenIcon Icon="chevron_left" />
+        </button>
+
+        @foreach (var pagina in Paginas) {
+            if (pagina == 0) {
+                <span class="cinemon-paginador-puntos" aria-hidden="true">...</span>
+            } else {
+                <button type="button"
+                        class="cinemon-paginador-btn @(pagina == PaginaActual ? "activo" : "")"
+                        aria-label="Ir a la página @pagina"
+                        aria-current="@(pagina == PaginaActual ? "page" : "false")"
+                        @onclick="() => Ir(pagina)">
+                    @pagina
+                </button>
+            }
+        }
+
+        <button type="button"
+                class="cinemon-paginador-btn"
+                disabled="@(PaginaActual >= TotalPaginas)"
+                aria-label="Página siguiente"
+                @onclick="() => Ir(PaginaActual + 1)">
+            <RadzenIcon Icon="chevron_right" />
+        </button>
+    </nav>
+}
+
+@code {
+    [Parameter]
+    public int PaginaActual { get; set; } = 1;
+
+    [Parameter]
+    public int TotalPaginas { get; set; } = 1;
+
+    [Parameter]
+    public EventCallback<int> PaginaCambiada { get; set; }
+
+    [Parameter]
+    public string AriaLabel { get; set; } = "Paginación";
+
+    private IEnumerable<int> Paginas {
+        get {
+            if (TotalPaginas <= 7) {
+                return Enumerable.Range(1, TotalPaginas);
+            }
+
+            var paginas = new List<int> { 1 };
+            var inicio = Math.Max(2, PaginaActual - 1);
+            var fin = Math.Min(TotalPaginas - 1, PaginaActual + 1);
+
+            if (inicio > 2) {
+                paginas.Add(0);
+            }
+
+            for (var i = inicio; i <= fin; i++) {
+                paginas.Add(i);
+            }
+
+            if (fin < TotalPaginas - 1) {
+                paginas.Add(0);
+            }
+
+            paginas.Add(TotalPaginas);
+
+            return paginas;
+        }
+    }
+
+    private async Task Ir(int pagina)
+    {
+        if (pagina < 1 || pagina > TotalPaginas || pagina == PaginaActual) {
+            return;
+        }
+
+        await PaginaCambiada.InvokeAsync(pagina);
+    }
+}

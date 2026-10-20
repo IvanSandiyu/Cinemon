@@ -5,6 +5,7 @@
 @using Cinemon.Web.Models.DTOs
 @using Cinemon.Web.Services
 @inject PeliculaApiService PeliculaService
+@inject IJSRuntime JS
 
 <PageTitle>Buscar películas | Cinemon</PageTitle>
 
@@ -40,9 +41,9 @@ else if (_resultados.Count == 0)
 }
 else
 {
-    <div class="row g-3 justify-content-center">
+    <div class="row g-3 justify-content-center" @ref="_resultadosRef">
 
-        @foreach (var (pelicula, index) in _resultados.Select((p, i) => (p, i)))
+        @foreach (var (pelicula, index) in ResultadosDePagina.Select((p, i) => (p, i)))
         {
             <div class="col-6 col-sm-4 col-md-3 col-lg-3">
                 <div class="cinemon-movie-card reveal"
@@ -81,6 +82,11 @@ else
         }
 
     </div>
+
+    <Paginador PaginaActual="_paginaActual"
+               TotalPaginas="TotalPaginas"
+               PaginaCambiada="CambiarPagina"
+               AriaLabel="Paginación de resultados" />
 }
 
 @code {
@@ -88,6 +94,17 @@ else
     private IReadOnlyCollection<PeliculaDto> _resultados = [];
     private string _termino = "";
     private bool _cargando = true;
+    private const int TamanoPagina = 9;
+    private int _paginaActual = 1;
+    private ElementReference _resultadosRef;
+
+    private int TotalPaginas =>
+        Math.Max(1, (int)Math.Ceiling(_resultados.Count / (double)TamanoPagina));
+
+    private IEnumerable<PeliculaDto> ResultadosDePagina =>
+        _resultados
+            .Skip((_paginaActual - 1) * TamanoPagina)
+            .Take(TamanoPagina);
 
     protected override async Task OnInitializedAsync()
     {
@@ -97,6 +114,7 @@ else
             _resultados = _peliculas
                 .Where(p => p.Activa || p.FechaEstreno > DateTime.Today)
                 .ToList();
+            _paginaActual = 1;
         }
         finally
         {
@@ -107,6 +125,7 @@ else
     private void OnTerminoCambio(ChangeEventArgs args)
     {
         _termino = args.Value?.ToString() ?? "";
+        _paginaActual = 1;
 
         var termino = _termino.Trim();
 
@@ -118,6 +137,22 @@ else
                 .Where(p => (p.Activa || p.FechaEstreno > DateTime.Today)
                             && p.Titulo.Contains(termino, StringComparison.OrdinalIgnoreCase))
                 .ToList();
+    }
+
+    private async Task CambiarPagina(int pagina)
+    {
+        _paginaActual = pagina;
+        AjustarPagina();
+        await JS.InvokeVoidAsync("cinemonScrollIntoView", _resultadosRef);
+    }
+
+    private void AjustarPagina()
+    {
+        if (_paginaActual < 1)
+            _paginaActual = 1;
+
+        if (_paginaActual > TotalPaginas)
+            _paginaActual = TotalPaginas;
     }
 
     private void NavegarAPelicula(int id) => Navigation.NavigateTo($"/peliculas/{id}");

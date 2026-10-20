@@ -5,10 +5,11 @@
 @using Cinemon.Web.Models.DTOs
 @using Cinemon.Web.Services
 @inject PeliculaApiService PeliculaService
+@inject IJSRuntime JS
 
 <PageTitle>Próximos estrenos | Cinemon</PageTitle>
 
-<div class="prenest-seccion">
+<div class="prenest-seccion" @ref="_seccionRef">
 
     <div class="prenest-head reveal">
         <h5 class="prenest-kicker">Próximos estrenos</h5>
@@ -49,7 +50,7 @@
     else {
         <div class="row g-3 justify-content-center">
 
-            @foreach (var (pelicula, index) in Proximos.Select((p, i) => (p, i))) {
+            @foreach (var (pelicula, index) in ProximosDePagina.Select((p, i) => (p, i))) {
                 <div class="col-6 col-sm-4 col-md-3 col-lg-3">
                     <div class="cinemon-movie-card reveal"
                          style="@($"--reveal-delay: {Math.Min((index % 6) * 50, 200)}ms;")">
@@ -92,6 +93,11 @@
             }
 
         </div>
+
+        <Paginador PaginaActual="_paginaActual"
+                   TotalPaginas="TotalPaginas"
+                   PaginaCambiada="CambiarPagina"
+                   AriaLabel="Paginación de próximos estrenos" />
     }
 
 </div>
@@ -100,6 +106,9 @@
     private IReadOnlyCollection<PeliculaDto> _peliculas = [];
     private bool _cargando = true;
     private string? _error;
+    private const int TamanoPagina = 9;
+    private int _paginaActual = 1;
+    private ElementReference _seccionRef;
 
     // Próximo estreno = fecha futura, sin importar si ya está en cartelera
     // (una película puede estar habilitada para preventa antes de estrenar).
@@ -109,12 +118,21 @@
             .OrderBy(p => p.FechaEstreno)
             .ToList();
 
+    private int TotalPaginas =>
+        Math.Max(1, (int)Math.Ceiling(Proximos.Count / (double)TamanoPagina));
+
+    private IEnumerable<PeliculaDto> ProximosDePagina =>
+        Proximos
+            .Skip((_paginaActual - 1) * TamanoPagina)
+            .Take(TamanoPagina);
+
     protected override async Task OnInitializedAsync() => await CargarAsync();
 
     private async Task CargarAsync()
     {
         _cargando = true;
         _error = null;
+        _paginaActual = 1;
 
         try {
             _peliculas = await PeliculaService.ObtenerTodasAsync();
@@ -124,6 +142,22 @@
         } finally {
             _cargando = false;
         }
+    }
+
+    private async Task CambiarPagina(int pagina)
+    {
+        _paginaActual = pagina;
+        AjustarPagina();
+        await JS.InvokeVoidAsync("cinemonScrollIntoView", _seccionRef);
+    }
+
+    private void AjustarPagina()
+    {
+        if (_paginaActual < 1)
+            _paginaActual = 1;
+
+        if (_paginaActual > TotalPaginas)
+            _paginaActual = TotalPaginas;
     }
 
     private void NavegarAPelicula(int id) => Navigation.NavigateTo($"/peliculas/{id}");
