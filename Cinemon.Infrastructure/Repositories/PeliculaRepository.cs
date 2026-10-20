@@ -1,4 +1,5 @@
 ﻿using Cinemon.Application.Abstractions;
+using Cinemon.Application.Peliculas.Queries.ObtenerPeliculas;
 using Cinemon.Domain.Entidades.Peliculas;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -167,6 +168,67 @@ namespace Cinemon.Infrastructure.Repositories
                 .ThenInclude(g => g.Genero)
                 .Include(p => p.Posters)
                 .ToListAsync(cancellationToken);
+        }
+
+        public async Task<(IReadOnlyCollection<Pelicula> Peliculas, int Total)> ObtenerPaginadasAsync(
+            FiltroPeliculasPublicas filtro,
+            string? busqueda,
+            IReadOnlyCollection<int> ids,
+            int pagina,
+            int tamanoPagina,
+            DateTime hoy,
+            CancellationToken cancellationToken)
+        {
+            var idsList = ids.ToList();
+
+            if (filtro == FiltroPeliculasPublicas.MisPeliculas && idsList.Count == 0)
+                return (Array.Empty<Pelicula>(), 0);
+
+            var query = _context.Peliculas
+                .AsNoTracking();
+
+            query = filtro switch
+            {
+                FiltroPeliculasPublicas.EnCartelera => query
+                    .Where(p => p.Activa),
+                FiltroPeliculasPublicas.Proximamente => query
+                    .Where(p => p.FechaEstreno > hoy),
+                FiltroPeliculasPublicas.MisPeliculas => query
+                    .Where(p => idsList.Contains(p.Id)),
+                FiltroPeliculasPublicas.Busqueda => query
+                    .Where(p => p.Activa || p.FechaEstreno > hoy),
+                _ => query
+            };
+
+            if (filtro == FiltroPeliculasPublicas.Busqueda &&
+                !string.IsNullOrWhiteSpace(busqueda))
+            {
+                query = query.Where(p => p.Titulo.Contains(busqueda));
+            }
+
+            var total = await query.CountAsync(cancellationToken);
+
+            query = filtro switch
+            {
+                FiltroPeliculasPublicas.Proximamente => query
+                    .OrderBy(p => p.FechaEstreno)
+                    .ThenBy(p => p.Id),
+                FiltroPeliculasPublicas.Busqueda => query
+                    .OrderBy(p => p.Titulo)
+                    .ThenBy(p => p.Id),
+                _ => query
+                    .OrderBy(p => p.Id)
+            };
+
+            var peliculas = await query
+                .Skip((pagina - 1) * tamanoPagina)
+                .Take(tamanoPagina)
+                .Include(p => p.Generos)
+                .ThenInclude(g => g.Genero)
+                .Include(p => p.Posters)
+                .ToListAsync(cancellationToken);
+
+            return (peliculas, total);
         }
 
         public async Task<Pelicula?> ObtenerPorIdAsync(int id,CancellationToken cancellationToken)

@@ -5,6 +5,7 @@ using Cinemon.Application.Peliculas.Commands.VincularTmdb;
 using Cinemon.Application.Peliculas.Queries.ObtenerPeliculas;
 
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using static Cinemon.Api.Endpoints.TmdbEndpoints;
 
 namespace Cinemon.Api.Endpoints.Peliculas
@@ -19,6 +20,8 @@ namespace Cinemon.Api.Endpoints.Peliculas
             group.MapPost("/", CrearPelicula).RequireAuthorization(policy =>policy.RequireRole("Admin"));
 
             group.MapGet("/", ObtenerPeliculas);
+
+            group.MapGet("/paginado", ObtenerPeliculasPaginadas);
 
             group.MapGet("/{id}", ObtenerPeliculasId);
 
@@ -71,6 +74,29 @@ namespace Cinemon.Api.Endpoints.Peliculas
                 cancellationToken);
 
             return Results.Ok(peliculas);
+        }
+
+        private static async Task<IResult> ObtenerPeliculasPaginadas(
+            ISender sender,
+            CancellationToken cancellationToken,
+            [FromQuery] int pagina = 1,
+            [FromQuery] int tamanoPagina = 9,
+            [FromQuery] FiltroPeliculasPublicas filtro = FiltroPeliculasPublicas.EnCartelera,
+            [FromQuery] string? busqueda = null,
+            [FromQuery] int[]? ids = null)
+        {
+            var query = new ObtenerPeliculasPaginadasQuery(
+                pagina,
+                tamanoPagina,
+                filtro,
+                busqueda,
+                ids);
+
+            var resultado = await sender.Send(
+                query,
+                cancellationToken);
+
+            return Results.Ok(resultado);
         }
 
         private static async Task<IResult> EditarPeliculas(int id, EditarPeliculaRequest request,ISender sender, CancellationToken cancellationToken)

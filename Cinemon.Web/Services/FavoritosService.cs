@@ -11,6 +11,8 @@ namespace Cinemon.Web.Services
 
         public bool EsFavorito(int id) => _ids.Contains(id);
 
+        public IReadOnlyCollection<int> ObtenerIds() => _ids.ToList();
+
         public async Task CargarAsync()
         {
             try

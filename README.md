@@ -126,7 +126,7 @@ También probé que el frontend muestre las butacas ya ocupadas (vía un DTO con
 
 ### Testing / Herramientas
 - **xUnit 2.6.6** en el proyecto `Cinemon.Tests` (net8.0), con `Microsoft.NET.Test.Sdk`, Coverlet y EF Core SQLite. Los tests usan **SQLite real** (archivo temporal) y no el provider `InMemory` a propósito: `InMemory` ignora índices únicos y bloqueos entre escrituras, que es justamente lo que hay que verificar en la reserva de butacas.
-- **Qué se cubre (130 casos)**: reglas de dominio de promociones (NxM, porcentaje, vigencia, días, activación) y elección del mejor descuento; flujo completo de `CrearReserva` (validaciones, precio de catálogo, promoción aplicable, cancelación); concurrencia de reservas; handlers de `CrearFuncion` / `CrearProgramacion`; productos y pedidos de Candy; y la vinculación de pósters de TMDB.
+- **Qué se cubre (153 casos)**: reglas de dominio de promociones (NxM, porcentaje, vigencia, días, activación) y elección del mejor descuento; flujo completo de `CrearReserva` (validaciones, precio de catálogo, promoción aplicable, cancelación); concurrencia de reservas; handlers de `CrearFuncion` / `CrearProgramacion`; productos y pedidos de Candy; la vinculación de pósters de TMDB; y la paginación pública de películas.
 - **Concurrencia de verdad**: los tests lanzan N reservas simultáneas sobre la misma butaca y verifican que **gana exactamente una** y que la transacción perdedora no deja butacas sueltas. Para soltar las tareas al mismo tiempo se usa una compuerta asíncrona (`TaskCompletionSource`) en lugar de `Barrier.SignalAndWait()`, que bloquea el hilo y hace deadlock con el sincronizador de xUnit.
 - **Swagger** como documentación interactiva de la API.
 - **`dotnet user-secrets`** para los secretos locales (no hay claves en el repo).
@@ -460,11 +460,11 @@ Sin entrar en detalles explotables, el sistema parte de una base sólida en mate
 
 ## 🗺️ Posibles mejoras a futuro
 
-- ~~**Tests automatizados** (xUnit)~~ ✅ hecho: suite `Cinemon.Tests` con 130 casos (dominio, handlers y concurrencia de reservas con SQLite real).
+- ~~**Tests automatizados** (xUnit)~~ ✅ hecho: suite `Cinemon.Tests` con 153 casos (dominio, handlers y concurrencia de reservas con SQLite real).
 - ~~**Promociones configurables**~~ ✅ hecho: promociones como datos (`vigencia`, `días`, `porcentaje` o `NxM`) con CRUD en `/admin/promociones` y motor que elige el mejor descuento.
 - **Usar el catálogo de precios también al editar funciones**: el alta ya no permite escribir el precio a mano, pero la edición todavía lo hace.
 - **Transacción para la programación semanal**: hoy cada función del lote se guarda por separado y los conflictos se omiten; con una transacción se podría garantizar todo-o-nada.
-- **Paginación del lado del servidor** en listados de películas, funciones y reservas (la cartelera, próximos estrenos y búsqueda ya paginan en el cliente de a 9; la API sigue trayendo todo).
+- **Paginación** en listados de administración de películas, funciones y reservas (la cartelera pública y los próximos estrenos ya paginan en el servidor; la búsqueda sigue resolviéndose en el cliente).
 - **CI/CD**: el repo ya tiene `.github/workflows/` (vacío) listo para un pipeline de build + test.
 - **Refresco de tokens** (`refresh token` + revocación).
 - **Mejoras UX**: mapa de sala accesible y mobile-first, filtros por fecha en el cliente.

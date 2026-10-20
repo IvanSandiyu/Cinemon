@@ -1,4 +1,5 @@
-﻿using Cinemon.Domain.Entidades.Peliculas;
+﻿using Cinemon.Application.Peliculas.Queries.ObtenerPeliculas;
+using Cinemon.Domain.Entidades.Peliculas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,15 @@ namespace Cinemon.Application.Abstractions
         Task AddGenerosAsync(Pelicula pelicula,IReadOnlyCollection<int> generoIds,CancellationToken cancellationToken);
 
         Task<IReadOnlyCollection<Pelicula>> ObtenerTodasAsync(CancellationToken cancellationToken);
+
+        Task<(IReadOnlyCollection<Pelicula> Peliculas, int Total)> ObtenerPaginadasAsync(
+            FiltroPeliculasPublicas filtro,
+            string? busqueda,
+            IReadOnlyCollection<int> ids,
+            int pagina,
+            int tamanoPagina,
+            DateTime hoy,
+            CancellationToken cancellationToken);
 
         Task<Pelicula?> ObtenerPorIdAsync(int id,CancellationToken cancellationToken);
 

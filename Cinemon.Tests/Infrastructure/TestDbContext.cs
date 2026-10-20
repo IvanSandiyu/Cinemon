@@ -76,13 +76,15 @@ namespace Cinemon.Tests.Infrastructure
 
         public async Task<Pelicula> CrearPeliculaAsync(
             bool activa = true,
-            int duracion = 120)
+            int duracion = 120,
+            string? titulo = null,
+            DateTime? fechaEstreno = null)
         {
             var pelicula = new Pelicula(
-                $"Pelicula {Guid.NewGuid():N}"[..12],
+                titulo ?? $"Pelicula {Guid.NewGuid():N}"[..12],
                 "Sinopsis de prueba.",
                 duracion,
-                DateTime.UtcNow.AddMonths(-1),
+                fechaEstreno ?? DateTime.UtcNow.AddMonths(-1),
                 ClasificacionEdad.ATP,
                 "https://image.tmdb.org/poster.jpg",
                 "https://youtube.com/watch?v=test");

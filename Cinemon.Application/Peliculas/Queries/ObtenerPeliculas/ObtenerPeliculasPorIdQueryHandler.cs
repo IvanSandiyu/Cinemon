@@ -23,26 +23,7 @@ namespace Cinemon.Application.Peliculas.Queries.ObtenerPeliculas
             if (pelicula is null)
                 return null;
 
-            return new PeliculaDto(
-                pelicula.Id,
-                pelicula.Titulo,
-                pelicula.Sinopsis,
-                pelicula.Duracion,
-                pelicula.FechaEstreno,
-                ClasificacionEdadHelper.ParaMostrar(pelicula.ClasificacionEdad),
-                pelicula.PosterUrl,
-                TmdbImageUrlHelper.ObtenerTrailerUrl(
-                    pelicula.TrailerUrl,
-                    pelicula.TmdbTrailerKey),
-                pelicula.Activa,
-                pelicula.Generos.Select(g => g.Genero.Nombre).ToList(), 
-                TmdbImageUrlHelper.BuildPosterUrl(pelicula.TmdbPosterPath),
-                TmdbImageUrlHelper.BuildBackdropUrl(pelicula.TmdbBackdropPath),
-                pelicula.Posters
-                    .Select(p => TmdbImageUrlHelper.BuildPosterUrl(p.Ruta))
-                    .Where(url => !string.IsNullOrWhiteSpace(url))
-                    .Cast<string>()
-                    .ToList());
+            return PeliculaDtoMapper.ToDto(pelicula);
         }
     }
 }

@@ -38,7 +38,7 @@
 
         </div>
     }
-    else if (Proximos.Count == 0) {
+    else if (_peliculas.Count == 0) {
         <div class="prenest-vacio">
 
             <RadzenAlert AlertStyle="AlertStyle.Info">
@@ -50,7 +50,7 @@
     else {
         <div class="row g-3 justify-content-center">
 
-            @foreach (var (pelicula, index) in ProximosDePagina.Select((p, i) => (p, i))) {
+            @foreach (var (pelicula, index) in _peliculas.Select((p, i) => (p, i))) {
                 <div class="col-6 col-sm-4 col-md-3 col-lg-3">
                     <div class="cinemon-movie-card reveal"
                          style="@($"--reveal-delay: {Math.Min((index % 6) * 50, 200)}ms;")">
@@ -95,7 +95,7 @@
         </div>
 
         <Paginador PaginaActual="_paginaActual"
-                   TotalPaginas="TotalPaginas"
+                   TotalPaginas="_totalPaginas"
                    PaginaCambiada="CambiarPagina"
                    AriaLabel="Paginación de próximos estrenos" />
     }
@@ -108,56 +108,56 @@
     private string? _error;
     private const int TamanoPagina = 9;
     private int _paginaActual = 1;
+    private int _totalPaginas = 1;
     private ElementReference _seccionRef;
-
-    // Próximo estreno = fecha futura, sin importar si ya está en cartelera
-    // (una película puede estar habilitada para preventa antes de estrenar).
-    private IReadOnlyList<PeliculaDto> Proximos =>
-        _peliculas
-            .Where(p => p.FechaEstreno > DateTime.Today)
-            .OrderBy(p => p.FechaEstreno)
-            .ToList();
-
-    private int TotalPaginas =>
-        Math.Max(1, (int)Math.Ceiling(Proximos.Count / (double)TamanoPagina));
-
-    private IEnumerable<PeliculaDto> ProximosDePagina =>
-        Proximos
-            .Skip((_paginaActual - 1) * TamanoPagina)
-            .Take(TamanoPagina);
+    private CancellationTokenSource? _cts;
 
     protected override async Task OnInitializedAsync() => await CargarAsync();
 
     private async Task CargarAsync()
     {
+        _cts?.Cancel();
+
+        var cts = new CancellationTokenSource();
+        _cts = cts;
+
         _cargando = true;
         _error = null;
-        _paginaActual = 1;
 
         try {
-            _peliculas = await PeliculaService.ObtenerTodasAsync();
+            var resultado = await PeliculaService.ObtenerPaginadasAsync(
+                _paginaActual,
+                TamanoPagina,
+                "Proximamente",
+                cancellationToken: cts.Token);
+
+            if (cts.IsCancellationRequested)
+                return;
+
+            _peliculas = resultado.Items;
+            _totalPaginas = Math.Max(1, resultado.TotalPaginas);
+        } catch (OperationCanceledException) {
         } catch {
-            _peliculas = [];
-            _error = "No se pudieron cargar los próximos estrenos. Revisá que el servicio de la API esté disponible.";
+            if (!cts.IsCancellationRequested) {
+                _peliculas = [];
+                _totalPaginas = 1;
+                _error = "No se pudieron cargar los próximos estrenos. Revisá que el servicio de la API esté disponible.";
+            }
         } finally {
-            _cargando = false;
+            if (ReferenceEquals(_cts, cts)) {
+                _cargando = false;
+                _cts = null;
+            }
+
+            cts.Dispose();
         }
     }
 
     private async Task CambiarPagina(int pagina)
     {
         _paginaActual = pagina;
-        AjustarPagina();
+        await CargarAsync();
         await JS.InvokeVoidAsync("cinemonScrollIntoView", _seccionRef);
-    }
-
-    private void AjustarPagina()
-    {
-        if (_paginaActual < 1)
-            _paginaActual = 1;
-
-        if (_paginaActual > TotalPaginas)
-            _paginaActual = TotalPaginas;
     }
 
     private void NavegarAPelicula(int id) => Navigation.NavigateTo($"/peliculas/{id}");

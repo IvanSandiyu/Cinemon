@@ -39,6 +39,42 @@ namespace Cinemon.Web.Services
             return peliculas ?? [];
         }
 
+        public async Task<PagedResultDto<PeliculaDto>> ObtenerPaginadasAsync(
+            int pagina,
+            int tamanoPagina,
+            string filtro,
+            string? busqueda = null,
+            IReadOnlyCollection<int>? ids = null,
+            CancellationToken cancellationToken = default)
+        {
+            var parametros = new List<string>
+            {
+                $"pagina={pagina}",
+                $"tamanoPagina={tamanoPagina}",
+                $"filtro={Uri.EscapeDataString(filtro)}"
+            };
+
+            if (!string.IsNullOrWhiteSpace(busqueda))
+                parametros.Add($"busqueda={Uri.EscapeDataString(busqueda.Trim())}");
+
+            if (ids is not null)
+            {
+                foreach (var id in ids)
+                    parametros.Add($"ids={id}");
+            }
+
+            var url = $"api/peliculas/paginado?{string.Join("&", parametros)}";
+
+            var resultado = await _httpClient.GetFromJsonAsync<
+                PagedResultDto<PeliculaDto>>(
+                    url,
+                    cancellationToken);
+
+            return resultado ?? PagedResultDto<PeliculaDto>.Vacio(
+                pagina,
+                tamanoPagina);
+        }
+
         public async Task<PeliculaDto?> ObtenerPorIdAsync(int id,CancellationToken cancellationToken = default)
         {
             return await _httpClient.GetFromJsonAsync<PeliculaDto>(
