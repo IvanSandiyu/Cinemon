@@ -462,17 +462,12 @@ Sin entrar en detalles explotables, el sistema parte de una base sólida en mate
 
 - ~~**Tests automatizados** (xUnit)~~ ✅ hecho: suite `Cinemon.Tests` con 130 casos (dominio, handlers y concurrencia de reservas con SQLite real).
 - ~~**Promociones configurables**~~ ✅ hecho: promociones como datos (`vigencia`, `días`, `porcentaje` o `NxM`) con CRUD en `/admin/promociones` y motor que elige el mejor descuento.
-- **Acotar el rango de las promociones**: hoy la vigencia se define por día (`FechaDesde` / `FechaHasta`) y no por franja horaria, así que una promoción 2x1 aplica a todas las funciones de ese día.
-- **Reglas de acumulación**: si en el futuro se quiere permitir más de una promoción por vez (por ejemplo 2x1 + descuento por membresía), el motor hoy elige una sola.
 - **Usar el catálogo de precios también al editar funciones**: el alta ya no permite escribir el precio a mano, pero la edición todavía lo hace.
 - **Transacción para la programación semanal**: hoy cada función del lote se guarda por separado y los conflictos se omiten; con una transacción se podría garantizar todo-o-nada.
 - **Paginación** en listados de películas, funciones y reservas (hoy se trae todo).
 - **CI/CD**: el repo ya tiene `.github/workflows/` (vacío) listo para un pipeline de build + test.
-- **Notificaciones por email** (confirmación y recordatorio de funciones).
-- **Pagos reales** (Mercado Pago/Stripe) en lugar de reserva sin cobro.
 - **Refresco de tokens** (`refresh token` + revocación).
 - **Mejoras UX**: mapa de sala accesible y mobile-first, filtros por fecha en el cliente.
-- **Ambientación**: soporte multi-idioma y moneda configurable.
 - **Migraciones explícitas en producción** en lugar del auto-migrate del seed.
 
 ## 📄 Licencia y contacto
